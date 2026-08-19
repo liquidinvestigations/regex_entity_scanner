@@ -1,0 +1,67 @@
+# Entity contract
+
+What `POST /scan` returns, and what a consumer may rely on.
+
+```jsonc
+{
+  "type": "date",                     // the entity category
+  "start": 1234,                      // byte offset in the source document
+  "end": 1244,                        // one past the last byte
+  "text": "2021-03-04",               // surface form exactly as it appears
+  "value": { "rfc3339": "2021-03-04", "precision": "day", "tz_known": false },
+  "confidence": 0.99,
+  "rule_id": "date.iso8601",          // which rule produced this
+  "flags": ["no_timezone"]            // machine-readable caveats; omitted when empty
+}
+```
+
+## Offsets are bytes, and they are absolute
+
+`start` and `end` are byte offsets into the **source document**, not into the fragment that was
+scanned and not character indices. A caller scanning a large document:
+
+1. splits it into windows that **overlap** by at least the longest matchable entity, so nothing is
+   lost on a boundary;
+2. passes each window's own byte offset as `offset` in the request;
+3. deduplicates on `(type, start, end)` across the overlap.
+
+Windows must never split a UTF-8 codepoint. `text[start..end]` on the original bytes is always
+exactly the reported `text`; the test suite asserts it on every corpus case.
+
+## The value is the point
+
+`text` is what was written. `value` is what it means, and it is what belongs in a typed index field
+— a date field, a scaled integer plus a currency, a double plus a unit — so that range queries
+work. Keeping `text` alongside it is not redundancy: highlighting needs it, and so does a user
+asking why the system thinks this is a date.
+
+Values are canonical, so two spellings of one thing collapse. `2021-03-04T09:12:00+0200` and
+`2021-03-04T09:12:00+02:00` produce the same value; an address's domain is lowercased and its local
+part is not, which is what RFC 5321 says about case sensitivity.
+
+`precision` travels with a date because indexing a day-precision date as an instant is spurious
+accuracy, and a consumer that cannot tell them apart will produce it.
+
+## `rule_id` and `confidence`
+
+`rule_id` is provenance. Asking "which rule produced this garbage?" over a real corpus is how
+precision work gets done, and without the field it is guesswork. It is stable, dotted from general
+to specific, and renaming one is a data migration.
+
+`confidence` is what a consumer thresholds on at index time. It means: how likely this span is to be
+the thing the rule claims, given what the validator was able to check. A rule that verified a check
+digit claims more than a rule that matched a shape and a nearby cue word, and the numbers have to
+stay comparable across rules for a single threshold to make sense.
+
+## Flags, not guesses
+
+Some ambiguity is real and unresolvable from the text alone — `03/04/2021` is genuinely two dates, a
+timestamp without an offset is genuinely not an instant. The contract reports it (`ambiguous_order`,
+`no_timezone`) instead of picking one and presenting it as certainty. An investigative index is
+exactly the place where a silently wrong date is expensive.
+
+## Versioning
+
+Extraction is not idempotent across rule versions: changing a rule changes what a document yields.
+Record which version of the rule set produced a document's entities, so that the scope of a reindex
+can be computed rather than guessed.

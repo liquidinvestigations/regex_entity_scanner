@@ -1,0 +1,54 @@
+# Containers and scripts
+
+Nothing is built or run on the host. There is no host Rust toolchain and no host Python; every
+build, test, script and server process runs in a container built from this repository.
+
+## The five scripts
+
+| Script | What it does |
+|---|---|
+| `build-dev.sh [--force]` | Builds the development image from `Dockerfile.devel`. `--force` rebuilds from scratch, ignoring the layer cache and re-pulling the base image. |
+| `build-rel.sh [--force]` | Builds the release image from `Dockerfile.release`. |
+| `shell.sh [command…]` | Interactive shell in a throwaway dev container. With arguments, runs them instead: `./shell.sh cargo test`. |
+| `run-server.sh [--dev]` | Runs the server detached on `127.0.0.1:19705`, replacing any container already holding the name. `--dev` runs from the dev image against the working tree. |
+| `test.sh [filter…]` | The full battery in the dev container, building the image first if it is missing. Arguments pass through to `cargo test`. |
+
+`common.sh` holds the image names, the published address and the shared helpers. It is sourced, not
+executed.
+
+If something is needed that these do not cover, extend them or the Dockerfiles. A host-side install
+is not a shortcut — it is a machine that works and a repository that does not.
+
+## The development image
+
+`Dockerfile.devel` is the toolchain, bind-mounted on the working tree at `/work`. It holds no state
+of its own: the cargo registry cache, the build directory and the shell history all live under the
+mount, in `.container/` and `target/`, so deleting the container costs nothing and the tree stays
+the single source of truth.
+
+Under rootless podman, container root maps to the invoking user, so files the container creates in
+the mount are owned by that user on the host — no ownership repair, no `--user` juggling.
+
+The directories that hold cargo's state live inside the mount, which does not exist until the
+container starts, so the entrypoint creates them before handing over.
+
+## The release image
+
+`Dockerfile.release` builds in one stage and ships in another. What lands in the final image is the
+optimised binary, `vendored/data` — the reference data the scanner loads at startup — and the
+upstream licence notices, which the licences require to travel with the data. No toolchain, no
+sources, no bind mount, and no `vendored/reference`, which is development material.
+
+It runs as an unprivileged user, listens on `0.0.0.0:19705` inside the container, and is configured
+by two environment variables: `RES_BIND` for the listen address and `RES_VENDORED_DIR` for the data
+directory. `RES_LOG` takes a tracing filter.
+
+`.dockerignore` keeps the build directory, the scratch tree and `vendored/reference` out of the
+build context — the context is sent in full, and without it that is hundreds of megabytes per
+build.
+
+## Ports
+
+The server listens on all interfaces inside its container; only the loopback publish on the host
+makes it reachable, at `127.0.0.1:19705`. Nothing here is authenticated, so that publish is the
+entire access control story — do not widen it without adding one.
