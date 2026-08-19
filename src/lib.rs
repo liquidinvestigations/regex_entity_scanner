@@ -11,10 +11,12 @@
 //! through both stages.
 
 pub mod data;
+pub mod explain;
 pub mod model;
 pub mod rules;
 pub mod scan;
 pub mod service;
 
+pub use explain::Explanation;
 pub use model::{Entity, EntityType, Flag, Value};
 pub use scan::Scanner;

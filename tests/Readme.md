@@ -5,6 +5,7 @@
 | `support/mod.rs` | Builds a scanner over the vendored tree next to the manifest, so tests do not depend on the environment the way the binary does. |
 | `dates.rs`, `email.rs` | Per-rule behaviour: what the validator keeps, what it rejects, and what the value normalises to. |
 | `golden.rs` | The labelled corpus, scored as precision and recall. |
+| `explain.rs` | Explainer cards, including that every compiled rule has a catalogue entry and that an entity round-trips from `/scan` into `/explain` unchanged. |
 | `http.rs` | The service surface over a real socket. |
 
 ## The golden corpus

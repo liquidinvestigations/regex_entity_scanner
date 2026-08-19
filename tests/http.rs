@@ -40,11 +40,35 @@ async fn health_rules_and_scan() {
         .json()
         .await
         .expect("rules json");
-    assert!(rules["rules"]
+    let email_rule = rules["rules"]
         .as_array()
         .expect("a rule list")
         .iter()
-        .any(|rule| rule == "email.basic"));
+        .find(|rule| rule["rule_id"] == "email.basic")
+        .expect("email.basic listed");
+    assert_eq!(email_rule["title"], "Email address");
+    assert_eq!(email_rule["compiled"], true);
+
+    let doc: serde_json::Value = client
+        .get(format!("{base}/rules/email.basic"))
+        .send()
+        .await
+        .expect("rule doc request")
+        .json()
+        .await
+        .expect("rule doc json");
+    assert!(!doc["checks"].as_array().expect("checks").is_empty());
+    assert!(!doc["not_checked"]
+        .as_array()
+        .expect("not_checked")
+        .is_empty());
+
+    let missing = client
+        .get(format!("{base}/rules/phone.zw.mobile"))
+        .send()
+        .await
+        .expect("missing rule request");
+    assert_eq!(missing.status(), reqwest::StatusCode::NOT_FOUND);
 
     let scanned: serde_json::Value = client
         .post(format!("{base}/scan"))
@@ -66,4 +90,30 @@ async fn health_rules_and_scan() {
     assert_eq!(entities[0]["rule_id"], "date.iso8601");
     assert_eq!(entities[1]["type"], "email");
     assert_eq!(entities[1]["value"]["address"], "ops@example.org");
+
+    // The entity goes back exactly as it arrived — this is the whole ergonomics of the endpoint.
+    let card: serde_json::Value = client
+        .post(format!("{base}/explain"))
+        .json(&entities[1])
+        .send()
+        .await
+        .expect("explain request")
+        .json()
+        .await
+        .expect("explain json");
+    assert_eq!(card["rule_id"], "email.basic");
+    assert_eq!(card["title"], "Email address");
+    assert!(card["subtitle"]
+        .as_str()
+        .expect("a subtitle")
+        .contains("example.org"));
+    assert!(card["body"].as_str().expect("a body").contains("IANA"));
+
+    let unknown = client
+        .post(format!("{base}/explain"))
+        .json(&serde_json::json!({ "rule_id": "phone.zw.mobile" }))
+        .send()
+        .await
+        .expect("explain request for an undocumented rule");
+    assert_eq!(unknown.status(), reqwest::StatusCode::NOT_FOUND);
 }

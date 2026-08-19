@@ -4,17 +4,19 @@
 //! `RES_VENDORED_DIR` points at the vendored tree — the bind mount in development, a directory
 //! baked into the release image otherwise.
 
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result};
 
-/// The IANA list and whatever else the validators need to distinguish a real match from a
-/// plausible-looking one.
+/// The IANA list and whatever else the validators and the explainer need to distinguish a real
+/// match from a plausible-looking one, and to say what it belongs to.
 #[derive(Debug, Default)]
 pub struct VendoredData {
     /// Top-level domains, uppercased exactly as IANA publishes them.
     tlds: HashSet<String>,
+    /// ISO 3166-1 alpha-2 code to English territory name, from CLDR.
+    territories: HashMap<String, String>,
 }
 
 impl VendoredData {
@@ -42,7 +44,17 @@ impl VendoredData {
             tlds.len()
         );
 
-        Ok(Self { tlds })
+        let territory_file: PathBuf = root.join("data/cldr/territories-en.json");
+        let raw = std::fs::read_to_string(&territory_file).with_context(|| {
+            format!(
+                "reading the vendored territory names at {}",
+                territory_file.display()
+            )
+        })?;
+        let territories: HashMap<String, String> =
+            serde_json::from_str(&raw).context("parsing the vendored territory names")?;
+
+        Ok(Self { tlds, territories })
     }
 
     /// Whether `label` is a registered top-level domain. This one membership test removes the bulk
@@ -53,5 +65,13 @@ impl VendoredData {
 
     pub fn tld_count(&self) -> usize {
         self.tlds.len()
+    }
+
+    /// The English name of an ISO 3166-1 alpha-2 territory. A card that can say "United Kingdom"
+    /// should not say "GB".
+    pub fn territory_name(&self, alpha2: &str) -> Option<&str> {
+        self.territories
+            .get(&alpha2.to_uppercase())
+            .map(String::as_str)
     }
 }

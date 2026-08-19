@@ -8,6 +8,7 @@ The scanner and the service around it.
 | `data.rs` | Loading of the vendored reference data the validators consult, once at startup. |
 | `rules/` | One candidate pattern and one validator per entity type. |
 | `scan/` | The pipeline: prefilter, then validate and normalise inside the rules, then resolve. |
+| `explain/` | Explainer cards: the static per-rule catalogue and the shapers that turn one match into a card. |
 | `service.rs` | The HTTP surface. |
 | `main.rs` | The service shell: load, compile, serve. |
 
