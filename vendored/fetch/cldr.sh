@@ -29,6 +29,19 @@ take cldr-dates-modern ca-gregorian.json
 take cldr-numbers-modern numbers.json
 take cldr-units-modern units.json
 
+# Territory names are runtime data rather than reference material: the explainer resolves a
+# country-code top-level domain to the country it belongs to, and a card that says "GB" where it
+# could say "United Kingdom" is a card nobody needed. Flattened to one map, because the release
+# image should not carry CLDR's bundle structure for the sake of 300 strings.
+names="$(npm_tarball cldr-localenames-modern)"
+mkdir -p "${DATA}/cldr"
+jq '.main.en.localeDisplayNames.territories
+    | with_entries(select(.key | test("^[A-Z]{2}$")))' \
+    "${names}/main/en/territories.json" > "${DATA}/cldr/territories-en.json"
+stamp "${DATA}/cldr" "https://github.com/unicode-org/cldr-json (npm cldr-localenames-modern)" \
+    "$(jq -r .version "${names}/package.json")"
+note "territories: $(jq 'length' "${DATA}/cldr/territories-en.json") names"
+
 # Supplemental data is locale-independent: currency minor units, week rules, likely subtags.
 core="$(npm_tarball cldr-core)"
 mkdir -p "${target}/cldr-core"

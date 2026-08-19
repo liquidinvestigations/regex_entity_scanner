@@ -53,6 +53,7 @@ commercial feed. Those four are deliberately not vendored here.
 |---|---|---|---|
 | `iana/` | [IANA TLD list](https://data.iana.org/TLD/tlds-alpha-by-domain.txt) | Public domain | The registered top-level domains. One membership test, and most of what an email pattern otherwise matches — file names, sprite paths, internal hostnames — disappears. |
 | `ourairports/` | [OurAirports](https://davidmegginson.github.io/ourairports-data/) | Unlicense (public domain) | IATA and ICAO codes for 72k airports, cut to five columns. Membership is necessary but never sufficient: a bare three-letter token collides with ordinary text, so the rule that uses this also requires a cue word. |
+| `cldr/` | [unicode-org/cldr-json](https://github.com/unicode-org/cldr-json) | Unicode-3.0 (GPL-compatible) | English names for the ISO 3166-1 alpha-2 territories, flattened to one map. The explainer resolves a country-code top-level domain to the country it belongs to, and a card that says "GB" where it could say "United Kingdom" is a card nobody needed. |
 | `itu/` | [michaeljfazio/MIDs](https://github.com/michaeljfazio/MIDs) | MIT | ITU Maritime Identification Digits: the first three digits of an MMSI are its flag state. An MMSI carries no check digit, so a valid MID plus a cue word is the whole precision story for that rule. |
 
 ## Development reference — `reference/`
