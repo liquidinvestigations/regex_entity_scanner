@@ -13,6 +13,9 @@
 pin individual behaviours; only a labelled corpus answers "did this pattern start swallowing version
 numbers", which is how this kind of system actually fails.
 
+`./test.sh -- --nocapture` shows the precision and recall numbers on a passing run; a failure lists
+every spurious and missed span by itself.
+
 Roughly half the corpus is fragments where the right answer is nothing at all. Negative cases are
 not padding — precision is the property under test, and a corpus of positives alone cannot measure
 it.

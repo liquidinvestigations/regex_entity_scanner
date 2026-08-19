@@ -27,7 +27,8 @@ tests pin individual behaviours; only a labelled corpus answers "did this patter
 version numbers", which is the way this kind of system actually fails — not by being slow, but by
 filling a facet with noise until nobody uses it.
 
-The harness scores precision and recall over the whole corpus and prints both. Roughly half the
+The harness scores precision and recall over the whole corpus; `./test.sh -- --nocapture` shows the
+numbers on a passing run, and a failure lists every spurious and missed span. Roughly half the
 cases expect nothing at all: precision is the property under test, and a corpus of positives alone
 cannot measure it.
 
