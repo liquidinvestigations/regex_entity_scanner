@@ -60,6 +60,13 @@ timestamp without an offset is genuinely not an instant. The contract reports it
 `no_timezone`) instead of picking one and presenting it as certainty. An investigative index is
 exactly the place where a silently wrong date is expensive.
 
+## The entity is a handle
+
+An entity is self-describing, and one endpoint depends on that: `POST /explain` takes an entity back
+exactly as it was returned — no field stripped, renamed or reordered — and answers with a card for
+the reader who clicked it. A client can therefore explain a match it stored months ago, and needs to
+keep nothing but the entity itself. See [Explainer_Cards.md](Explainer_Cards.md).
+
 ## Versioning
 
 Extraction is not idempotent across rule versions: changing a rule changes what a document yields.

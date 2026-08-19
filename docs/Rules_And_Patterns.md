@@ -55,6 +55,14 @@ cue word nearby does not get to claim the same, however useful its output is.
 Dotted, general to specific: `date.iso8601`, `email.basic`. The identifier ships in the output and
 lands in the index, which makes renaming one a data migration rather than a tidy-up.
 
+## Every rule is documented
+
+A rule is not finished when it matches correctly. It is finished when a reader who clicks one of its
+matches can find out what it is: a catalogue entry in `src/explain/catalog.rs` naming what it
+matches, the standards behind it, what the validator checks, what acceptance does **not** prove, the
+authorities and the references. The test suite asserts that every compiled rule has one. See
+[Explainer_Cards.md](Explainer_Cards.md).
+
 ## What does not belong here
 
 Person names, organisation names, locations, job titles, relationships, events. The division is

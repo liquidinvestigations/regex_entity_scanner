@@ -73,8 +73,10 @@ Details in [docs/Architecture.md](docs/Architecture.md).
 | Route | Purpose |
 |---|---|
 | `GET /health` | Liveness, the number of compiled rules, and the size of the loaded TLD list. |
-| `GET /rules` | The compiled rule identifiers. |
+| `GET /rules` | Every documented rule: identifier, type, human-readable title, and whether this build has it compiled. |
+| `GET /rules/{rule_id}` | The full static documentation for one rule. |
 | `POST /scan` | `{"text": "…", "offset": 0}` → `{"entities": [...]}`. |
+| `POST /explain` | An entity, posted back exactly as `/scan` returned it → an explainer card. |
 
 `offset` is the byte offset of the fragment's first byte in the source document; it is added to
 every span, so a caller windowing a large document gets offsets usable against the original bytes.
@@ -89,6 +91,38 @@ Full contract, including what `confidence`, `rule_id` and the flags mean:
 
 Configuration is three environment variables: `RES_BIND` (default `0.0.0.0:19705`),
 `RES_VENDORED_DIR`, and `RES_LOG` for a tracing filter.
+
+## Explainer cards
+
+A reader clicks a highlighted match and wants to know what it is. The client posts the entity back
+**unchanged** and gets a card with three text fields — a title, a subtitle and a Markdown body —
+plus the same material as structured facts and links.
+
+```console
+$ curl -sS -X POST http://127.0.0.1:19705/explain -H 'content-type: application/json' -d @entity.json
+{
+  "title": "Email address",
+  "subtitle": "example.co.uk · United Kingdom",
+  "body": "…what the format is, what this value means, what was checked, what it does not prove…",
+  "facts": [ {"label": "Country", "value": "United Kingdom"}, … ],
+  "references": [ {"title": "IANA register entry for .uk",
+                   "url": "https://www.iana.org/domains/root/db/uk.html", "note": "…"}, … ]
+}
+```
+
+The entity is the whole input — nothing is looked up in a session or in the original document — so a
+client can explain a match it stored months ago. Only `rule_id` is required; unknown fields and
+unfamiliar value shapes thin the card rather than fail it, because an entity from an older rule set
+must still explain itself.
+
+The knowledge is static and lives in `src/explain/catalog.rs`: one entry per rule with what it
+matches, the standards that define it, what the validator checks, what acceptance does **not**
+prove, the authorities and the references. Per-rule shapers add what only a particular match can
+say — the country behind its top-level domain, the weekday its date fell on, the register entry for
+its own identifier. Every compiled rule must have an entry, and the test suite fails if one does
+not: a reader who clicks a match and gets nothing is worse than a rule that does not exist.
+
+Details in [docs/Explainer_Cards.md](docs/Explainer_Cards.md).
 
 ## Entity types
 
@@ -153,10 +187,11 @@ More in [docs/Testing.md](docs/Testing.md).
 
 ## Writing a rule
 
-A candidate pattern, a validator, a fixture. The pattern goes in the prefilter and must stay
-linear-time; the validator gets one candidate at a time and does the deciding. Guards that need
-lookaround move into the validator as byte comparisons. See
-[docs/Rules_And_Patterns.md](docs/Rules_And_Patterns.md) and `src/rules/Readme.md`.
+A candidate pattern, a validator, a fixture, and a catalogue entry so the match can explain itself.
+The pattern goes in the prefilter and must stay linear-time; the validator gets one candidate at a
+time and does the deciding. Guards that need lookaround move into the validator as byte comparisons.
+See [docs/Rules_And_Patterns.md](docs/Rules_And_Patterns.md),
+[docs/Explainer_Cards.md](docs/Explainer_Cards.md) and `src/rules/Readme.md`.
 
 Person names, organisations, locations and relationships are deliberately out of scope. This layer
 owns everything with machine-checkable structure; meaning belongs to an NLP layer. The two meet at
