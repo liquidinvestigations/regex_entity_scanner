@@ -1,0 +1,6 @@
+AGENTS.md
+plans/
+tmp/
+target/
+.container/
+vendored/gleif/data/
