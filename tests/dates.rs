@@ -1,0 +1,99 @@
+//! ISO 8601 / RFC 3339 rule: calendar validity, offset canonicalisation, and the guards that keep
+//! identifiers out of the date facet.
+
+mod support;
+
+use regex_entity_scanner::model::{DatePrecision, EntityType, Flag, Value};
+
+fn date_value(text: &str) -> (String, DatePrecision, bool) {
+    let scanner = support::scanner();
+    let entities = scanner.scan(text, 0);
+    assert_eq!(entities.len(), 1, "{text:?} produced {entities:?}");
+    assert_eq!(entities[0].entity_type, EntityType::Date);
+    match &entities[0].value {
+        Value::Date {
+            rfc3339,
+            precision,
+            tz_known,
+        } => (rfc3339.clone(), *precision, *tz_known),
+        other => panic!("expected a date value, got {other:?}"),
+    }
+}
+
+#[test]
+fn a_bare_date_carries_day_precision_and_no_zone() {
+    let (rfc3339, precision, tz_known) = date_value("filed 2021-03-04 in Bucharest");
+    assert_eq!(rfc3339, "2021-03-04");
+    assert_eq!(precision, DatePrecision::Day);
+    assert!(!tz_known);
+}
+
+/// Two spellings of the same instant have to land on the same value, or a range query over the
+/// index silently misses half of its own corpus.
+#[test]
+fn offsets_canonicalise_to_one_spelling() {
+    for text in ["2021-03-04T09:12:00+0200", "2021-03-04T09:12:00+02:00"] {
+        let (rfc3339, precision, tz_known) = date_value(text);
+        assert_eq!(rfc3339, "2021-03-04T09:12:00+02:00");
+        assert_eq!(precision, DatePrecision::Second);
+        assert!(tz_known);
+    }
+    let (rfc3339, _, tz_known) = date_value("2021-03-04t09:12:00z");
+    assert_eq!(rfc3339, "2021-03-04T09:12:00Z");
+    assert!(tz_known);
+}
+
+#[test]
+fn a_zoneless_timestamp_says_so() {
+    let scanner = support::scanner();
+    let entities = scanner.scan("2021-03-04 09:12", 0);
+    assert_eq!(entities.len(), 1);
+    assert!(entities[0].flags.contains(&Flag::NoTimezone));
+}
+
+/// The pattern cannot know that February has 28 days. The validator can, which is why the check
+/// belongs there and not in a cleverer pattern.
+#[test]
+fn rejects_dates_the_calendar_does_not_have() {
+    let scanner = support::scanner();
+    for text in [
+        "2021-02-30",
+        "2021-13-01",
+        "2021-00-10",
+        "2021-03-04T25:00:00Z",
+    ] {
+        let entities = scanner.scan(text, 0);
+        assert!(
+            entities.iter().all(|e| e.text != text),
+            "{text:?} produced {entities:?}"
+        );
+    }
+}
+
+/// A date wedged inside a longer digit run is part of that run, not a date. This is the stripped
+/// lookaround being re-imposed in the validator.
+#[test]
+fn rejects_dates_embedded_in_longer_numbers() {
+    let scanner = support::scanner();
+    for text in ["ref 992021-03-0412", "id=2021-03-041"] {
+        let entities = scanner.scan(text, 0);
+        assert!(entities.is_empty(), "{text:?} produced {entities:?}");
+    }
+}
+
+#[test]
+fn rejects_years_outside_the_plausible_window() {
+    let scanner = support::scanner();
+    let entities = scanner.scan("version 0001-02-03 of the schema", 0);
+    assert!(entities.is_empty(), "{entities:?}");
+}
+
+/// Within one type the longer, more completely parsed match wins: a full timestamp is not also a
+/// bare date.
+#[test]
+fn a_timestamp_is_emitted_once() {
+    let scanner = support::scanner();
+    let entities = scanner.scan("2021-03-04T09:12:00Z", 0);
+    assert_eq!(entities.len(), 1);
+    assert_eq!(entities[0].text, "2021-03-04T09:12:00Z");
+}

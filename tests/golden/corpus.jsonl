@@ -1,0 +1,28 @@
+{"name": "iso date in prose", "text": "The transfer was ordered on 2021-03-04 and cleared two days later.", "expect": [{"type": "date", "text": "2021-03-04", "value": "2021-03-04"}]}
+{"name": "iso timestamp with offset", "text": "audit entry 2021-03-04T09:12:00+02:00 user=ap", "expect": [{"type": "date", "text": "2021-03-04T09:12:00+02:00", "value": "2021-03-04T09:12:00+02:00"}]}
+{"name": "iso timestamp zulu", "text": "created_at=2019-11-30T23:59:59Z", "expect": [{"type": "date", "text": "2019-11-30T23:59:59Z", "value": "2019-11-30T23:59:59Z"}]}
+{"name": "compact offset spelling", "text": "Received: 2020-01-02T03:04:05+0530", "expect": [{"type": "date", "text": "2020-01-02T03:04:05+0530", "value": "2020-01-02T03:04:05+05:30"}]}
+{"name": "space separated timestamp", "text": "2018-07-16 14:22 committee minutes", "expect": [{"type": "date", "text": "2018-07-16 14:22", "value": "2018-07-16T14:22"}]}
+{"name": "leap day is a real day", "text": "signed 2020-02-29 in Vienna", "expect": [{"type": "date", "text": "2020-02-29", "value": "2020-02-29"}]}
+{"name": "two dates in one line", "text": "valid 2021-01-01 through 2021-12-31", "expect": [{"type": "date", "text": "2021-01-01", "value": "2021-01-01"}, {"type": "date", "text": "2021-12-31", "value": "2021-12-31"}]}
+{"name": "date in a bracketed log prefix", "text": "[2022-05-09T00:00:01Z] worker started", "expect": [{"type": "date", "text": "2022-05-09T00:00:01Z", "value": "2022-05-09T00:00:01Z"}]}
+{"name": "not a leap year", "text": "dated 2021-02-29 which does not exist", "expect": []}
+{"name": "month out of range", "text": "reference 2021-13-01 in the ledger", "expect": []}
+{"name": "day out of range", "text": "reference 2021-04-31 in the ledger", "expect": []}
+{"name": "digits either side", "text": "checksum 12021-03-047 recorded", "expect": []}
+{"name": "semantic version is not a date", "text": "upgraded to 1.2.3 and then 10-04-2021 style stamps", "expect": []}
+{"name": "implausible year", "text": "record 0004-01-01 from the archive index", "expect": []}
+{"name": "hour out of range", "text": "stamp 2021-03-04T24:30:00Z rejected", "expect": []}
+{"name": "plain address", "text": "Please write to ops@example.org for access.", "expect": [{"type": "email", "text": "ops@example.org", "value": "ops@example.org"}]}
+{"name": "mixed case domain", "text": "From: Anna Popescu <Anna.Popescu@Example.CO.UK>", "expect": [{"type": "email", "text": "Anna.Popescu@Example.CO.UK", "value": "Anna.Popescu@example.co.uk"}]}
+{"name": "plus addressing", "text": "billing+invoices@company.ro received the notice", "expect": [{"type": "email", "text": "billing+invoices@company.ro", "value": "billing+invoices@company.ro"}]}
+{"name": "address at end of sentence", "text": "Send it to press@occrp.org.", "expect": [{"type": "email", "text": "press@occrp.org", "value": "press@occrp.org"}]}
+{"name": "two addresses", "text": "cc: a.one@example.com, b.two@example.net", "expect": [{"type": "email", "text": "a.one@example.com", "value": "a.one@example.com"}, {"type": "email", "text": "b.two@example.net", "value": "b.two@example.net"}]}
+{"name": "long tld", "text": "hello@my-agency.consulting is the contact", "expect": [{"type": "email", "text": "hello@my-agency.consulting", "value": "hello@my-agency.consulting"}]}
+{"name": "sprite filename", "text": "background-image: url(icons@2x.png);", "expect": []}
+{"name": "unregistered internal tld", "text": "the queue is at worker@broker.internal", "expect": []}
+{"name": "twitter style handle", "text": "posted by @example about the leak", "expect": []}
+{"name": "version suffix is not a domain", "text": "artifact bundle@1.2.min.js was rebuilt", "expect": []}
+{"name": "date and address together", "text": "On 2021-03-04 ops@example.org filed the request.", "expect": [{"type": "date", "text": "2021-03-04", "value": "2021-03-04"}, {"type": "email", "text": "ops@example.org", "value": "ops@example.org"}]}
+{"name": "prose with neither", "text": "The committee met in the spring and adjourned without a vote.", "expect": []}
+{"name": "hash is neither", "text": "sha256:9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08", "expect": []}
