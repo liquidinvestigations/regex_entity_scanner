@@ -76,10 +76,13 @@ behind the others: the largest origin carries many times the cases of the smalle
 loses every case in a small one moves the aggregate by less than the aggregate floor's own margin.
 Every origin in the corpus must have a floor, so adding an origin is a decision about the number it
 is expected to hold. The floors are a ratchet — raised after a real fix, never lowered to make a run
-pass. An origin joining the corpus is the one thing that moves the aggregate without a rule
-changing, because it changes the denominator; the aggregate floor is re-derived from the run at the
-commit that adds one, and that is not the same thing as lowering it for a corpus that has not
-changed.
+pass. Two things move the aggregate by changing the denominator rather than by a rule getting worse.
+An origin joining the corpus is one. A new rule is the other, from the opposite direction: the cases
+for a scheme nothing claimed were excluded as *no rule for this entity type*, and the rule that
+claims them turns every one of them into a scored case at once — including the ones it will miss,
+because a rule's documented limits arrive in the denominator with its successes. In both the floor is
+re-derived from the run at the commit that moves it, with the reason recorded beside the constant,
+and that is not the same thing as lowering it for a corpus that has not changed.
 
 Three numbers are reported per scheme, per origin and in aggregate, and never blended: **recall**
 over upstream-valid cases in a scheme we implement, **precision** over upstream-invalid ones — did
@@ -87,6 +90,41 @@ we stay silent — and **coverage**, how much of the extracted material was scor
 cases are counted and listed with their reason beside every score, because a run that excludes its
 way to a good number measures nothing. `tests/conformance/Readme.md` has the case-file schema, the
 carrier and cue rules, and what may be excluded.
+
+## The four rules whose evidence is their unit tests
+
+Every other rule has upstream cases behind it. Four do not, for reasons that are about what can be
+licensed and published rather than about the rules, and the gap is written down here because **a gap
+that is named is a decision and a gap that is quiet is a defect**. For these four the unit tests are
+not a sample of the evidence; they are the evidence.
+
+- **`coord.dms`.** No corpus writes a coordinate pair in the sexagesimal surface form under a licence
+  that can be redistributed: geographic gazetteers keep latitude and longitude in separate columns,
+  so joining them manufactures the token, and wiki sources hold template parameters rather than a
+  surface form. `tests/extras.rs` carries the same point in the ASCII spelling, in the typographic
+  prime spelling and in a mixture of the two, plus the sexagesimal overflow, the lone latitude and
+  the hemisphere-first form the card refuses.
+- **`network.asn`.** Every authoritative source publishes bare numbers, and the rule requires the
+  literal `AS`/`ASN` prefix *inside* the token, so prefixing them manufactures the token. The one
+  register that writes the prefix out — RIPE's database — forbids redistributing any substantial
+  part of it, which is not a licence a manifest can record. `tests/devices_network.rs` carries the
+  guard that is the rule's whole interesting claim: a space is allowed after the three-letter
+  spelling and refused after the two-letter one, because `AS` followed by a space is the English
+  word far more often than it is a network.
+- **`date.iso_week`.** No public dataset carries a week date. `tests/dates.rs` therefore sweeps it
+  exhaustively rather than sampling: eight years — 2004, 2009, 2015, 2020 and 2026, which have
+  fifty-three weeks, and 2021, 2022 and 2023, which have fifty-two — times every week from 1 to 53,
+  times every weekday from 1 to 7, times both ISO spellings. Each is accepted or refused according
+  to week-date arithmetic worked out inside the test from the day-of-week of 4 January, because an
+  oracle that shares the rule's own implementation proves nothing; an accepted one has its resolved
+  calendar day compared against that arithmetic. Roughly six thousand scans, well inside the
+  per-test budget.
+- **`device.imei`.** The one public type-allocation database fails TLS and has no mirror, and a type
+  allocation code is the first eight digits rather than an IMEI, so building numbers out of one
+  manufactures tokens. `python-stdnum` supplies a single upstream case, an invalid one, which is
+  precision evidence and no recall evidence at all; `tests/devices_network.rs` carries the valid
+  number, its grouped spelling, the counterpart whose check digit disagrees, and the cue the rule
+  requires.
 
 ## One scanner per test binary
 

@@ -208,3 +208,132 @@ fn formats_that_do_not_fix_a_whole_day_are_not_matched() {
         assert!(entities.is_empty(), "{text:?} produced {entities:?}");
     }
 }
+
+/// The ISO week date's whole claim is that week 53 exists only in the years that have one, and no
+/// public corpus carries a week date at all — so this sweep is the rule's evidence rather than a
+/// sample of it. It is exhaustive over eight chosen years: 2004, 2009, 2015, 2020 and 2026, which
+/// are the long years of this century's first three decades, and 2021, 2022 and 2023, which are
+/// short. Every week from 1 to 53 and every weekday from 1 to 7 is scanned in both ISO spellings,
+/// and each is compared against week-date arithmetic worked out here rather than against the
+/// library the rule uses — an oracle that shares the implementation proves nothing.
+#[test]
+fn every_week_of_a_long_and_a_short_year_resolves_or_is_refused() {
+    let scanner = support::scanner();
+    let mut accepted = 0usize;
+    let mut refused = 0usize;
+
+    for year in [2004, 2009, 2015, 2020, 2026, 2021, 2022, 2023] {
+        let weeks = iso_weeks_in_year(year);
+        assert_eq!(
+            weeks == 53,
+            [2004, 2009, 2015, 2020, 2026].contains(&year),
+            "{year} is a {weeks}-week year"
+        );
+
+        for week in 1..=53 {
+            for weekday in 1..=7 {
+                let expected = (week <= weeks).then(|| iso_week_date_to_civil(year, week, weekday));
+                for text in [
+                    format!("batch {year}-W{week:02}-{weekday}"),
+                    format!("batch {year}W{week:02}{weekday}"),
+                ] {
+                    let entities = scanner.scan(&text, 0);
+                    match &expected {
+                        Some(day) => {
+                            assert_eq!(entities.len(), 1, "{text:?} produced {entities:?}");
+                            match &entities[0].value {
+                                Value::Date { rfc3339, .. } => {
+                                    assert_eq!(rfc3339, day, "{text:?}");
+                                }
+                                other => panic!("expected a date value, got {other:?}"),
+                            }
+                            accepted += 1;
+                        }
+                        None => {
+                            assert!(entities.is_empty(), "{text:?} produced {entities:?}");
+                            refused += 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Five long years and three short ones: (5 × 53 + 3 × 52) × 7 weekdays × 2 spellings.
+    assert_eq!(accepted, (5 * 53 + 3 * 52) * 7 * 2);
+    assert_eq!(refused, 3 * 7 * 2);
+
+    // The fields either side of the range, in both spellings.
+    for text in [
+        "batch 2021-W00-1",
+        "batch 2021-W54-1",
+        "batch 2021-W09-0",
+        "batch 2021-W09-8",
+        "batch 2021W001",
+        "batch 2021W541",
+        "batch 2021W090",
+        "batch 2021W098",
+    ] {
+        let entities = scanner.scan(text, 0);
+        assert!(entities.is_empty(), "{text:?} produced {entities:?}");
+    }
+}
+
+/// How many ISO weeks a year has: 53 when 1 January or 31 December falls on a Thursday, 52
+/// otherwise.
+fn iso_weeks_in_year(year: i64) -> i64 {
+    if iso_weekday(year, 1, 1) == 4 || iso_weekday(year, 12, 31) == 4 {
+        53
+    } else {
+        52
+    }
+}
+
+/// The calendar day an ISO week date names, as an RFC 3339 date. Week 1 is the week holding
+/// 4 January, so its Monday is that date pulled back to the start of its own week.
+fn iso_week_date_to_civil(year: i64, week: i64, weekday: i64) -> String {
+    let january_fourth = days_from_civil(year, 1, 4);
+    let first_monday = january_fourth - (iso_weekday(year, 1, 4) - 1);
+    let (y, m, d) = civil_from_days(first_monday + (week - 1) * 7 + (weekday - 1));
+    format!("{y:04}-{m:02}-{d:02}")
+}
+
+/// The ISO weekday, 1 for Monday: the epoch day 1970-01-01 was a Thursday.
+fn iso_weekday(year: i64, month: i64, day: i64) -> i64 {
+    (days_from_civil(year, month, day) + 3).rem_euclid(7) + 1
+}
+
+/// Days from 1970-01-01 to a proleptic Gregorian date, by the era arithmetic that avoids any
+/// table of month lengths.
+fn days_from_civil(year: i64, month: i64, day: i64) -> i64 {
+    let year = if month <= 2 { year - 1 } else { year };
+    let era = if year >= 0 { year } else { year - 399 } / 400;
+    let year_of_era = year - era * 400;
+    let shifted = if month > 2 { month - 3 } else { month + 9 };
+    let day_of_year = (153 * shifted + 2) / 5 + day - 1;
+    let day_of_era = year_of_era * 365 + year_of_era / 4 - year_of_era / 100 + day_of_year;
+    era * 146_097 + day_of_era - 719_468
+}
+
+/// The inverse of [`days_from_civil`].
+fn civil_from_days(days: i64) -> (i64, i64, i64) {
+    let shifted = days + 719_468;
+    let era = if shifted >= 0 {
+        shifted
+    } else {
+        shifted - 146_096
+    } / 146_097;
+    let day_of_era = shifted - era * 146_097;
+    let year_of_era =
+        (day_of_era - day_of_era / 1460 + day_of_era / 36_524 - day_of_era / 146_096) / 365;
+    let day_of_year = day_of_era - (365 * year_of_era + year_of_era / 4 - year_of_era / 100);
+    let shifted_month = (5 * day_of_year + 2) / 153;
+    let day = day_of_year - (153 * shifted_month + 2) / 5 + 1;
+    let month = if shifted_month < 10 {
+        shifted_month + 3
+    } else {
+        shifted_month - 9
+    };
+    let year = year_of_era + era * 400 + i64::from(month <= 2);
+    (year, month, day)
+}

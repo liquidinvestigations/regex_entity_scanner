@@ -9,7 +9,7 @@ build, test, script and server process runs in a container built from this repos
 |---|---|
 | `build-dev.sh [--force]` | Builds the development image from `Dockerfile.devel`. `--force` rebuilds from scratch, ignoring the layer cache and re-pulling the base image. |
 | `build-rel.sh [--force]` | Builds the release image from `Dockerfile.release`. |
-| `shell.sh [command…]` | Interactive shell in a throwaway dev container. With arguments, runs them instead: `./shell.sh cargo test`. |
+| `shell.sh [command…]` | Interactive shell in a throwaway dev container. With arguments, runs them instead: `./shell.sh cargo test`. A terminal is allocated only when there is one on both ends, so redirected output keeps stdout and stderr apart — `./shell.sh python3 tests/conformance/extract_presidio.py > presidio.jsonl` writes the cases and leaves the progress line on the terminal. |
 | `run-server.sh [--dev]` | Runs the server detached on `127.0.0.1:19705`, replacing any container already holding the name. `--dev` runs from the dev image against the working tree. |
 | `test.sh [filter…]` | The full battery in the dev container, building the image first if it is missing. Arguments pass through to `cargo test`. |
 | `test-long.sh [origin]` | The upstream conformance run in the dev container: the checked-in cases taken from the reference projects our rules were ported from, scored as recall, precision and coverage. An argument restricts the run to one origin, named by its case file's stem — `./test-long.sh stdnum`. |

@@ -185,6 +185,15 @@ static RULE_DOCS: &[RuleDoc] = &[
             "whether the domain exists, resolves, or accepts mail — no lookup of any kind is made",
             "whether the mailbox exists or the address was ever in use",
             "whether the address belongs to the person the surrounding text is about",
+            "a domain with no dot in it: the pattern requires at least two labels, so test@io is \
+             not matched. message.rfc5322 does admit a single-label right-hand side, because RFC \
+             5322 §3.6.4 says an id-right may be a bare dot-atom-text; the two rules disagree \
+             about this on purpose and this is the one that asks for more",
+            "the local-part characters RFC 5322 admits that this pattern's class does not — ! # $ \
+             & ' * / = ? ^ ` { | } ~. An address using one is not merely skipped: the match \
+             begins after the offending character, so the bounce address \
+             bounces+866407-eeb4-penultim_o=yahoo.com@delivery.customeriomail.com is reported as \
+             yahoo.com@delivery.customeriomail.com — a wrong value rather than a miss",
         ],
         authorities: &[Authority {
             name: "Internet Assigned Numbers Authority",
@@ -1409,6 +1418,11 @@ static RULE_DOCS: &[RuleDoc] = &[
              side is conventionally a domain and is not required to be one",
             "uniqueness, which the standard asks of the generator and nobody can verify from the \
              text",
+            "the left-side characters RFC 5322 atext admits that this pattern's class does not — \
+             $, ^ and the backtick. The Outlook-style id \
+             <000401c3daea$062d4b60$c589498e@ds.mda.ca> is therefore not matched, and because \
+             email.basic reads the tail of it as an address the field yields one missed message id \
+             and one spurious email rather than nothing",
         ],
         authorities: &[Authority {
             name: "Internet Engineering Task Force",
@@ -1471,7 +1485,9 @@ static RULE_DOCS: &[RuleDoc] = &[
         title: "Degrees, minutes and seconds",
         matches: "A latitude and longitude in the sexagesimal form — 40°26'46\"N 79°58'56\"W. The \
                   degree sign and the hemisphere letters make it unmistakable, which is why it \
-                  needs no cue word.",
+                  needs no cue word. Minutes and seconds may be marked with the ASCII apostrophe \
+                  and quote or with the typographic prime and double prime a typeset document \
+                  substitutes for them.",
         standards: &["WGS84 — World Geodetic System 1984, the datum these values are read in"],
         checks: &[
             "both halves are present with their hemisphere letter; a latitude on its own is not a \

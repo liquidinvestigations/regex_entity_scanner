@@ -89,7 +89,14 @@ the scope of a reindex computable: extraction is not idempotent across rule sets
 
 Bump it for any change to a candidate pattern, to a validator's accept or reject boundary, to the
 value a rule normalises to, or to the rule inventory. Do not bump it for card text, a doc comment or
-a catalogue entry — none of those change what a document yields.
+a catalogue entry — none of those change what a document yields. Adding a conformance origin does
+not bump it either: it changes no pattern, no validator and no inventory.
+
+A bump is scopable by facet, which is what makes it worth having. A change that adds two bank rules
+changes what a document yields for `bank_account` and for nothing else, so a consumer holding
+entities extracted under an older version re-extracts the facets the change names rather than the
+whole index. That only works if each bump covers one coherent change, which is why the version moves
+once per change and not once per release.
 
 ## The contract
 

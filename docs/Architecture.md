@@ -2,9 +2,12 @@
 
 ## The shape of the problem
 
-Five of the entity types this service is built for — dates, sums of money, physical quantities,
-email addresses, phone numbers — plus the much larger tier of structured identifiers, share a
-property that decides the whole design: **matching them is the cheap half.**
+The entity types this service is built for — dates, sums of money, email addresses, phone numbers,
+and the much larger tier of structured identifiers — share a property that decides the whole
+design: **matching them is the cheap half.**
+
+Unit-bearing physical quantities are not extracted. There is no quantity entity type, no value
+shape for one and no rule that reads one, so `5 in`, `3 T` and `12 kg` are ordinary text here.
 
 A pattern that finds every date in a corpus takes a morning. A pattern that finds every date and
 nothing that merely looks like one does not exist, because `2021-13-45`, `1.2.3` and the middle of a
@@ -30,7 +33,7 @@ fragment (UTF-8, with the byte offset of its first byte in the source document)
         │                  fragment.
         │
         ├─ 3. NORMALISE ── span to canonical typed value: RFC 3339 instant, ISO-4217 minor units,
-        │                  SI base unit, E.164, compact identifier form.
+        │                  E.164, compact identifier form.
         │
         ├─ 4. RESOLVE ──── overlaps between rules: structural strength, then length, then position.
         │

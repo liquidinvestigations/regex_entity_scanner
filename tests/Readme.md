@@ -52,3 +52,7 @@ check digit means what its author meant.
 The whole battery stays inside two to three minutes and an individual test inside ten to fifteen
 seconds. Reference corpora are large; a test iterates a representative subset and says what the
 subset covers. A suite that takes long enough to skip is not more thorough, it is unused.
+
+The one exhaustive test is the ISO week sweep in `dates.rs`, and it is exhaustive because no corpus
+anywhere carries a week date: it generates its own cases over eight chosen years rather than
+iterating a vendored corpus, which is exactly what keeps it inside the budget.

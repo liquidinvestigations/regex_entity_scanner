@@ -132,8 +132,18 @@ spelling every bank statement prints.
 `natid.es_nif_nie` does not. Its arithmetic is one check letter over seven digits: 22 candidates in
 23 are turned away, which is a strong filter for a token somebody has already called a NIF and a
 weak one against every hyphenated reference in a corpus. `container.iso6346` is in the same
-position, with one check digit and a four-letter owner prefix. Both stay compact and upper-case, and
-their cards say so.
+position, with one check digit and a four-letter owner prefix. `bank.aba_routing` is the plainest
+case of all — nine digits behind a one-in-ten weighted sum — so the hyphenated fractional spelling
+printed on some cheques is not matched. All three stay compact, and their cards say so.
+
+`bank.payment_card` accepts separators and is the case that shows what the price really buys. Luhn
+alone is one in ten; what pays for the tolerance is the issuer table on top of it — the number must
+begin in a range some issuer was allocated *and* be as long as that issuer's cards — plus the
+requirement that one separator character be used throughout, since a run mixing spaces and hyphens
+is a reference number rather than a card. Even those two together leave several article and
+tracking numbers standing on a page of invoice-like text, which is why the rule is cue-gated as
+well: separator tolerance and cue-gating are two different prices for two different weaknesses, and
+this rule pays both.
 
 The repetition bound that admits a grouped form is arithmetic of its own and worth stating
 separately: a candidate pattern's upper bound has to cover the separators as well as the characters,
@@ -145,8 +155,16 @@ back.
 
 A check digit on a bare digit run is a one-in-ten filter, and one in ten invoice numbers is far too
 many to put into a facet. For the formats that are nothing but a token and a check digit — IMO,
-MMSI, IMEI, CUSIP, SEDOL — acceptance also requires a cue word within a short window either side,
+MMSI, IMEI, CUSIP, SEDOL, the payment card, the ABA routing number, the PESEL, the personnummer and
+the organisationsnummer — acceptance also requires a cue word within a short window either side,
 matched case-insensitively and on ASCII word boundaries. The window is 48 bytes, roughly a clause.
+
+For those rules the cue is not a tie-breaker on top of the arithmetic; it is one of the terms the
+rule was admitted on. A payment card is a digit run, an organisationsnummer is a digit run, and
+each was weighed as *check digit plus structure plus the word beside it*. **If the cue requirement
+is ever dropped from one of them, the rule goes with it** — that sentence is on each of their
+cards, so the decision cannot be quietly reversed by a later change that finds the cue
+inconvenient.
 
 The same guard covers a second case: a format with no check digit at all whose shape collides with
 ordinary words. A BIC is eight or eleven uppercase characters, and `DOCUMENT` and `CUSTOMER` both

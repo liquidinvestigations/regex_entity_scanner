@@ -81,6 +81,13 @@ uniformly and recorded in the file rather than reinvented by the runner:
   `stdnum.cusip.validate` *is* the statement "this is a CUSIP", so that scheme's own documented cue
   goes into the carrier. A cue is never supplied to a rule that does not require one — that would
   be measuring a different rule than the one that runs in production.
+
+  This is what makes a newly-claimed scheme a re-extraction rather than a one-line change to the
+  runner. Cases for a scheme no rule claimed carry `"cue": null`, because there was no rule to take
+  one from; the extractor has to run again so the carrier gains the cue the rule that now claims
+  them documents. The same commit therefore moves the origin's denominator twice over — every one
+  of those cases stops being excluded and starts being scored, misses included — which is why the
+  floors are re-derived there.
 - **The token is verbatim.** Separators, case and punctuation are left exactly as upstream wrote
   them. How a number survives contact with real prose is the property under test, so normalising it
   first would delete the finding.

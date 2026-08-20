@@ -84,7 +84,18 @@ pub struct DmsRule;
 
 /// The sexagesimal form, with the degree sign and the hemisphere letters that make it
 /// self-identifying. Both halves are required: a latitude on its own is not a point.
-const DMS_PATTERN: &str = r#"\d{1,3}°[ ]?\d{1,2}'[ ]?\d{1,2}(?:[.]\d{1,4})?"?[ ]?[NSns][ ,]{0,3}\d{1,3}°[ ]?\d{1,2}'[ ]?\d{1,2}(?:[.]\d{1,4})?"?[ ]?[EWew]"#;
+///
+/// Minutes and seconds are marked with the ASCII apostrophe and quote or with the typographic
+/// prime and double prime, U+2032 and U+2033. Every typeset document uses the latter — a word
+/// processor substitutes them as they are typed — so a rule that read only the ASCII pair would
+/// see the form nobody prints. The marks are notation and take no part in the arithmetic, so
+/// admitting both costs nothing: the degree sign, the hemisphere letters and the sexagesimal range
+/// checks are what make the match.
+const DMS_PATTERN: &str = concat!(
+    r#"\d{1,3}°[ ]?\d{1,2}['′][ ]?\d{1,2}(?:[.]\d{1,4})?["″]?[ ]?[NSns]"#,
+    r#"[ ,]{0,3}"#,
+    r#"\d{1,3}°[ ]?\d{1,2}['′][ ]?\d{1,2}(?:[.]\d{1,4})?["″]?[ ]?[EWew]"#,
+);
 
 impl Rule for DmsRule {
     fn id(&self) -> &'static str {

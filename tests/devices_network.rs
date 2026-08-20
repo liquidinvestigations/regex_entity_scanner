@@ -149,11 +149,29 @@ fn accepts_autonomous_system_numbers_behind_their_prefix() {
         only_match("peer ASN 15169 upstream"),
         ("asn".to_string(), "AS15169".to_string())
     );
+    // The registry object form, which is how a routing policy database writes it.
+    assert_eq!(
+        only_match("aut-num: AS3333"),
+        ("asn".to_string(), "AS3333".to_string())
+    );
 }
 
+/// The guard this rule is built around, and its only interesting claim: a space is allowed after
+/// the three-letter spelling and refused after the two-letter one, because `AS` followed by a
+/// space is the English word far more often than it is a network. No corpus can be vendored for
+/// this rule — every authoritative source publishes bare numbers, and the one register that writes
+/// the prefix out forbids redistributing its database — so these fixtures are the whole of its
+/// evidence.
 #[test]
 fn rejects_numbers_without_the_autonomous_system_prefix() {
     rejects("carried 64512 tonnes of cargo");
+    // `AS` and a space is the conjunction, whatever number follows it.
+    rejects("the same route as 64512 was withdrawn");
+    rejects("AS 64512 was announced");
     // Beyond the 32-bit space.
     rejects("route from AS9999999999 rejected");
+    // Zero is reserved and never assigned.
+    rejects("route from AS0 rejected");
+    // A prefix growing out of a longer token is part of that token.
+    rejects("build ALIAS64512 shipped");
 }

@@ -68,8 +68,7 @@ re-imposes the guards that had to be stripped out of the pattern — a lookbehin
 decide truth: calendar validity, check digits, list membership, plausibility windows.
 
 **Normalise.** Span to canonical typed value: an RFC 3339 instant, minor units plus an ISO-4217
-code, an SI base unit, E.164, a compact identifier form. This is the half that makes the output
-worth indexing.
+code, E.164, a compact identifier form. This is the half that makes the output worth indexing.
 
 **Resolve.** Rules scan independently, so their spans can overlap. Structural strength wins first,
 then length, then position — a match that had to satisfy a checksum is the less accidental reading
@@ -149,6 +148,8 @@ which is why the value carries its own `kind` tag. `date`, `email`, `phone`, `mo
 `bank_account`, `company_id`, `security`, `vessel`, `cargo_container`, `device`, `network`,
 `publication`, `vulnerability`, `crypto_wallet`, `coordinates`, `national_id` and `message_id` are
 the categories; each holds at most six rules, which is the budget a new rule is measured against.
+`national_id` holds six and is full: the next national scheme is a conversation about splitting the
+type per region rather than a seventh entry.
 
 Compiled today:
 
@@ -161,9 +162,12 @@ Compiled today:
 | `email` | `email.basic` | RFC 5321 length limits, an addressable local part, no adjacent addressable characters on either side, and — the largest single precision win — the top-level domain must be in the IANA list. |
 | `bank_account` | `bank.iban` | The country's entry in the vendored IBAN registry: exact length, positional character classes, then ISO 7064 mod-97-10 over the rearranged form. |
 | `bank_account` | `bank.bic` | Eight or eleven characters, positions five and six an ISO 3166-1 country, and a label — BIC, SWIFT, IBAN, bank, beneficiary, correspondent — nearby. ISO 9362 defines no check digit. |
+| `bank_account` | `bank.payment_card` | Luhn over thirteen to nineteen digits, one separator character throughout or none, an issuer identification range that was allocated together with the length that issuer uses, and a word — card, cardholder, Visa, Mastercard, Amex, Discover, JCB, Diners, Maestro — nearby. |
+| `bank_account` | `bank.aba_routing` | The 3-7-1 weighted check over nine digits, a leading Federal Reserve routing symbol in one of the four allocated blocks, and a word — routing, ABA, RTN, transit — nearby. Compact form only. |
 | `company_id` | `company.lei` | ISO 7064 mod-97-10 over all twenty characters, letters counting as their base-36 value. |
 | `company_id` | `company.vat_eu` | An EU VAT number: the member-state prefix, that state's own body length and alphabet, and the check digit its tax administration publishes. All twenty-seven states, with Greece under `EL`. |
 | `company_id` | `company.vat_non_eu` | The same VATIN shape outside the Union, for the countries whose check digit is implemented: GB, CH, NO, RS, ME, MK, RU and TR. The Swiss and Norwegian numbers carry the tax abbreviation their administrations append. |
+| `company_id` | `company.se_organisationsnummer` | Luhn over ten digits, a leading digit that is one of the eight allocated legal forms, a third digit of at least two — which is what separates it from a personnummer — and a word: organisationsnummer, orgnr, org.nr, företagsnummer, company identity, company registration. |
 | `security` | `security.isin` | Luhn over the letter-expanded form, and a prefix that is an ISO 3166-1 country or one of the allocations ISO 6166 makes to substitute agencies. |
 | `security` | `security.cusip` | The alternating-weight check digit, plus a cue word — CUSIP, SEDOL, ISIN, ticker, security, CIK — because nine alphanumerics are also every part number there is. |
 | `security` | `security.sedol` | The weighted check digit, the vowel-free alphabet, and the same cue words. |
@@ -181,15 +185,17 @@ Compiled today:
 | `national_id` | `natid.es_nif_nie` | The modulo-23 check letter, with `X`, `Y` and `Z` standing for a leading 0, 1 and 2 and `K`, `L`, `M` carrying the older algorithm. |
 | `national_id` | `natid.mx_curp` | The weighted check digit and a state code the registry uses. |
 | `national_id` | `natid.in_pan` | The holder-type letter, a serial that is not all zeroes, and a word — PAN, income tax, Aadhaar, ITR, assessee — nearby. The check character's algorithm is unpublished. |
+| `national_id` | `natid.pl_pesel` | The weighted check digit over eleven digits, a birth date that exists once the century has been read out of the month field, and the word PESEL nearby. The date is read only to reject an impossible one. |
+| `national_id` | `natid.se_personnummer` | Luhn over the last ten digits, a birth date that could exist, and a word — personnummer, samordningsnummer, personal identity, person number, pnr — nearby. The value keeps the separator, because it is the century. |
 | `crypto_wallet` | `crypto.bitcoin` | The base58check or bech32 checksum, and a version byte or witness program the standard defines. |
 | `crypto_wallet` | `crypto.ethereum` | Where the address is mixed case, the EIP-55 checksum hidden in the capitalisation; where it is not, the shape only, reported with a lower confidence and the no-checksum flag. |
 | `coordinates` | `coord.decimal` | Latitude and longitude ranges, and at least four decimal places on both sides, because a coarser pair is a pair of measurements as often as a place. |
-| `coordinates` | `coord.dms` | Both hemispheres present, minutes and seconds below sixty, and the ranges after the sign is applied. Normalises to decimal degrees. |
+| `coordinates` | `coord.dms` | Both hemispheres present, minutes and seconds below sixty, and the ranges after the sign is applied. Minutes and seconds are marked with the ASCII apostrophe and quote or with the typographic prime and double prime. Normalises to decimal degrees. |
 | `coordinates` | `coord.plus_code` | The vowel-free Open Location Code alphabet, the separator's position, and the first pair's range. Decodes to the centre of the cell. |
 | `phone` | `phone.international` | A country calling code the ITU has assigned and a national number the country actually issues, both from libphonenumber's metadata. International form only — a leading `+` or the `00` prefix — because a national-format number needs a region the document does not supply. Normalises to E.164 and names the line type. |
 | `money` | `money.iso_code` | The three-letter code is in ISO 4217 and in current use; every thousands group is exactly three digits; the fraction is no longer than the currency's own minor units. A code that is also an English word — ALL, TOP, CUP, TRY — additionally needs a word about money nearby. |
 | `money` | `money.symbol` | The sign is one CLDR publishes for a currency in current use, in its standard or narrow form. An ISO 4217 code standing beside the sign settles which currency it is; otherwise a sign shared by several currencies names the most widely used one and carries the ambiguous-currency flag. |
-| `message_id` | `message.rfc5322` | Angle brackets, a registered top-level domain on the right-hand side, and a header name — Message-ID, In-Reply-To, References — nearby, because a `From` line has the same shape. |
+| `message_id` | `message.rfc5322` | Angle brackets and a header name — Message-ID, In-Reply-To, References, Resent-Message-ID — immediately to the left, with nothing between it and the value but whitespace, list punctuation and complete angle-bracketed groups. The label is the whole precision story, because a `From` line has the same shape. |
 
 Full RFC 5322 is deliberately not the target for email: it accepts a great deal nobody writes, and
 on real corpora the TLD membership test is where the precision actually comes from.

@@ -223,16 +223,41 @@ fn rejects_number_pairs_that_are_not_coordinates() {
     rejects("point 91.1234, 2.2945 is off the earth");
 }
 
+/// The same point in the two ways a document writes it: the ASCII apostrophe and quote a keyboard
+/// produces, and the typographic prime and double prime a word processor substitutes for them. No
+/// prose corpus is licensed for this rule, so these fixtures are its evidence, and the typeset
+/// spelling is the one a real document carries.
 #[test]
 fn accepts_the_sexagesimal_form_and_converts_it() {
-    let (latitude, longitude) = geo_point("marker at 40°26'46\"N 79°58'56\"W");
-    assert!((latitude - 40.446_111).abs() < 1e-5, "{latitude}");
-    assert!((longitude + 79.982_222).abs() < 1e-5, "{longitude}");
+    for fragment in [
+        "marker at 40°26'46\"N 79°58'56\"W",
+        "marker at 40°26′46″N 79°58′56″W",
+        // Mixed marks, which is what a document that was edited twice looks like.
+        "marker at 40°26′46\"N 79°58'56″W",
+    ] {
+        let (latitude, longitude) = geo_point(fragment);
+        assert!(
+            (latitude - 40.446_111).abs() < 1e-5,
+            "{fragment}: {latitude}"
+        );
+        assert!(
+            (longitude + 79.982_222).abs() < 1e-5,
+            "{fragment}: {longitude}"
+        );
+    }
 }
 
+/// The marks are notation and change nothing about what is checked: the sexagesimal ranges, the
+/// hemisphere letters and the requirement that both halves be present all apply to either
+/// spelling. Hemisphere-first is refused in both, as the card says.
 #[test]
 fn rejects_sexagesimal_readings_that_have_run_over() {
     rejects("marker at 40°26'46\"N 79°78'56\"W");
+    rejects("marker at 40°26′46″N 79°78′56″W");
+    // A latitude on its own is not a point.
+    rejects("marker at 40°26′46″N and nothing else");
+    // Hemisphere-first.
+    rejects("marker at N40°26′46″ W79°58′56″");
 }
 
 /// The ten-character cell is about fourteen metres across, so the centre is what is reported.

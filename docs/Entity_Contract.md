@@ -56,6 +56,22 @@ property of its own.
 consumers, and a sum of money is not a float. `exponent` is the ISO 4217 minor-unit count, so the
 major-unit value is `amount_minor / 10^exponent` computed in integers by whoever needs it.
 
+## A type holds at most six rules
+
+An entity type is a facet somebody indexes, and a facet fed by a dozen loosely related rules stops
+meaning one thing. Six is the budget a proposed rule is measured against: when a type is full, the
+question is which of its rules is the weakest, not how to raise the cap.
+
+`national_id` is full. Its six are `natid.it_codice_fiscale`, `natid.es_nif_nie`, `natid.mx_curp`,
+`natid.in_pan`, `natid.pl_pesel` and `natid.se_personnummer`. The next national scheme is therefore
+a contract conversation — splitting the type per region changes what a consumer's facet means —
+rather than a seventh entry.
+
+`bank_account` holds four, and its two newest are a payment card and a United States routing number,
+which are the instrument and the institution rather than the account. Both produce `identifier`,
+under the schemes `payment_card` and `aba_routing`, and both map into FollowTheMoney through a `res:`
+extension because the schema has no property for either. `company_id` holds four.
+
 ## The value is the point
 
 `text` is what was written. `value` is what it means, and it is what belongs in a typed index field
