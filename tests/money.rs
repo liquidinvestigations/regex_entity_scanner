@@ -183,3 +183,27 @@ fn digits_across_a_separator_and_a_space_are_not_two_amounts() {
         rejects(text);
     }
 }
+
+/// A sign that names twenty-nine currencies stops being ambiguous the moment the writer puts the
+/// code beside it. Reporting `NZD $100.70` as United States dollars is a wrong value in an indexed
+/// field, which is worse than reporting nothing.
+#[test]
+fn an_iso_code_beside_a_sign_settles_which_currency_it_is() {
+    let scanner = support::scanner();
+
+    let (code, minor, _, flags) = money("the price is NZD $100.70 today");
+    assert_eq!(code, "NZD");
+    assert_eq!(minor, "10070");
+    assert!(flags.is_empty(), "{flags:?}");
+
+    let entities = scanner.scan("the price is SGD$4.90 today", 0);
+    assert_eq!(entities.len(), 1, "{entities:?}");
+    assert_eq!(entities[0].text, "SGD$4.90", "{entities:?}");
+
+    // The code has to be one the sign itself can stand for, and it has to stand on its own: a
+    // three-letter word beside a price is not a currency, and neither is the tail of a longer one.
+    let (code, _, _, _) = money("the price is EUR $40 today");
+    assert_eq!(code, "USD");
+    let entities = scanner.scan("the total in XSGD$4.90 today", 0);
+    assert!(entities.is_empty(), "{entities:?}");
+}

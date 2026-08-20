@@ -148,7 +148,7 @@ impl Rule for SymbolRule {
     }
 
     fn validate(&self, candidate: &Candidate<'_>) -> Option<Verdict> {
-        if continues_left(candidate) || continues_right(candidate) {
+        if continues_right(candidate) {
             return None;
         }
 
@@ -167,6 +167,21 @@ impl Rule for SymbolRule {
             let split = text.rfind(|c: char| c.is_ascii_digit())? + 1;
             (text[split..].trim_start(), text[..split].trim_end())
         };
+
+        // An explicit ISO 4217 code beside the sign settles which of the sign's currencies this
+        // is. `NZD $100.70` and `SGD$4.90` are not United States dollars, and reporting them as
+        // such is a wrong value rather than a miss — the worse of the two failures. This is asked
+        // before the left-hand guard, because in `SGD$4.90` the pattern's leftmost match starts
+        // inside the code and the letters the guard sees are the code itself.
+        if leading {
+            if let Some((code, code_at)) = code_beside_sign(candidate, symbol) {
+                return minted(candidate, code, code_at, amount, Vec::new(), 0.95);
+            }
+        }
+
+        if continues_left(candidate) {
+            return None;
+        }
 
         // A capital or two in front of the sign is part of the symbol only when the pair is one
         // somebody actually writes. Otherwise they belong to the word before it, and the span
@@ -192,31 +207,87 @@ impl Rule for SymbolRule {
 
         let codes = candidate.data.currency_symbol(symbol)?;
         let code = codes.first()?;
-        let currency = candidate.data.currency(code)?;
-        let (amount_minor, inferred) = to_minor_units(amount, currency.exponent)?;
-
-        let mut flags = Vec::new();
-        if codes.len() > 1 {
-            flags.push(Flag::AmbiguousCurrency);
-        }
-        if inferred {
-            flags.push(Flag::SeparatorInferred);
-        }
-
-        Some(Verdict {
+        // A symbol shared by twenty-nine currencies names the most widely used of them and says so
+        // with a flag; it has not established which one this is.
+        let ambiguous = codes.len() > 1;
+        let flags = if ambiguous {
+            vec![Flag::AmbiguousCurrency]
+        } else {
+            Vec::new()
+        };
+        minted(
+            candidate,
+            code,
             start,
-            end: candidate.end,
-            value: Value::Money {
-                currency: code.to_string(),
-                amount_minor,
-                exponent: currency.exponent,
-            },
-            // A symbol shared by twenty-nine currencies names the most widely used of them and says
-            // so with a flag; it has not established which one this is.
-            confidence: if codes.len() > 1 { 0.80 } else { 0.95 },
+            amount,
             flags,
-        })
+            if ambiguous { 0.80 } else { 0.95 },
+        )
     }
+}
+
+/// The ISO 4217 code written immediately in front of a currency sign, and where it starts.
+///
+/// The code has to be one the sign itself can denote: that intersection is what separates
+/// `SGD$4.90` from an ordinary three-letter word standing next to a price.
+fn code_beside_sign<'a>(candidate: &Candidate<'a>, symbol: &str) -> Option<(&'a str, usize)> {
+    let letters = symbol.len()
+        - symbol
+            .trim_start_matches(|c: char| c.is_ascii_uppercase())
+            .len();
+    let sign = symbol.get(letters..)?;
+    let sign_at = candidate.start + letters;
+
+    let head = candidate.fragment.get(..sign_at)?;
+    let head = head.strip_suffix([' ', '\u{a0}']).unwrap_or(head);
+    let code_at = head.len().checked_sub(3)?;
+    let code = head.get(code_at..)?;
+    if !code.bytes().all(|byte| byte.is_ascii_uppercase()) {
+        return None;
+    }
+    // The code has to stand on its own. A letter or digit in front of it makes it the tail of a
+    // longer word, and a sign or a separator makes the whole span the tail of a longer number —
+    // and this rule reports an unsigned amount, so a dropped minus would report the wrong money.
+    if head.as_bytes()[..code_at]
+        .last()
+        .is_some_and(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'.' | b','))
+    {
+        return None;
+    }
+
+    let codes = candidate.data.currency_symbol(sign)?;
+    codes
+        .iter()
+        .any(|candidate_code| candidate_code == code)
+        .then_some((code, code_at))
+}
+
+/// The verdict a resolved currency and amount make, or nothing when the amount is not a number any
+/// separator convention produces.
+fn minted(
+    candidate: &Candidate<'_>,
+    code: &str,
+    start: usize,
+    amount: &str,
+    mut flags: Vec<Flag>,
+    confidence: f32,
+) -> Option<Verdict> {
+    let currency = candidate.data.currency(code)?;
+    let (amount_minor, inferred) = to_minor_units(amount, currency.exponent)?;
+    if inferred {
+        flags.push(Flag::SeparatorInferred);
+    }
+    Some(Verdict {
+        start,
+        end: candidate.end,
+        value: Value::Money {
+            currency: code.to_string(),
+            amount_minor,
+            exponent: currency.exponent,
+        },
+        confidence,
+        flags,
+    })
 }
 
 // ---------------------------------------------------------------------------------------------

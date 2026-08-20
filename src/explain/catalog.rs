@@ -1725,6 +1725,9 @@ static RULE_DOCS: &[RuleDoc] = &[
              or its narrow form",
             "capitals in front of the sign are kept only where the pair is a symbol somebody \
              writes — A$, CN¥, R$; otherwise the span narrows to the sign alone",
+            "an ISO 4217 code standing immediately in front of the sign settles which of the \
+             sign's currencies is meant — NZD $100.70 is not United States dollars — and the code \
+             has to be one that sign is actually written for",
             "every thousands group is exactly three digits, whether it is grouped by a space or by \
              the apostrophe Switzerland writes",
             "the fraction is no longer than the currency's own minor units; beside a sign it may \
@@ -1735,9 +1738,9 @@ static RULE_DOCS: &[RuleDoc] = &[
              past the span",
         ],
         not_checked: &[
-            "which currency a shared sign means: $ is written for twenty-nine currencies and £ \
-             for six, so the value names the most widely used of them and carries the \
-             ambiguous-currency flag, which is the case that flag exists for",
+            "which currency a shared sign means when no code stands beside it: $ is written for \
+             twenty-nine currencies and £ for six, so the value names the most widely used of them \
+             and carries the ambiguous-currency flag, which is the case that flag exists for",
             "the decimal convention where the number allows both readings, reported with the \
              separator-inferred flag",
             "currency names spelled out in words, and the letter-only symbols such as kr and zł",

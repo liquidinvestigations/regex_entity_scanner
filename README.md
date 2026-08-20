@@ -188,7 +188,7 @@ Compiled today:
 | `coordinates` | `coord.plus_code` | The vowel-free Open Location Code alphabet, the separator's position, and the first pair's range. Decodes to the centre of the cell. |
 | `phone` | `phone.international` | A country calling code the ITU has assigned and a national number the country actually issues, both from libphonenumber's metadata. International form only — a leading `+` or the `00` prefix — because a national-format number needs a region the document does not supply. Normalises to E.164 and names the line type. |
 | `money` | `money.iso_code` | The three-letter code is in ISO 4217 and in current use; every thousands group is exactly three digits; the fraction is no longer than the currency's own minor units. A code that is also an English word — ALL, TOP, CUP, TRY — additionally needs a word about money nearby. |
-| `money` | `money.symbol` | The sign is one CLDR publishes for a currency in current use, in its standard or narrow form. A sign shared by several currencies names the most widely used one and carries the ambiguous-currency flag. |
+| `money` | `money.symbol` | The sign is one CLDR publishes for a currency in current use, in its standard or narrow form. An ISO 4217 code standing beside the sign settles which currency it is; otherwise a sign shared by several currencies names the most widely used one and carries the ambiguous-currency flag. |
 | `message_id` | `message.rfc5322` | Angle brackets, a registered top-level domain on the right-hand side, and a header name — Message-ID, In-Reply-To, References — nearby, because a `From` line has the same shape. |
 
 Full RFC 5322 is deliberately not the target for email: it accepts a great deal nobody writes, and
