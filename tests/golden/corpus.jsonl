@@ -189,3 +189,15 @@
 {"name": "a price after a row number", "text": "row 7 $1,200 total", "expect": [{"type": "money", "text": "$1,200", "value": "USD 120000"}]}
 {"name": "a quantity column does not lend its number to the code beside it", "text": "qty 2 EUR 30 per unit", "expect": [{"type": "money", "text": "EUR 30", "value": "EUR 3000"}]}
 {"name": "a note number does not lend its number to the code beside it", "text": "see note 4 USD 500 due", "expect": [{"type": "money", "text": "USD 500", "value": "USD 50000"}]}
+{"name": "payment card in the grouped spelling", "text": "card number 4012 8888 8888 1881 on file", "expect": [{"type": "bank_account", "text": "4012 8888 8888 1881", "value": "4012888888881881"}]}
+{"name": "payment card written compactly", "text": "cardholder charged 4111111111111111 twice", "expect": [{"type": "bank_account", "text": "4111111111111111", "value": "4111111111111111"}]}
+{"name": "a card number whose check digit disagrees", "text": "card number 4012 8888 8888 1882 on file", "expect": []}
+{"name": "a luhn-valid run with no card word beside it", "text": "order reference 4012888888881881 shipped", "expect": []}
+{"name": "a luhn-valid run whose prefix belongs to no issuer", "text": "card number 9999 9999 9999 9995 quoted", "expect": []}
+{"name": "a card number mixing its separators", "text": "card 4012-8888 8888-1881 on file", "expect": []}
+{"name": "an imei beside a card reader lends no thirteen-digit head", "text": "the card reader logged IMEI 490154203237518", "expect": [{"type": "device", "text": "490154203237518", "value": "490154203237518"}]}
+{"name": "routing number beside its label", "text": "routing number 121000358 for the wire", "expect": [{"type": "bank_account", "text": "121000358", "value": "121000358"}]}
+{"name": "nine digits with no routing word beside them", "text": "case file 121000358 was closed", "expect": []}
+{"name": "a routing number whose checksum disagrees", "text": "routing number 121000359 for the wire", "expect": []}
+{"name": "a routing checksum outside every federal reserve district", "text": "routing number 130000006 for the wire", "expect": []}
+{"name": "the hyphenated routing spelling is not matched", "text": "routing number 3222-7162-7 on the form", "expect": []}

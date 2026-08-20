@@ -56,9 +56,16 @@ const DEFAULT_MAX_PER_SCHEME: usize = 500;
 /// run instead of quietly eroding it. Raise them when a fix moves the real number up.
 ///
 /// An origin joining the corpus changes the denominator rather than the rules, so the aggregate
-/// floor is re-derived from the run at the commit that adds one. It is never lowered to let an
-/// unchanged corpus pass.
-const MIN_RECALL_PERCENT: f64 = 97.5;
+/// floor is re-derived from the run at the commit that adds one. A new rule does the same thing
+/// from the other side: the cases for a scheme nothing claimed were excluded as *no rule for this
+/// entity type*, and the rule that claims them turns every one of them into a scored case at once.
+/// Both are a larger denominator rather than a regression, and both re-derive the floor in the
+/// commit that moves it. It is never lowered to let an unchanged corpus pass.
+///
+/// The aggregate stands under a corpus in which the payment-card scheme is scored: the card rule
+/// requires a cue word, and three of Presidio's valid fixtures are one fragment holding three card
+/// numbers and no cue, which is the rule's documented limit rather than a defect.
+const MIN_RECALL_PERCENT: f64 = 97.4;
 const MIN_PRECISION_PERCENT: f64 = 99.5;
 
 /// The same ratchet per origin: minimum recall, then minimum precision. The aggregate floor alone
@@ -79,7 +86,10 @@ const ORIGIN_FLOORS: &[(&str, f64, f64)] = &[
     ("isemail", 78.0, 99.5),
     ("libphonenumber", 98.5, 99.5),
     ("open-location-code", 99.5, 99.5),
-    ("presidio", 98.9, 99.5),
+    // Presidio's payment-card fixtures are scored, and five of its twenty are out of reach on
+    // purpose: three sit in one fragment that writes three card numbers and no cue word, and two
+    // are a fifteen-digit airline-range number the issuer table does not admit.
+    ("presidio", 97.4, 99.5),
     ("price-parser", 98.0, 99.5),
     ("pyais", 99.5, 99.5),
     ("python-stdnum", 86.0, 99.5),

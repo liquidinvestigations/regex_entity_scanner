@@ -38,7 +38,7 @@ use crate::model::{EntityType, Flag, Value};
 /// What bumps it: any change to a candidate pattern, any change to a validator's accept or reject
 /// boundary or to the value it normalises to, and any rule added or removed. What does not: card
 /// text, a doc comment, a catalogue entry, because none of those change what a document yields.
-pub const RULE_SET_VERSION: u32 = 14;
+pub const RULE_SET_VERSION: u32 = 15;
 
 /// A span the prefilter proposed, with the surrounding fragment available for the guard checks.
 pub struct Candidate<'a> {
@@ -123,6 +123,8 @@ pub fn all() -> Vec<Box<dyn Rule>> {
         Box::new(date_machine::IsoWeekRule),
         Box::new(bank::IbanRule),
         Box::new(bank::BicRule),
+        Box::new(bank::PaymentCardRule),
+        Box::new(bank::AbaRoutingRule),
         Box::new(company::LeiRule),
         Box::new(company::VatEuRule),
         Box::new(company::VatNonEuRule),

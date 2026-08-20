@@ -10,7 +10,7 @@ pattern, a validator and a fixture — not a new pipeline.
 | `email.rs` | `email.basic` |
 | `date_iso.rs` | `date.iso8601` |
 | `date_machine.rs` | `date.rfc2822`, `date.clf`, `date.iso_week` |
-| `bank.rs` | `bank.iban`, `bank.bic` |
+| `bank.rs` | `bank.iban`, `bank.bic`, `bank.payment_card`, `bank.aba_routing` |
 | `company.rs` | `company.lei`, `company.vat_eu`, `company.vat_non_eu` |
 | `security.rs` | `security.isin`, `security.cusip`, `security.sedol` |
 | `maritime.rs` | `vessel.imo`, `vessel.mmsi`, `container.iso6346` |

@@ -57,6 +57,8 @@ document's text, so a mention this scanner adds is named the same way.
 | `email` | `email.basic` | `Analyzable.emailMentioned` | Defined upstream, for exactly this: an address found in text. |
 | `bank_account` | `bank.iban` | `BankAccount.iban` | Defined upstream. `Analyzable.ibanMentioned` is the same value seen from the document's side, and a consumer building an account entity wants the account property. |
 | `bank_account` | `bank.bic` | `BankAccount.bic` | Defined upstream. |
+| `bank_account` | `bank.payment_card` | `BankAccount.res:cardNumber` | `BankAccount` has `accountNumber`, `iban` and `bic` and no property for a card. Not `accountNumber`: a card is an instrument presented against an account, and merging the two pollutes the join a consumer builds on `accountNumber`. |
+| `bank_account` | `bank.aba_routing` | `BankAccount.res:routingNumber` | `bic` names the institution internationally and nothing covers the domestic clearing number that says the same thing in the United States. |
 | `company_id` | `company.lei` | `LegalEntity.leiCode` | Defined upstream on the abstract parent, inherited by `Company` and `Organization`. |
 | `company_id` | `company.vat_eu` | `LegalEntity.vatCode` | Defined upstream on the same abstract parent, so a company, an organisation or a public body all carry it on one property. |
 | `company_id` | `company.vat_non_eu` | `LegalEntity.vatCode` | The same property: FollowTheMoney does not scope `vatCode` to the Union, so every jurisdiction lands on one property. |

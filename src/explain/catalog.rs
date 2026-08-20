@@ -455,6 +455,130 @@ static RULE_DOCS: &[RuleDoc] = &[
         ],
     },
     RuleDoc {
+        rule_id: "bank.payment_card",
+        entity_type: EntityType::BankAccount,
+        title: "Payment card number",
+        matches: "The number embossed on a payment card, written compactly or in the groups of \
+                  four a form prints it in. It is the instrument a payment was made with rather \
+                  than the account behind it, and in a document it is normally beside the words \
+                  that say so.",
+        standards: &[
+            "ISO/IEC 7812-1 — Identification cards: identification of issuers, numbering system",
+            "ISO/IEC 7812-2 — the application and registration procedures for issuer identifiers",
+        ],
+        checks: &[
+            "the number is thirteen to nineteen digits, written compactly or with one separator \
+             character used throughout — a run mixing spaces and hyphens is refused",
+            "the Luhn check digit agrees",
+            "the leading digits fall in a range allocated to a card issuer, and the number is as \
+             long as that issuer's cards are — a Luhn-valid run whose prefix belongs to no issuer \
+             is not a card",
+            "one of the words card, cardholder, Visa, Mastercard, Amex, Discover, JCB, Diners or \
+             Maestro appears within 48 bytes either side, in the candidate's own field. Luhn is a \
+             one-in-ten filter and the issuer table does not close it on its own: over a page of \
+             invoice-like text, article and tracking numbers still pass both. The cue is what \
+             makes the match defensible, and if it is ever dropped the rule goes with it",
+            "nothing alphanumeric and no hyphen runs into the match from either side",
+        ],
+        not_checked: &[
+            "whether the card was ever issued, is still valid, or belongs to whoever the text says",
+            "the expiry date and the card verification value, which are separate fields this rule \
+             does not read and does not pair with the number",
+            "the airline range — a fifteen-digit run beginning with 1 is not matched, because that \
+             is also the shape of half the reference numbers in a logistics document",
+            "which account the card is presented against; a card and an account are different \
+             things and this value names only the card",
+        ],
+        authorities: &[
+            Authority {
+                name: "International Organization for Standardization",
+                role: "publishes ISO/IEC 7812 and defines the numbering system",
+                url: "https://www.iso.org/standard/70484.html",
+            },
+            Authority {
+                name: "American Bankers Association",
+                role: "is the registration authority for issuer identification numbers",
+                url: "https://www.aba.com/about-us/routing-number",
+            },
+        ],
+        ftm: FtmMapping {
+            schema: "BankAccount",
+            property: "res:cardNumber",
+            note: "FollowTheMoney's BankAccount has accountNumber, iban and bic and no property \
+                   for a card. The card is not written to accountNumber: it is an instrument \
+                   presented against an account rather than the account itself, and merging the \
+                   two pollutes the join a consumer builds on accountNumber. This is a local \
+                   extension in the res: namespace.",
+        },
+        references: &[
+            Reference {
+                title: "Luhn algorithm",
+                url: "https://en.wikipedia.org/wiki/Luhn_algorithm",
+                note: "the check digit, which is ISO/IEC 7812-1 annex B",
+            },
+            Reference {
+                title: "Payment card number",
+                url: "https://en.wikipedia.org/wiki/Payment_card_number",
+                note: "the issuer identification ranges and the length each issuer uses",
+            },
+        ],
+    },
+    RuleDoc {
+        rule_id: "bank.aba_routing",
+        entity_type: EntityType::BankAccount,
+        title: "ABA routing transit number",
+        matches: "The nine-digit number that names the United States financial institution an \
+                  account is held at — printed on a cheque beside the account number, and quoted \
+                  in a payment instruction as the routing or transit number.",
+        standards: &[
+            "ABA routing transit number — the American Bankers Association's numbering system, \
+             ANSI X9.13",
+        ],
+        checks: &[
+            "the leading two digits are a Federal Reserve routing symbol that was actually \
+             allocated: 00 to 12, 21 to 32, 61 to 72, or 80. Everything else is not a routing \
+             number whatever its checksum says",
+            "the 3-7-1 weighted sum over the nine digits is zero modulo ten",
+            "one of the words routing, ABA, abarouting, bankrouting, RTN or transit appears \
+             within 48 bytes either side, in the candidate's own field — two filters over nine \
+             digits are still nine digits, and a nine-digit reference number passes the checksum \
+             one time in ten",
+            "nothing alphanumeric runs into the match from either side",
+        ],
+        not_checked: &[
+            "whether the number names a bank that still exists, or one that is still in the \
+             Federal Reserve's directory",
+            "the hyphenated fractional spelling printed on some cheques, which is not matched: \
+             nine digits behind a one-in-ten checksum do not buy separator tolerance",
+            "which of an institution's routing numbers this is — a bank has several, by region \
+             and by transfer type",
+        ],
+        authorities: &[Authority {
+            name: "American Bankers Association",
+            role: "is the registration authority and assigns routing numbers through Accuity",
+            url: "https://www.aba.com/about-us/routing-number",
+        }],
+        ftm: FtmMapping {
+            schema: "BankAccount",
+            property: "res:routingNumber",
+            note: "FollowTheMoney's BankAccount names the institution with bic and has no \
+                   property for a domestic routing number, which is the same fact in the United \
+                   States clearing system. This is a local extension in the res: namespace.",
+        },
+        references: &[
+            Reference {
+                title: "ABA routing transit number",
+                url: "https://en.wikipedia.org/wiki/ABA_routing_transit_number",
+                note: "the routing symbol ranges and the 3-7-1 check digit",
+            },
+            Reference {
+                title: "Routing number lookup",
+                url: "https://routingnumber.aba.com/",
+                note: "where a number can be checked against the register",
+            },
+        ],
+    },
+    RuleDoc {
         rule_id: "company.lei",
         entity_type: EntityType::CompanyId,
         title: "Legal Entity Identifier",

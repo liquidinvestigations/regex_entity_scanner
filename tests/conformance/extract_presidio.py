@@ -21,9 +21,9 @@ Three things follow from the corpus rather than from a choice:
   valid direction: did the right type fire anywhere in it.
 
 Presidio recognises far more entity types than this rule set implements — driver's licences,
-passports, medical and tax numbers for two dozen countries, credit cards, US SSNs. Those are
-excluded for the plainest reason there is, the absence of a rule, and the exclusion count is
-printed beside the score so the coverage figure cannot be mistaken for a recall figure.
+passports, medical and tax numbers for two dozen countries, US SSNs. Those are excluded for the
+plainest reason there is, the absence of a rule, and the exclusion count is printed beside the
+score so the coverage figure cannot be mistaken for a recall figure.
 
 The script emits one JSON object per line on stdout, in the shape the Rust runner reads. It runs
 inside the dev container and needs no network; the case file it writes is checked in.
@@ -54,6 +54,8 @@ CARRIER_SUFFIX = " on the form."
 
 # Scheme -> (rule id, wire entity type). Everything not named here has no rule and is excluded.
 SCORED = {
+    "aba_routing": ("bank.aba_routing", "bank_account"),
+    "credit_card": ("bank.payment_card", "bank_account"),
     "crypto": ("crypto.bitcoin", "crypto_wallet"),
     "date": ("date.iso8601", "date"),
     "de_vat_id": ("company.vat_eu", "company_id"),
@@ -76,7 +78,11 @@ SCORED = {
 # The cue a rule requires before it will look at a token at all. Supplied only into a carrier
 # sentence, and only for the rule that requires it — supplying one to a rule that needs none would
 # measure a rule that does not run in production.
-CUES = {"in_pan": "PAN"}
+CUES = {
+    "aba_routing": "routing number",
+    "credit_card": "card",
+    "in_pan": "PAN",
+}
 
 # The machine-readable date formats the four date rules claim. Anything else in Presidio's date
 # module is a human-written date, which is the documented absence of a rule rather than a miss.
@@ -161,6 +167,10 @@ EXCLUSION_IP_LONGER_RUN = (
     "a slice of a dotted run longer than four components, which src/rules/network.rs refuses by "
     "name: a five-component run is not an address, and matching its first four is a wrong value "
     "rather than a miss"
+)
+EXCLUSION_ROUTING_HYPHENATED = (
+    "the hyphenated fractional spelling, which the routing card lists as not matched: nine digits "
+    "behind a one-in-ten checksum do not buy separator tolerance"
 )
 EXCLUSION_BITCOIN_ONLY = (
     "an address outside the Bitcoin family; crypto.bitcoin claims P2PKH, P2SH and Bech32 "
@@ -271,6 +281,8 @@ def documented_exclusion(scheme: str, token: str, tail: str, valid: bool, functi
         if not token.lstrip("_: ").startswith(("+", "00")):
             return EXCLUSION_NATIONAL_PHONE
         return None
+    if scheme == "aba_routing" and not token.isdigit():
+        return EXCLUSION_ROUTING_HYPHENATED
     if scheme == "mac" and not valid and RESERVED_MAC.search(token):
         return EXCLUSION_MAC_RESERVED
     if scheme == "ip" and LONGER_DOTTED_RUN.match(tail):

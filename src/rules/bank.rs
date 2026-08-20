@@ -1,9 +1,17 @@
-//! Bank account and bank institution identifiers: IBAN and BIC.
+//! Bank account and bank institution identifiers: IBAN, BIC, payment card and ABA routing number.
+//!
+//! The four sit at opposite ends of how much a pattern can carry on its own. An IBAN names its
+//! country in its first two characters and closes with mod-97 over up to thirty-four of them, so it
+//! is findable in bare text. A card number and a routing number are digit runs and nothing else,
+//! and the arithmetic on them — Luhn, and a weighted mod-10 over nine digits — is a one-in-ten
+//! filter that every long reference number in a document passes at that rate. Both are therefore
+//! **cue-gated**: a run with a valid check digit and no word beside it saying what it is stays
+//! silent, and if the cue requirement is ever dropped the rule goes with it.
 
 use std::collections::BTreeMap;
 
 use crate::model::{EntityType, Flag, Value};
-use crate::rules::checksum::iso7064;
+use crate::rules::checksum::{iso7064, luhn, weighted_mod};
 use crate::rules::context::DEFAULT_CUE_WINDOW;
 use crate::rules::{Candidate, Rule, Verdict};
 
@@ -228,6 +236,263 @@ impl Rule for BicRule {
             },
             confidence: 0.95,
             flags: vec![Flag::NoChecksum],
+        })
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Payment card
+// ---------------------------------------------------------------------------------------------
+
+pub struct PaymentCardRule;
+
+/// Thirteen to nineteen digits carrying the group separators a printed card number is written
+/// with. The interior class holds the separators as well as the digits, so the bound is on
+/// characters rather than on digits: nineteen digits in groups of four carry four separators.
+const PAYMENT_CARD_PATTERN: &str = r"[0-9](?:[0-9 -]{11,21})[0-9]";
+
+/// The words that admit a card number. Presidio's own recogniser context list, narrowed to the
+/// forms that survive a word-boundary test — its bare `credit` and `debit` are dropped, because a
+/// credit note and a debit balance are ordinary invoice words and `card` already covers the two
+/// phrases that matter.
+const PAYMENT_CARD_CUES: &[&str] = &[
+    "card",
+    "cardholder",
+    "visa",
+    "mastercard",
+    "amex",
+    "discover",
+    "jcb",
+    "diners",
+    "maestro",
+];
+
+/// The issuer identification ranges this rule admits, each with the lengths that issuer's cards
+/// are, from ISO/IEC 7812-1's allocation of the major industry identifier.
+///
+/// Luhn over a long digit run is a one-in-ten filter, and long digit runs are what an invoice, an
+/// order confirmation or a manifest is made of. The prefix table is what turns that filter into a
+/// real one: the number has to begin inside a range an issuer was allocated **and** be as long as
+/// that issuer's cards. Measured on a page of invoice-like text, the two together still leave
+/// several article and tracking numbers standing, which is why the cue is required on top of them.
+///
+/// The airline range — major industry identifier 1 — is not here. Fifteen digits beginning with a
+/// 1 is the shape of half the reference numbers in a logistics document, and a travel-agency card
+/// is not what an investigative corpus is looking for.
+type IssuerRange = (
+    &'static str,
+    &'static [(&'static str, &'static str)],
+    &'static [usize],
+);
+const ISSUER_RANGES: &[IssuerRange] = &[
+    ("Visa", &[("4", "4")], &[13, 16, 19]),
+    ("Mastercard", &[("51", "55"), ("2221", "2720")], &[16]),
+    ("American Express", &[("34", "34"), ("37", "37")], &[15]),
+    (
+        "Diners Club",
+        &[("300", "305"), ("3095", "3095"), ("36", "36"), ("38", "39")],
+        &[14, 16, 19],
+    ),
+    ("JCB", &[("3528", "3589")], &[16, 19]),
+    (
+        "Discover",
+        &[
+            ("6011", "6011"),
+            ("644", "649"),
+            ("65", "65"),
+            ("622126", "622925"),
+        ],
+        &[16, 19],
+    ),
+    ("UnionPay", &[("62", "62")], &[16, 17, 18, 19]),
+    (
+        "Maestro",
+        &[
+            ("5018", "5018"),
+            ("5020", "5020"),
+            ("5038", "5038"),
+            ("5893", "5893"),
+            ("6304", "6304"),
+            ("6759", "6759"),
+            ("6761", "6763"),
+        ],
+        &[12, 13, 14, 15, 16, 17, 18, 19],
+    ),
+    ("Dankort", &[("5019", "5019")], &[16]),
+    ("InterPayment", &[("636", "636")], &[16, 17, 18, 19]),
+    ("InstaPayment", &[("637", "639")], &[16]),
+];
+
+impl Rule for PaymentCardRule {
+    fn id(&self) -> &'static str {
+        "bank.payment_card"
+    }
+
+    fn entity_type(&self) -> EntityType {
+        EntityType::BankAccount
+    }
+
+    fn candidate_pattern(&self) -> &'static str {
+        PAYMENT_CARD_PATTERN
+    }
+
+    fn validate(&self, candidate: &Candidate<'_>) -> Option<Verdict> {
+        // Both neighbours guard, and a hyphen guards with them. The scan loop shrinks a rejected
+        // candidate from the right, so a longer digit run offers up every shorter prefix of
+        // itself, and one shorter prefix in ten passes Luhn: a fifteen-digit IMEI hands over a
+        // Luhn-valid thirteen-digit head. Refusing to end beside a digit is what turns that back
+        // into silence.
+        if candidate
+            .byte_before()
+            .is_some_and(|b| b.is_ascii_alphanumeric() || b == b'-')
+            || candidate
+                .byte_after()
+                .is_some_and(|b| b.is_ascii_alphanumeric() || b == b'-')
+        {
+            return None;
+        }
+
+        let text = candidate.text();
+        // One separator character throughout or none at all. A run that mixes them is a reference
+        // number that happens to hold digits, not a card written in groups.
+        let separators: Vec<char> = text.chars().filter(|c| !c.is_ascii_digit()).collect();
+        if separators.windows(2).any(|pair| pair[0] != pair[1]) {
+            return None;
+        }
+
+        let compact: String = text.chars().filter(char::is_ascii_digit).collect();
+        if !luhn(&compact) {
+            return None;
+        }
+        let issuer = issuer_of(&compact)?;
+
+        if !candidate.has_cue(PAYMENT_CARD_CUES, DEFAULT_CUE_WINDOW) {
+            return None;
+        }
+
+        let mut parts = BTreeMap::new();
+        parts.insert("issuer".to_string(), issuer.to_string());
+        parts.insert("iin".to_string(), compact.get(0..6)?.to_string());
+
+        Some(Verdict {
+            start: candidate.start,
+            end: candidate.end,
+            value: Value::Identifier {
+                scheme: "payment_card".to_string(),
+                compact,
+                country: None,
+                parts,
+            },
+            confidence: 0.97,
+            flags: Vec::new(),
+        })
+    }
+}
+
+/// The issuer whose allocated range the number begins in and whose card length it has, or `None`.
+fn issuer_of(compact: &str) -> Option<&'static str> {
+    ISSUER_RANGES
+        .iter()
+        .find_map(|(issuer, prefixes, lengths)| {
+            let in_range = prefixes.iter().any(|(low, high)| {
+                compact
+                    .get(0..low.len())
+                    .is_some_and(|head| head >= *low && head <= *high)
+            });
+            (in_range && lengths.contains(&compact.len())).then_some(*issuer)
+        })
+}
+
+// ---------------------------------------------------------------------------------------------
+// ABA routing number
+// ---------------------------------------------------------------------------------------------
+
+pub struct AbaRoutingRule;
+
+/// Nine digits, compact. The hyphenated spelling some forms print is deliberately not matched:
+/// nine digits behind a one-in-ten checksum do not buy separator tolerance, which is the same
+/// arithmetic the IBAN rule passes and this one does not.
+const ABA_ROUTING_PATTERN: &str = r"[0-9]{9}";
+
+/// The words that admit a bare nine-digit run, from the American Bankers Association's own names
+/// for the number and from Presidio's recogniser context list.
+const ABA_ROUTING_CUES: &[&str] = &[
+    "routing",
+    "aba",
+    "abarouting",
+    "bankrouting",
+    "rtn",
+    "transit",
+];
+
+/// The leading two digits a routing number may carry, as inclusive ranges.
+///
+/// The first two digits are the Federal Reserve routing symbol, and only four blocks of them were
+/// ever allocated: 00–12 for the twelve districts and the government, 21–32 for the thrift
+/// institutions that mirror them, 61–72 for electronic-only transactions, and 80 for traveller's
+/// cheques. Everything else is not a routing number whatever its checksum says, which is a second
+/// filter over the same nine digits and independent of the first.
+const ROUTING_SYMBOL_RANGES: [(u32, u32); 4] = [(0, 12), (21, 32), (61, 72), (80, 80)];
+
+impl Rule for AbaRoutingRule {
+    fn id(&self) -> &'static str {
+        "bank.aba_routing"
+    }
+
+    fn entity_type(&self) -> EntityType {
+        EntityType::BankAccount
+    }
+
+    fn candidate_pattern(&self) -> &'static str {
+        ABA_ROUTING_PATTERN
+    }
+
+    fn validate(&self, candidate: &Candidate<'_>) -> Option<Verdict> {
+        // The length is exactly nine, so both neighbours guard: nine digits cut out of a longer
+        // run are not a routing number.
+        if candidate
+            .byte_before()
+            .is_some_and(|b| b.is_ascii_alphanumeric())
+            || candidate
+                .byte_after()
+                .is_some_and(|b| b.is_ascii_alphanumeric())
+        {
+            return None;
+        }
+
+        let text = candidate.text();
+        let district: u32 = text.get(0..2)?.parse().ok()?;
+        if !ROUTING_SYMBOL_RANGES
+            .iter()
+            .any(|(low, high)| district >= *low && district <= *high)
+        {
+            return None;
+        }
+
+        let digits: Vec<u32> = text.chars().filter_map(|c| c.to_digit(10)).collect();
+        if weighted_mod(&digits, &[3, 7, 1], 10) != 0 {
+            return None;
+        }
+
+        if !candidate.has_cue(ABA_ROUTING_CUES, DEFAULT_CUE_WINDOW) {
+            return None;
+        }
+
+        let mut parts = BTreeMap::new();
+        parts.insert("routing_symbol".to_string(), text[0..4].to_string());
+        parts.insert("institution".to_string(), text[4..8].to_string());
+
+        Some(Verdict {
+            start: candidate.start,
+            end: candidate.end,
+            value: Value::Identifier {
+                scheme: "aba_routing".to_string(),
+                compact: text.to_string(),
+                country: Some("US".to_string()),
+                parts,
+            },
+            confidence: 0.97,
+            flags: Vec::new(),
         })
     }
 }

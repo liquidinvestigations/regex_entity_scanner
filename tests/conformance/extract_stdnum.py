@@ -44,6 +44,7 @@ DIRECT = {
     # module               scheme            rule                       entity type       cue
     "iban": ("iban", "bank.iban", "bank_account", None),
     "bic": ("bic", "bank.bic", "bank_account", "BIC"),
+    "us.rtn": ("us_rtn", "bank.aba_routing", "bank_account", "routing number"),
     "iso9362": ("bic", "bank.bic", "bank_account", "BIC"),
     "lei": ("lei", "company.lei", "company_id", None),
     "isin": ("isin", "security.isin", "security", None),
