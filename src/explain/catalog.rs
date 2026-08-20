@@ -1561,6 +1561,74 @@ static RULE_DOCS: &[RuleDoc] = &[
         }],
     },
     RuleDoc {
+        rule_id: "phone.international",
+        entity_type: EntityType::Phone,
+        title: "Telephone number, international form",
+        matches: "A number written the way it would be dialled from another country — with a \
+                  leading plus sign, or with the 00 prefix that stands for one. Punctuation is \
+                  read as written: spaces, hyphens, dots and an area code in brackets all reach \
+                  the same number. A number in national form is deliberately not matched, because \
+                  the same digits name a different subscriber in every country and nothing in the \
+                  text says which one is meant.",
+        standards: &[
+            "ITU-T E.164 — The international public telecommunication numbering plan",
+            "ITU-T E.123 — Notation for national and international telephone numbers",
+        ],
+        checks: &[
+            "the country calling code is one the ITU has assigned, and the national number matches \
+             a pattern that country actually issues, both taken from Google's libphonenumber \
+             metadata",
+            "the number is reported as the line type the metadata gives it — mobile, fixed line, \
+             toll free and the rest",
+            "brackets open, hold digits and close, so a number is not assembled across two pieces \
+             of text",
+            "the span is not the page range and year of a citation, and not the leading half of a \
+             timestamp whose minutes follow it",
+            "nothing alphanumeric, no currency sign and no separator that continues the token \
+             touches the match, so a plus-addressed mailbox or a longer code is not read as a \
+             number",
+        ],
+        not_checked: &[
+            "national-format numbers, which need a region the document does not supply; no default \
+             region exists, because assuming one mislabels every document written elsewhere",
+            "whether the number is assigned, in service, or belongs to whoever the text is about",
+            "extensions, which are dropped rather than parsed — the span ends at the number itself",
+            "vanity spellings such as 1-800-FLOWERS, and short codes, neither of which is \
+             dialable from abroad",
+        ],
+        authorities: &[
+            Authority {
+                name: "International Telecommunication Union",
+                role: "assigns country calling codes and publishes the E.164 numbering plan",
+                url: "https://www.itu.int/en/ITU-T/inr/Pages/default.aspx",
+            },
+            Authority {
+                name: "Google libphonenumber",
+                role: "maintains the numbering metadata every check here rests on",
+                url: "https://github.com/google/libphonenumber",
+            },
+        ],
+        ftm: FtmMapping {
+            schema: "Analyzable",
+            property: "phoneMentioned",
+            note: "The property FollowTheMoney defines for a number found in a document's text. \
+                   LegalEntity.phone is the one to write when the number is known to belong to the \
+                   entity, which is an assertion extraction cannot make on its own.",
+        },
+        references: &[
+            Reference {
+                title: "ITU-T Recommendation E.164",
+                url: "https://www.itu.int/rec/T-REC-E.164",
+                note: "the numbering plan the canonical form comes from",
+            },
+            Reference {
+                title: "ITU list of country calling codes",
+                url: "https://www.itu.int/pub/T-SP-E.164D",
+                note: "which code belongs to which administration",
+            },
+        ],
+    },
+    RuleDoc {
         rule_id: "money.iso_code",
         entity_type: EntityType::Money,
         title: "Sum of money, ISO 4217 code",

@@ -147,3 +147,23 @@
 {"name": "turkish tax number with a bad check digit", "text": "reference TR4540536921 failed validation", "expect": []}
 {"name": "british prefix in front of an ordinary number", "text": "reference GB000123456 in the ledger", "expect": []}
 {"name": "norwegian organisation number without the tax suffix", "text": "orgnr NO995525828 is not a VAT number on its own", "expect": []}
+{"name": "international number in prose", "text": "Call +40 21 555 0100 for details.", "expect": [{"type": "phone", "text": "+40 21 555 0100", "value": "+40215550100"}]}
+{"name": "north american number with hyphens", "text": "Reach us on +1 202-555-0143 during office hours.", "expect": [{"type": "phone", "text": "+1 202-555-0143", "value": "+12025550143"}]}
+{"name": "german number with a bracketed trunk digit", "text": "Mobil: +49 (0) 30 901820 in Berlin", "expect": [{"type": "phone", "text": "+49 (0) 30 901820", "value": "+4930901820"}]}
+{"name": "number dialled with the international prefix", "text": "dial 0044 20 7123 4567 from abroad", "expect": [{"type": "phone", "text": "0044 20 7123 4567", "value": "+442071234567"}]}
+{"name": "freephone number that belongs to no country", "text": "freephone +800 1234 5678 worldwide", "expect": [{"type": "phone", "text": "+800 1234 5678", "value": "+80012345678"}]}
+{"name": "brazilian mobile number", "text": "WhatsApp +55 11 91234-5678 Sao Paulo", "expect": [{"type": "phone", "text": "+55 11 91234-5678", "value": "+5511912345678"}]}
+{"name": "number written straight after a tel scheme", "text": "the desk line is tel:+40215550100 during the week", "expect": [{"type": "phone", "text": "+40215550100", "value": "+40215550100"}]}
+{"name": "french number written with dots", "text": "Tel. +33 1.42.68.53.00 Paris", "expect": [{"type": "phone", "text": "+33 1.42.68.53.00", "value": "+33142685300"}]}
+{"name": "number followed by a separate figure", "text": "call +40 21 555 0100 3 times before escalating", "expect": [{"type": "phone", "text": "+40 21 555 0100", "value": "+40215550100"}]}
+{"name": "number the metadata only half recognises", "text": "Fax +40 200 001 132 in Bucharest", "expect": [{"type": "phone", "text": "+40 200 001 132", "value": "+40200001132"}]}
+{"name": "national format without a region to read it in", "text": "Ring 020 7123 4567 and ask for Ana.", "expect": []}
+{"name": "north american number in national format", "text": "(202) 555-0143 is the desk number", "expect": []}
+{"name": "invoice number with two leading zeros", "text": "invoice 0012345678901 paid in full", "expect": []}
+{"name": "hyphen joined run that continues past a number", "text": "ticket +40-21-555-0100-999 raised", "expect": []}
+{"name": "release number with a build tag", "text": "release 2.10.3+40712345678 build", "expect": []}
+{"name": "page range and year in a citation", "text": "Chen Li. VLDB J. 12(3): 211-227 (2003).", "expect": []}
+{"name": "country calling code that was never assigned", "text": "+99 12 345 6789 nowhere", "expect": []}
+{"name": "digits no country issues", "text": "Fax +40 999 999 999 in Bucharest", "expect": []}
+{"name": "plus addressed mailbox is an address", "text": "user+40712345678@example.com wrote in", "expect": [{"type": "email", "text": "user+40712345678@example.com", "value": "user+40712345678@example.com"}]}
+{"name": "timestamp whose minutes follow the digits", "text": "logged at +41 2012-01-02 08:30 today", "expect": [{"type": "date", "text": "2012-01-02 08:30", "value": "2012-01-02T08:30"}]}
