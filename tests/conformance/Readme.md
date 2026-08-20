@@ -25,6 +25,8 @@ scorer.
 | `isemail.jsonl` | The extracted is_email cases, checked in. |
 | `extract_eth_utils.py` | Turns eth-utils' address tables and ERC-55's own vectors into Ethereum address cases. |
 | `eth-utils.jsonl` | The extracted eth-utils and ERC-55 cases, checked in. |
+| `extract_crossref.py` | Turns the reduced Crossref slice — DOIs and the ORCID identifiers on author records — into publication cases. |
+| `crossref.jsonl` | The extracted Crossref cases, checked in. |
 | `extract_presidio.py` | Turns Presidio's recogniser tests — parametrised free-text fragments with the spans upstream asserts are in them — into cases. |
 | `presidio.jsonl` | The extracted Presidio cases, checked in. |
 
@@ -107,11 +109,22 @@ tracked tree is a thumb on the scale. The run prints the exclusion count beside 
 ./shell.sh python3 tests/conformance/extract_open_location_code.py > tests/conformance/open-location-code.jsonl
 ./shell.sh python3 tests/conformance/extract_isemail.py > tests/conformance/isemail.jsonl
 ./shell.sh python3 tests/conformance/extract_eth_utils.py > tests/conformance/eth-utils.jsonl
+./shell.sh python3 tests/conformance/extract_crossref.py > tests/conformance/crossref.jsonl
 ```
 
 Each script reads its own directory under `vendored/reference/`, needs no network, and writes the
 case file to stdout with a count on stderr. Re-run one when the vendored snapshot moves or when a
 scheme gains a rule, and commit the diff — the case file is the corpus, not a build artefact.
+
+## An origin that can only agree
+
+Crossref publishes registered identifiers, so its DOI and ORCID cases are recall and nothing else:
+there is no malformed identifier in the source to stay silent about. That matters most for
+`publication.orcid`, whose ISO 7064 check digit makes the invalid examples the interesting ones —
+and mutating a digit to manufacture one would break the rule that a token is what upstream wrote.
+Those negatives live in the rule's unit tests instead, and the origin is described as what it is.
+The same reading applies wherever an upstream can only confirm us: agreement from a source that
+publishes nothing wrong is a weaker measurement than the percentage makes it look.
 
 ## What a flag would say, and the one origin that needs it to
 

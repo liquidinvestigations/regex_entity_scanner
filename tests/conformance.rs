@@ -58,7 +58,7 @@ const DEFAULT_MAX_PER_SCHEME: usize = 500;
 /// An origin joining the corpus changes the denominator rather than the rules, so the aggregate
 /// floor is re-derived from the run at the commit that adds one. It is never lowered to let an
 /// unchanged corpus pass.
-const MIN_RECALL_PERCENT: f64 = 96.4;
+const MIN_RECALL_PERCENT: f64 = 97.4;
 const MIN_PRECISION_PERCENT: f64 = 99.5;
 
 /// The same ratchet per origin: minimum recall, then minimum precision. The aggregate floor alone
@@ -70,6 +70,7 @@ const MIN_PRECISION_PERCENT: f64 = 99.5;
 /// An origin with no upstream-invalid cases has no precision to measure; its precision floor is
 /// still written down, and is simply not asserted until such a case exists.
 const ORIGIN_FLOORS: &[(&str, f64, f64)] = &[
+    ("crossref", 99.5, 99.5),
     ("dateparser", 99.0, 99.0),
     ("eth-utils", 99.5, 99.5),
     ("grok", 99.0, 99.0),
@@ -564,16 +565,21 @@ fn upstream_conformance() {
         report.total.scored > 0,
         "no case was scored; the harness measured nothing"
     );
-    let recall = report.recall_percent.unwrap_or(0.0);
-    let precision = report.precision_percent.unwrap_or(0.0);
-    assert!(
-        recall >= MIN_RECALL_PERCENT,
-        "aggregate recall {recall:.1}% is below the {MIN_RECALL_PERCENT:.1}% floor"
-    );
-    assert!(
-        precision >= MIN_PRECISION_PERCENT,
-        "aggregate precision {precision:.1}% is below the {MIN_PRECISION_PERCENT:.1}% floor"
-    );
+    // A floor over an empty measurement is not zero, it is nothing: an origin whose upstream
+    // publishes only registered identifiers has no invalid case to stay silent about, and a run
+    // narrowed to it has no precision to compare against a floor.
+    if let Some(recall) = report.recall_percent {
+        assert!(
+            recall >= MIN_RECALL_PERCENT,
+            "aggregate recall {recall:.1}% is below the {MIN_RECALL_PERCENT:.1}% floor"
+        );
+    }
+    if let Some(precision) = report.precision_percent {
+        assert!(
+            precision >= MIN_PRECISION_PERCENT,
+            "aggregate precision {precision:.1}% is below the {MIN_PRECISION_PERCENT:.1}% floor"
+        );
+    }
 
     // Skipped when the run was narrowed to one origin: the others are absent by request, not by
     // regression, and asserting a missing floor there would fail every single-origin run.
