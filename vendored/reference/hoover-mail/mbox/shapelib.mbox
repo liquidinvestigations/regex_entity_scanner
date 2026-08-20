@@ -1,0 +1,3142 @@
+From warmerda@yoda.imagelinks.com Fri Dec  5 14:31:36 2003
+Received: from yoda.imagelinks.com ([208.24.120.42])
+	by www.maptools.org (8.12.5/8.12.5) with ESMTP id hB5JVY8o016221
+	for <shapelib@maptools.org>; Fri, 5 Dec 2003 14:31:35 -0500
+Received: (from warmerda@localhost)
+	by yoda.imagelinks.com (8.11.6/8.11.2) id hB5JVWs28404
+	for shapelib@maptools.org; Fri, 5 Dec 2003 14:31:32 -0500
+Date: Fri, 5 Dec 2003 14:31:32 -0500
+From: Frank Warmerdam GEOTIFF mod mgr <warmerda@remotesensing.org>
+Message-Id: <200312051931.hB5JVWs28404@yoda.imagelinks.com>
+To: shapelib@maptools.org
+Subject: [Shapelib] test
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+
+test
+
+From warmerdam@pobox.com Mon Dec  8 16:07:17 2003
+Received: from sabre.velocet.net (sabre.velocet.net [216.138.209.205])
+	by www.maptools.org (8.12.5/8.12.5) with ESMTP id hB8L7G8o008337
+	for <shapelib@maptools.org>; Mon, 8 Dec 2003 16:07:16 -0500
+Received: from pobox.com (H156.C195.tor.velocet.net [216.138.195.156])
+	by sabre.velocet.net (Postfix) with ESMTP id A2E4514975C
+	for <shapelib@maptools.org>; Mon,  8 Dec 2003 09:52:46 -0500 (EST)
+Message-ID: <3FD4904E.80609@pobox.com>
+Date: Mon, 08 Dec 2003 09:53:02 -0500
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.5a) Gecko/20030718
+X-Accept-Language: en-us, en
+MIME-Version: 1.0
+To: shapelib@maptools.org
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
+From: shapelib-admin@lists.maptools.org
+Subject: [Shapelib] Anonymity Test
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+Test
+
+-- 
+---------------------------------------+--------------------------------------
+I set the clouds in motion - turn up   | Frank Warmerdam, warmerdam@pobox.com
+light and sound - activate the windows | http://pobox.com/~warmerdam
+and watch the world go round - Rush    | Geospatial Programmer for Rent
+
+
+
+From David.Gancarz@ci.orlando.fl.us Fri Jan  9 13:30:09 2004
+Received: from vmail.ci.orlando.fl.us (vmail.ci.orlando.fl.us [198.190.151.26])
+	by www.maptools.org (8.12.5/8.12.5) with SMTP id i09IU58p030237
+	for <shapelib@lists.maptools.org>; Fri, 9 Jan 2004 13:30:08 -0500
+Received: from OrlMail1.ci.orlando.fl.us ([198.190.151.27])
+ by vmail.ci.orlando.fl.us (SAVSMTP 3.1.2.35) with SMTP id M2004010913304102772
+ for <shapelib@lists.maptools.org>; Fri, 09 Jan 2004 13:30:41 -0500
+To: shapelib@lists.maptools.org
+MIME-Version: 1.0
+X-Mailer: Lotus Notes Release 6.0.1 February 07, 2003
+Message-ID: <OF394E128F.599FC5BA-ON85256E16.00658F27-85256E16.0065A05D@ci.orlando.fl.us>
+Date: Fri, 9 Jan 2004 13:29:59 -0500
+X-MIMETrack: Serialize by Router on OrlMail1/Orlando(Release 6.0.2CF2|July 23, 2003) at
+ 01/09/2004 13:30:00,
+	Serialize complete at 01/09/2004 13:30:00
+Content-Type: multipart/alternative; boundary="=_alternative 0065A05885256E16_="
+From: shapelib-admin@lists.maptools.org
+Subject: [Shapelib] .NET wrapper available
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+This is a multipart message in MIME format.
+--=_alternative 0065A05885256E16_=
+Content-Type: text/plain; charset="US-ASCII"
+
+FYI: 
+
+A first cut at developing .NET wrapper class for shapelib is now available 
+on the shapelib site at 
+http://shapelib.maptools.org/dl/contrib/DotNET_Framework_Support.zip. The 
+zip file contains the following:
+
+shapelib.cs is the C# wrapper for shapelib.  It is sprinkled liberally 
+with C# XML documentation tags, both to provide intellisense capability 
+for the the VS IDE, and to produce documentation.  Code comments are taken 
+directly from the original shapelib documentation, with only a few minor 
+changes.
+
+The included shapelib.dll is compiled for Win32.
+
+doc.xml was generated w/ Visual Studio  from the documentation tags.  It 
+is included along with Anders Hejlsberg's doc.css and doc.xsl, which 
+format doc.xml to HTML.
+
+test.cs is a console app to test and demonstrate the wrapper.  The 
+compiled version is also included as test.exe.
+
+The wrapper class is pretty much a straight up implementation of shapelib, 
+with the following exceptions:
+
+1) In the DBFRead/WriteLogical functions I pass .NET boolean values
+2) I made SHPT_* and SHPP_* constants into enumerations to be in keeping 
+with .NET coding conventions.
+
+I have not done anything with the quadtree functions in shapelib. 
+
+Please send any comments, suggestions, bug reports, or whatever, to me at 
+dgancarz@cfl.rr.com or david.gancarz@cityoforlando.net
+
+David Gancarz, P.E.
+
+
+btw: 
+
+I also posted some files for calling shapelib.dll from VB6, if anyone is 
+interested.  See http://shapelib.maptools.org/dl/contrib/testvb/TestVB.zip 
+and http://shapelib.maptools.org/dl/contrib/testvb/readme.pdf.  Please 
+note that, in the VB test program, I incorrectly define my polygon 
+vertices in counterclockwise order.  The shapefile format requires that 
+polygon interiors be traversed in clockwise order (standard mathematical 
+conventions notwithstanding :-( 
+
+-dhg
+--=_alternative 0065A05885256E16_=
+Content-Type: text/html; charset="US-ASCII"
+
+
+<br><font size=2 face="sans-serif">FYI: &nbsp;</font>
+<br>
+<br><font size=2 face="sans-serif">A first cut at developing .NET wrapper
+class for shapelib is now available on the shapelib site at http://shapelib.maptools.org/dl/contrib/DotNET_Framework_Support.zip.
+The zip file contains the following:</font>
+<br>
+<br><font size=2 face="sans-serif">shapelib.cs is the C# wrapper for shapelib.
+&nbsp;It is sprinkled liberally with C# XML documentation tags, both to
+provide intellisense capability for the the VS IDE, and to produce documentation.
+&nbsp;Code comments are taken directly from the original shapelib documentation,
+with only a few minor changes.</font>
+<br>
+<br><font size=2 face="sans-serif">The included shapelib.dll is compiled
+for Win32.</font>
+<br>
+<br><font size=2 face="sans-serif">doc.xml was generated w/ Visual Studio
+&nbsp;from the documentation tags. &nbsp;It is included along with Anders
+Hejlsberg's doc.css and doc.xsl, which format doc.xml to HTML.</font>
+<br>
+<br><font size=2 face="sans-serif">test.cs is a console app to test and
+demonstrate the wrapper. &nbsp;The compiled version is also included as
+test.exe.</font>
+<br>
+<br><font size=2 face="sans-serif">The wrapper class is pretty much a straight
+up implementation of shapelib, with the following exceptions:</font>
+<br>
+<br><font size=2 face="sans-serif">1) In the DBFRead/WriteLogical functions
+I pass .NET boolean values</font>
+<br><font size=2 face="sans-serif">2) I made SHPT_* and SHPP_* constants
+into enumerations to be in keeping with .NET coding conventions.</font>
+<br>
+<br><font size=2 face="sans-serif">I have not done anything with the quadtree
+functions in shapelib. &nbsp;</font>
+<br>
+<br><font size=2 face="sans-serif">Please send any comments, suggestions,
+bug reports, or whatever, to me at dgancarz@cfl.rr.com or david.gancarz@cityoforlando.net</font>
+<br>
+<br><font size=2 face="sans-serif">David Gancarz, P.E.</font>
+<br>
+<br>
+<br><font size=2 face="sans-serif">btw: &nbsp;</font>
+<br>
+<br><font size=2 face="sans-serif">I also posted some files for calling
+shapelib.dll from VB6, if anyone is interested. &nbsp;See http://shapelib.maptools.org/dl/contrib/testvb/TestVB.zip
+and http://shapelib.maptools.org/dl/contrib/testvb/readme.pdf. &nbsp;Please
+note that, in the VB test program, I incorrectly define my polygon vertices
+in counterclockwise order. &nbsp;The shapefile format requires that polygon
+interiors be traversed in clockwise order (standard mathematical conventions
+notwithstanding :-( </font>
+<br>
+<br><font size=2 face="sans-serif">-dhg</font>
+--=_alternative 0065A05885256E16_=--
+
+From warmerdam@pobox.com Thu Jan 15 02:01:27 2004
+Received: from sabre.velocet.net (sabre.velocet.net [216.138.209.205])
+	by www.maptools.org (8.12.5/8.12.5) with ESMTP id i0F71R8o004966
+	for <shapelib@lists.maptools.org>; Thu, 15 Jan 2004 02:01:27 -0500
+Received: from pobox.com (H156.C195.tor.velocet.net [216.138.195.156])
+	by sabre.velocet.net (Postfix) with ESMTP
+	id 8CE1E13835A; Thu, 15 Jan 2004 02:01:12 -0500 (EST)
+Message-ID: <40063ABD.5060700@pobox.com>
+Date: Thu, 15 Jan 2004 02:01:17 -0500
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.5a) Gecko/20030718
+X-Accept-Language: en-us, en
+MIME-Version: 1.0
+To: James Rowe <jrowe@mda.ca>
+Cc: shapelib <shapelib@lists.maptools.org>
+References: <000401c3daea$062d4b60$c589498e@ds.mda.ca>
+In-Reply-To: <000401c3daea$062d4b60$c589498e@ds.mda.ca>
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
+From: shapelib-admin@lists.maptools.org
+Subject: [Shapelib] Re: Information about ESRI ShapeFiles
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+James Rowe wrote:
+> Hi Frank,
+> I'm working on implementing an ESRI ShapeFile utility in C++ for reading and
+> writing ShapeFiles programmatically. I'm currently adding support for
+> reading and writing attributes to an associated DBF file.  I'm using the
+> Shapefile C Library version 1.2.10 as the file writer.
+> My problem is that the ShapeFile C library does not seem to write out
+> default values for attributes correctly. I'm assuming it's not doing it
+> correctly because I'm using ESRI ArcExplorer 4.0.1 to try to read the
+> ShapeFile and AreExplorer is complaining that it can't interpret it. I tried
+> creating a ShapeFile using PCI Geomatica and ArcExplorer happily read it
+> (even with default attribute values in it). Unfortunately, Geomatica does
+> not correctly put default values in. I tried saving a ShapeFile that had no
+> value for a real number field, but when read back using ArcExplorer the
+> value showed up as 1.328753764365E+308. So even Geomatica isn't reliable.
+> 
+> What I'm looking for is if you have any insight into how to deal with
+> default values in DBF files or if you can point to somewhere that I can find
+> more information. Ideally I'd like to find a utility that checks if a
+> ShapeFile is valid or not and tells why it's not valid. Or even if you have
+> a lead on where I can find a proper specification for the DBF file. The
+> whitesheet for the ESRI ShapeFile doesn't go into any depth on DBF files.
+> Instead it refers to a dBASE file spec from IMPRISE Corp. that I can't find
+> anymore.
+
+James,
+
+I am afraid I don't know the real answer for NULL handling in DBF files.  There
+is a bunch of code built into DBFIsAttributeNULL() that says:
+
+     switch(psDBF->pachFieldType[iField])
+     {
+       case 'N':
+       case 'F':
+         /* NULL numeric fields have value "****************" */
+         return pszValue[0] == '*';
+
+       case 'D':
+         /* NULL date fields have value "00000000" */
+         return strncmp(pszValue,"00000000",8) == 0;
+
+       case 'L':
+         /* NULL boolean fields have value "?" */
+         return pszValue[0] == '?';
+
+       default:
+         /* empty string fields are considered NULL */
+         return strlen(pszValue) == 0;
+     }
+
+So, here the impression is that different "null" values are used for each
+type of field.  It looks like DBFWriteAttribute() tries to set values in
+this manner when initializing a new record too.
+
+You might want to verify that the fields in question are in fact being
+written with these null values.  If so, then you might consider whether
+ArcExplorer is really doing the right thing.  What does ArcView or ArcGIS do?
+
+There are various dBase/xBase format specs available on wotsit:
+
+   http://www.wotsit.org/search.asp?s=database
+
+PS. I have taken the liberty of cc:ing this message to the shapelib list.
+It is quite new, and so has very few members, but this question and any
+followup conversation is of general interest so I would like it added to
+the email archive.
+
+Best regards,
+
+-- 
+---------------------------------------+--------------------------------------
+I set the clouds in motion - turn up   | Frank Warmerdam, warmerdam@pobox.com
+light and sound - activate the windows | http://pobox.com/~warmerdam
+and watch the world go round - Rush    | Geospatial Programmer for Rent
+
+
+
+From eduardo@consultoria.eti.br Wed Jan 28 11:47:47 2004
+Received: from hm13.locaweb.com.br (hm13.locaweb.com.br [200.246.179.113])
+	by www.maptools.org (8.12.5/8.12.5) with SMTP id i0SGlX4r024236
+	for <shapelib@lists.maptools.org>; Wed, 28 Jan 2004 11:47:46 -0500
+Received: (qmail 30255 invoked from network); 28 Jan 2004 16:03:58 -0000
+Received: from hm47.locaweb.com.br (200.182.98.147)
+  by hm13.locaweb.com.br with QMTP; 28 Jan 2004 16:03:58 -0000
+Received: (qmail 10526 invoked by uid 12344); 28 Jan 2004 16:04:03 -0000
+Message-ID: <20040128160402.10525.qmail@hm47.locaweb.com.br>
+Date: Wed, 28 Jan 2004 14:04:02 -0200
+To: shapelib@lists.maptools.org
+References: 
+In-Reply-To: 
+X-Mailer: LocaMail
+X-IPAddress: 200.231.30.115
+X-Sender: eduardo@consultoria.eti.br
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+From: shapelib-admin@lists.maptools.org
+Subject: [Shapelib] ShapeLib tools manual
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+As far as I know the only "help" available for shapelib binary tools(such as shpdump, shpcentrid, shpinfo, dbfinfo, etc...) are the:
+
+$ command --help
+
+is there any more detailed information about their parameters?
+
+
+if not, I was planning to elaborate it as text files but at least some basic description of each I would need...
+does .c header's of each tool contain this information?
+
+thanks
+
+
+Eduardo Patto Kanegae
++Homepage:http://www.consultoria.eti.br   ( BRASIL )
++Perfil:http://www.consultoria.eti.br/ptbr/epk.php
+*Fórum ptMapServer - http://www.consultoria.eti.br/mapserverptforum/ - "Discussões relacionadas ao MapServer"
+*ClickBrasil - http://www.consultoria.eti.br/clickbrasil/  - "Mapas do Brasil com dados censitários"
+***************************************
+***Fim da Mensagem / End of Message ***
+***************************************
+
+
+
+
+
+From warmerdam@pobox.com Wed Jan 28 11:55:55 2004
+Received: from sabre.velocet.net (sabre.velocet.net [216.138.209.205])
+	by www.maptools.org (8.12.5/8.12.5) with ESMTP id i0SGtc4r024313
+	for <shapelib@lists.maptools.org>; Wed, 28 Jan 2004 11:55:54 -0500
+Received: from pobox.com (H156.C195.tor.velocet.net [216.138.195.156])
+	by sabre.velocet.net (Postfix) with ESMTP id BCDAF1399B6
+	for <shapelib@lists.maptools.org>; Wed, 28 Jan 2004 11:55:15 -0500 (EST)
+Message-ID: <4017E974.6030307@pobox.com>
+Date: Wed, 28 Jan 2004 11:55:16 -0500
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.5a) Gecko/20030718
+X-Accept-Language: en-us, en
+MIME-Version: 1.0
+To: shapelib@lists.maptools.org
+Subject: Re: [Shapelib] ShapeLib tools manual
+References: <20040128160402.10525.qmail@hm47.locaweb.com.br>
+In-Reply-To: <20040128160402.10525.qmail@hm47.locaweb.com.br>
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
+From: shapelib-admin@lists.maptools.org
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+shapelib-admin@lists.maptools.org wrote:
+> As far as I know the only "help" available for shapelib binary tools(such as shpdump, shpcentrid, shpinfo, dbfinfo, etc...) are the:
+> 
+> $ command --help
+> 
+> is there any more detailed information about their parameters?
+> 
+> 
+> if not, I was planning to elaborate it as text files but at least some basic description of each I would need...
+> does .c header's of each tool contain this information?
+
+Eduardo,
+
+The .c files contain the "usage" message but and some in-code comments on
+how some stuff works, but generally not good documentation.  If you prepare
+docs it would be most convient from my point of view if it was done as an
+html file I could distributed with shapelib and have available on the web
+site.
+
+Best regards,
+-- 
+---------------------------------------+--------------------------------------
+I set the clouds in motion - turn up   | Frank Warmerdam, warmerdam@pobox.com
+light and sound - activate the windows | http://pobox.com/~warmerdam
+and watch the world go round - Rush    | Geospatial Programmer for Rent
+
+
+
+From eduardo@consultoria.eti.br Wed Jan 28 13:25:46 2004
+Received: from hm61.locaweb.com.br (hm61.locaweb.com.br [200.213.197.161])
+	by www.maptools.org (8.12.5/8.12.5) with SMTP id i0SIPZ4r025227
+	for <shapelib@lists.maptools.org>; Wed, 28 Jan 2004 13:25:46 -0500
+Received: (qmail 30007 invoked from network); 28 Jan 2004 17:07:40 -0000
+Received: from hm47.locaweb.com.br (200.182.98.147)
+  by hm61.locaweb.com.br with QMTP; 28 Jan 2004 17:07:40 -0000
+Received: (qmail 26458 invoked by uid 12344); 28 Jan 2004 17:08:44 -0000
+Message-ID: <20040128170844.26457.qmail@hm47.locaweb.com.br>
+Date: Wed, 28 Jan 2004 15:08:44 -0200
+To: shapelib@lists.maptools.org
+Subject: Re: [Shapelib] ShapeLib tools manual
+References:   <4017E974.6030307@pobox.com>
+In-Reply-To:  <4017E974.6030307@pobox.com>
+X-Mailer: LocaMail
+X-IPAddress: 200.231.30.115
+X-Sender: eduardo@consultoria.eti.br
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+From: shapelib-admin@lists.maptools.org
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+OK.  Thanks Frank.
+
+So, I'll start something maybe this week and as soon as I finished the minimum I'll keep you informed by ShapeLib mail list.
+
+best,
+
+Eduardo Patto Kanegae
++Homepage:http://www.consultoria.eti.br   ( BRASIL )
++Perfil:http://www.consultoria.eti.br/ptbr/epk.php
+*Fórum ptMapServer - http://www.consultoria.eti.br/mapserverptforum/ - "Discussões relacionadas ao MapServer"
+*ClickBrasil - http://www.consultoria.eti.br/clickbrasil/  - "Mapas do Brasil com dados censitários"
+***************************************
+***Fim da Mensagem / End of Message ***
+***************************************
+
+
+On Wed, 28 Jan 2004 11:55:16 -0500, shapelib-admin@lists.maptools.org escreveu:
+
+> De: shapelib-admin@lists.maptools.org
+> Data: Wed, 28 Jan 2004 11:55:16 -0500
+> Para: shapelib@lists.maptools.org
+> Assunto: Re: [Shapelib] ShapeLib tools manual
+> 
+> shapelib-admin@lists.maptools.org wrote:
+> > As far as I know the only "help" available for shapelib binary tools(such as shpdump, shpcentrid, shpinfo, dbfinfo, etc...) are the:
+> > 
+> > $ command --help
+> > 
+> > is there any more detailed information about their parameters?
+> > 
+> > 
+> > if not, I was planning to elaborate it as text files but at least some basic description of each I would need...
+> > does .c header's of each tool contain this information?
+> 
+> Eduardo,
+> 
+> The .c files contain the "usage" message but and some in-code comments on
+> how some stuff works, but generally not good documentation.  If you prepare
+> docs it would be most convient from my point of view if it was done as an
+> html file I could distributed with shapelib and have available on the web
+> site.
+> 
+> Best regards,
+> -- 
+> ---------------------------------------+--------------------------------------
+> I set the clouds in motion - turn up   | Frank Warmerdam, warmerdam@pobox.com
+> light and sound - activate the windows | http://pobox.com/~warmerdam
+> and watch the world go round - Rush    | Geospatial Programmer for Rent
+> 
+> 
+> _______________________________________________
+> Shapelib mailing list
+> Shapelib@lists.maptools.org
+> http://lists.maptools.org/mailman/listinfo/shapelib
+> 
+> 
+> 
+
+From mphantom@gmx.net Tue Mar  2 12:42:04 2004
+Received: from mail.gmx.net (pop.gmx.de [213.165.64.20])
+	by www.maptools.org (8.12.5/8.12.5) with SMTP id i22Hg2aN000744
+	for <shapelib@lists.maptools.org>; Tue, 2 Mar 2004 12:42:03 -0500
+Received: (qmail 13411 invoked by uid 65534); 2 Mar 2004 17:42:01 -0000
+Received: from ip182154.wh.uni-hannover.de (HELO phantom) (130.75.182.154)
+  by mail.gmx.net (mp007) with SMTP; 02 Mar 2004 18:42:01 +0100
+X-Authenticated: #5347413
+To: "Shapelib" <shapelib@lists.maptools.org>
+Date: Tue, 2 Mar 2004 18:47:44 +0100
+Message-ID: <BEEGKKCGIOFCPAPMDOEGOENKCAAA.mphantom@gmx.net>
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+X-Priority: 3 (Normal)
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook IMO, Build 9.0.2416 (9.0.2910.0)
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2800.1165
+Importance: Normal
+From: shapelib-admin@lists.maptools.org
+Subject: [Shapelib] DLL -> access violation
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+Hi,
+all times i want to opnen shapefile whit the SHPOpen function, i get this
+error:
+
+Exception in text.exe(SHAPELIB.DLL):0xC000005: Access Violation
+
+Dont know why! The name is right and i can open the file whit normal
+functions.
+(VC++: CFile file.
+	 file.open(...) )
+Or does this funtion only work in C? I thought i can use the DLL in VC++
+programms.
+I include the shapefil.h and under projects i told the linker were he can
+find the
+shapelib.lib. What i have t do jet?
+Thy for any reponse
+
+Michael
+
+
+From warmerdam@pobox.com Tue Mar  2 13:36:30 2004
+Received: from sabre.velocet.net (sabre.velocet.net [216.138.209.205])
+	by www.maptools.org (8.12.5/8.12.5) with ESMTP id i22IaSaN001035
+	for <shapelib@lists.maptools.org>; Tue, 2 Mar 2004 13:36:30 -0500
+Received: from pobox.com (H156.C195.tor.velocet.net [216.138.195.156])
+	by sabre.velocet.net (Postfix) with ESMTP id D7E56138321
+	for <shapelib@lists.maptools.org>; Tue,  2 Mar 2004 13:35:19 -0500 (EST)
+Message-ID: <4044D3F1.6090508@pobox.com>
+Date: Tue, 02 Mar 2004 13:35:29 -0500
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.6) Gecko/20040113
+X-Accept-Language: en-us, en
+MIME-Version: 1.0
+To: shapelib@lists.maptools.org
+Subject: Re: [Shapelib] DLL -> access violation
+References: <BEEGKKCGIOFCPAPMDOEGOENKCAAA.mphantom@gmx.net>
+In-Reply-To: <BEEGKKCGIOFCPAPMDOEGOENKCAAA.mphantom@gmx.net>
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
+From: shapelib-admin@lists.maptools.org
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+shapelib-admin@lists.maptools.org wrote:
+> Hi,
+> all times i want to opnen shapefile whit the SHPOpen function, i get this
+> error:
+> 
+> Exception in text.exe(SHAPELIB.DLL):0xC000005: Access Violation
+> 
+> Dont know why! The name is right and i can open the file whit normal
+> functions.
+> (VC++: CFile file.
+> 	 file.open(...) )
+> Or does this funtion only work in C? I thought i can use the DLL in VC++
+> programms.
+> I include the shapefil.h and under projects i told the linker were he can
+> find the
+> shapelib.lib. What i have t do jet?
+> Thy for any reponse
+
+Michael,
+
+I'm not clear on exactly how you are calling SHPOpen().  It does normally
+work from C++ code built with MS VC++.  I use that frequently.  However,
+if you have different linkage conventions between your application and the DLL,
+or if your filename string is of the wrong type or any number of other situations
+you could get a crash.  Try elaborating on the conditions.  Provide a minimal
+program that demonstrates your problem.
+
+Best regards,
+-- 
+---------------------------------------+--------------------------------------
+I set the clouds in motion - turn up   | Frank Warmerdam, warmerdam@pobox.com
+light and sound - activate the windows | http://pobox.com/~warmerdam
+and watch the world go round - Rush    | Geospatial Programmer for Rent
+
+
+From mphantom@gmx.net Tue Mar  2 15:54:19 2004
+Received: from mail.gmx.net (imap.gmx.net [213.165.64.20])
+	by www.maptools.org (8.12.5/8.12.5) with SMTP id i22KsIw3003491
+	for <shapelib@lists.maptools.org>; Tue, 2 Mar 2004 15:54:18 -0500
+Received: (qmail 32697 invoked by uid 65534); 2 Mar 2004 20:54:14 -0000
+Received: from ip182154.wh.uni-hannover.de (HELO phantom) (130.75.182.154)
+  by mail.gmx.net (mp016) with SMTP; 02 Mar 2004 21:54:14 +0100
+X-Authenticated: #5347413
+To: <shapelib@lists.maptools.org>
+Subject: AW: [Shapelib] DLL -> access violation
+Date: Tue, 2 Mar 2004 21:59:58 +0100
+Message-ID: <BEEGKKCGIOFCPAPMDOEGCENMCAAA.mphantom@gmx.net>
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Priority: 3 (Normal)
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook IMO, Build 9.0.2416 (9.0.2910.0)
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2800.1165
+Importance: Normal
+In-Reply-To: <4044D3F1.6090508@pobox.com>
+From: shapelib-admin@lists.maptools.org
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+I use VC++6.0. Make minimal project (dialog). (add the
+shapefil.h,shapelib.lib and shapelib.dll in the working directory
+Only add 3 things,
+1.Include in stdafx.h
+2.Linker: use shapelib.lib
+3.Dialogclass: SHPHandle file = SHPOpen("michael_lines.shp","rb");
+
+mfg Michael
+
+-----Ursprungliche Nachricht-----
+Von: shapelib-admin@lists.maptools.org
+[mailto:shapelib-admin@lists.maptools.org]
+Gesendet: Dienstag, 2. Marz 2004 19:35
+An: shapelib@lists.maptools.org
+Betreff: Re: [Shapelib] DLL -> access violation
+
+
+shapelib-admin@lists.maptools.org wrote:
+> Hi,
+> all times i want to opnen shapefile whit the SHPOpen function, i get this
+> error:
+>
+> Exception in text.exe(SHAPELIB.DLL):0xC000005: Access Violation
+>
+> Dont know why! The name is right and i can open the file whit normal
+> functions.
+> (VC++: CFile file.
+> 	 file.open(...) )
+> Or does this funtion only work in C? I thought i can use the DLL in VC++
+> programms.
+> I include the shapefil.h and under projects i told the linker were he can
+> find the
+> shapelib.lib. What i have t do jet?
+> Thy for any reponse
+
+Michael,
+
+I'm not clear on exactly how you are calling SHPOpen().  It does normally
+work from C++ code built with MS VC++.  I use that frequently.  However,
+if you have different linkage conventions between your application and the
+DLL,
+or if your filename string is of the wrong type or any number of other
+situations
+you could get a crash.  Try elaborating on the conditions.  Provide a
+minimal
+program that demonstrates your problem.
+
+Best regards,
+--
+---------------------------------------+------------------------------------
+--
+I set the clouds in motion - turn up   | Frank Warmerdam,
+warmerdam@pobox.com
+light and sound - activate the windows | http://pobox.com/~warmerdam
+and watch the world go round - Rush    | Geospatial Programmer for Rent
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+
+From warmerdam@pobox.com Tue Mar  2 15:59:05 2004
+Received: from sabre.velocet.net (sabre.velocet.net [216.138.209.205])
+	by www.maptools.org (8.12.5/8.12.5) with ESMTP id i22Kx4w3003529
+	for <shapelib@lists.maptools.org>; Tue, 2 Mar 2004 15:59:04 -0500
+Received: from pobox.com (H156.C195.tor.velocet.net [216.138.195.156])
+	by sabre.velocet.net (Postfix) with ESMTP id 516DD138165
+	for <shapelib@lists.maptools.org>; Tue,  2 Mar 2004 15:59:03 -0500 (EST)
+Message-ID: <4044F5A1.8020708@pobox.com>
+Date: Tue, 02 Mar 2004 15:59:13 -0500
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.6) Gecko/20040113
+X-Accept-Language: en-us, en
+MIME-Version: 1.0
+To: shapelib@lists.maptools.org
+Subject: Re: AW: [Shapelib] DLL -> access violation
+References: <BEEGKKCGIOFCPAPMDOEGCENMCAAA.mphantom@gmx.net>
+In-Reply-To: <BEEGKKCGIOFCPAPMDOEGCENMCAAA.mphantom@gmx.net>
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
+From: shapelib-admin@lists.maptools.org
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+shapelib-admin@lists.maptools.org wrote:
+> I use VC++6.0. Make minimal project (dialog). (add the
+> shapefil.h,shapelib.lib and shapelib.dll in the working directory
+> Only add 3 things,
+> 1.Include in stdafx.h
+> 2.Linker: use shapelib.lib
+> 3.Dialogclass: SHPHandle file = SHPOpen("michael_lines.shp","rb");
+
+Michael,
+
+Instead of adding shapelib.lib to your project, try just adding the
+shpopen.c and dbfopen.c source files into your project.  Also, bring the
+shapefil.h include file.  My guess would be that you are using different
+build options than were used for the shapelib.lib static library.
+
+Best regards,
+-- 
+---------------------------------------+--------------------------------------
+I set the clouds in motion - turn up   | Frank Warmerdam, warmerdam@pobox.com
+light and sound - activate the windows | http://pobox.com/~warmerdam
+and watch the world go round - Rush    | Geospatial Programmer for Rent
+
+
+From mphantom@gmx.net Tue Mar  2 16:23:18 2004
+Received: from mail.gmx.net (pop.gmx.de [213.165.64.20])
+	by www.maptools.org (8.12.5/8.12.5) with SMTP id i22LNHw3003763
+	for <shapelib@lists.maptools.org>; Tue, 2 Mar 2004 16:23:17 -0500
+Received: (qmail 20468 invoked by uid 65534); 2 Mar 2004 21:23:16 -0000
+Received: from ip182154.wh.uni-hannover.de (HELO phantom) (130.75.182.154)
+  by mail.gmx.net (mp008) with SMTP; 02 Mar 2004 22:23:16 +0100
+X-Authenticated: #5347413
+To: <shapelib@lists.maptools.org>
+Subject: AW: AW: [Shapelib] DLL -> access violation
+Date: Tue, 2 Mar 2004 22:29:00 +0100
+Message-ID: <BEEGKKCGIOFCPAPMDOEGOENMCAAA.mphantom@gmx.net>
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Priority: 3 (Normal)
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook IMO, Build 9.0.2416 (9.0.2910.0)
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2800.1165
+Importance: Normal
+In-Reply-To: <4044F5A1.8020708@pobox.com>
+From: shapelib-admin@lists.maptools.org
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+:) This i try too. But than i get other compiler errors.
+If i only include, the compiler say, he reach the EOF while searching
+directive precompiled header file (translate word by word),
+normal this mean that he want
+#include "stdafx.h" (hmm or have i disable the using of precompiled
+headers????)
+If i include his file, he say:
+Debug/test.pch' isnt a precompiled Header-File, who is create whit this
+compiler
+And if i look in MSDN, its because using c files. And i have to recompile
+(create all new), but
+this change nothing.
+
+Sorry for asking so much im a study in learning (and english too )
+
+mfg Michael
+
+-----Ursprungliche Nachricht-----
+Von: shapelib-admin@lists.maptools.org
+[mailto:shapelib-admin@lists.maptools.org]
+Gesendet: Dienstag, 2. Marz 2004 21:59
+An: shapelib@lists.maptools.org
+Betreff: Re: AW: [Shapelib] DLL -> access violation
+
+
+shapelib-admin@lists.maptools.org wrote:
+> I use VC++6.0. Make minimal project (dialog). (add the
+> shapefil.h,shapelib.lib and shapelib.dll in the working directory
+> Only add 3 things,
+> 1.Include in stdafx.h
+> 2.Linker: use shapelib.lib
+> 3.Dialogclass: SHPHandle file = SHPOpen("michael_lines.shp","rb");
+
+Michael,
+
+Instead of adding shapelib.lib to your project, try just adding the
+shpopen.c and dbfopen.c source files into your project.  Also, bring the
+shapefil.h include file.  My guess would be that you are using different
+build options than were used for the shapelib.lib static library.
+
+Best regards,
+--
+---------------------------------------+------------------------------------
+--
+I set the clouds in motion - turn up   | Frank Warmerdam,
+warmerdam@pobox.com
+light and sound - activate the windows | http://pobox.com/~warmerdam
+and watch the world go round - Rush    | Geospatial Programmer for Rent
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+
+From warmerdam@pobox.com Tue Mar  2 16:27:59 2004
+Received: from sabre.velocet.net (sabre.velocet.net [216.138.209.205])
+	by www.maptools.org (8.12.5/8.12.5) with ESMTP id i22LRxw3003802
+	for <shapelib@lists.maptools.org>; Tue, 2 Mar 2004 16:27:59 -0500
+Received: from pobox.com (H156.C195.tor.velocet.net [216.138.195.156])
+	by sabre.velocet.net (Postfix) with ESMTP id 91F3313825B
+	for <shapelib@lists.maptools.org>; Tue,  2 Mar 2004 16:27:58 -0500 (EST)
+Message-ID: <4044FC68.8070904@pobox.com>
+Date: Tue, 02 Mar 2004 16:28:08 -0500
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.6) Gecko/20040113
+X-Accept-Language: en-us, en
+MIME-Version: 1.0
+To: shapelib@lists.maptools.org
+Subject: Re: AW: AW: [Shapelib] DLL -> access violation
+References: <BEEGKKCGIOFCPAPMDOEGOENMCAAA.mphantom@gmx.net>
+In-Reply-To: <BEEGKKCGIOFCPAPMDOEGOENMCAAA.mphantom@gmx.net>
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
+From: shapelib-admin@lists.maptools.org
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+shapelib-admin@lists.maptools.org wrote:
+> :) This i try too. But than i get other compiler errors.
+> If i only include, the compiler say, he reach the EOF while searching
+> directive precompiled header file (translate word by word),
+> normal this mean that he want
+> #include "stdafx.h" (hmm or have i disable the using of precompiled
+> headers????)
+> If i include his file, he say:
+> Debug/test.pch' isnt a precompiled Header-File, who is create whit this
+> compiler
+> And if i look in MSDN, its because using c files. And i have to recompile
+> (create all new), but
+> this change nothing.
+> 
+> Sorry for asking so much im a study in learning (and english too )
+
+Michael,
+
+I have run into this before too, and had to find the way of disabling
+pre-compiled header files for the project.  While I for the most part am
+quite impressed with Visual Studio, I find this area exceedingly brain-dead.
+
+Best regards,
+-- 
+---------------------------------------+--------------------------------------
+I set the clouds in motion - turn up   | Frank Warmerdam, warmerdam@pobox.com
+light and sound - activate the windows | http://pobox.com/~warmerdam
+and watch the world go round - Rush    | Geospatial Programmer for Rent
+
+
+From mphantom@gmx.net Tue Mar  2 16:35:20 2004
+Received: from mail.gmx.net (imap.gmx.net [213.165.64.20])
+	by www.maptools.org (8.12.5/8.12.5) with SMTP id i22LZJw3003874
+	for <shapelib@lists.maptools.org>; Tue, 2 Mar 2004 16:35:19 -0500
+Received: (qmail 1815 invoked by uid 65534); 2 Mar 2004 21:35:18 -0000
+Received: from ip182154.wh.uni-hannover.de (HELO phantom) (130.75.182.154)
+  by mail.gmx.net (mp015) with SMTP; 02 Mar 2004 22:35:18 +0100
+X-Authenticated: #5347413
+To: <shapelib@lists.maptools.org>
+Subject: AW: AW: AW: [Shapelib] DLL -> access violation
+Date: Tue, 2 Mar 2004 22:41:01 +0100
+Message-ID: <BEEGKKCGIOFCPAPMDOEGGENNCAAA.mphantom@gmx.net>
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Priority: 3 (Normal)
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook IMO, Build 9.0.2416 (9.0.2910.0)
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2800.1165
+Importance: Normal
+In-Reply-To: <4044FC68.8070904@pobox.com>
+From: shapelib-admin@lists.maptools.org
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+This i dont understand. Have you use shapelib whit MFC together? If yes, can
+y send me a small example how?
+
+
+-----Ursprungliche Nachricht-----
+Von: shapelib-admin@lists.maptools.org
+[mailto:shapelib-admin@lists.maptools.org]
+Gesendet: Dienstag, 2. Marz 2004 22:28
+An: shapelib@lists.maptools.org
+Betreff: Re: AW: AW: [Shapelib] DLL -> access violation
+
+
+shapelib-admin@lists.maptools.org wrote:
+> :) This i try too. But than i get other compiler errors.
+> If i only include, the compiler say, he reach the EOF while searching
+> directive precompiled header file (translate word by word),
+> normal this mean that he want
+> #include "stdafx.h" (hmm or have i disable the using of precompiled
+> headers????)
+> If i include his file, he say:
+> Debug/test.pch' isnt a precompiled Header-File, who is create whit this
+> compiler
+> And if i look in MSDN, its because using c files. And i have to recompile
+> (create all new), but
+> this change nothing.
+>
+> Sorry for asking so much im a study in learning (and english too )
+
+Michael,
+
+I have run into this before too, and had to find the way of disabling
+pre-compiled header files for the project.  While I for the most part am
+quite impressed with Visual Studio, I find this area exceedingly brain-dead.
+
+Best regards,
+--
+---------------------------------------+------------------------------------
+--
+I set the clouds in motion - turn up   | Frank Warmerdam,
+warmerdam@pobox.com
+light and sound - activate the windows | http://pobox.com/~warmerdam
+and watch the world go round - Rush    | Geospatial Programmer for Rent
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+
+From warmerdam@pobox.com Tue Mar  2 16:50:18 2004
+Received: from sabre.velocet.net (sabre.velocet.net [216.138.209.205])
+	by www.maptools.org (8.12.5/8.12.5) with ESMTP id i22LoIw3003957
+	for <shapelib@lists.maptools.org>; Tue, 2 Mar 2004 16:50:18 -0500
+Received: from pobox.com (H156.C195.tor.velocet.net [216.138.195.156])
+	by sabre.velocet.net (Postfix) with ESMTP id C1C621383EB
+	for <shapelib@lists.maptools.org>; Tue,  2 Mar 2004 16:50:14 -0500 (EST)
+Message-ID: <404501A0.9060506@pobox.com>
+Date: Tue, 02 Mar 2004 16:50:24 -0500
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.6) Gecko/20040113
+X-Accept-Language: en-us, en
+MIME-Version: 1.0
+To: shapelib@lists.maptools.org
+Subject: Re: AW: AW: AW: [Shapelib] DLL -> access violation
+References: <BEEGKKCGIOFCPAPMDOEGGENNCAAA.mphantom@gmx.net>
+In-Reply-To: <BEEGKKCGIOFCPAPMDOEGGENNCAAA.mphantom@gmx.net>
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
+From: shapelib-admin@lists.maptools.org
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+shapelib-admin@lists.maptools.org wrote:
+> This i dont understand. Have you use shapelib whit MFC together? If yes, can
+> y send me a small example how?
+
+Michael,
+
+I have, and no I can't.  I don't keep around project files as a rule, and
+if I did they would likely have a huge bunch of complications that would make
+it more trouble than it is worth.
+
+Best regards,
+-- 
+---------------------------------------+--------------------------------------
+I set the clouds in motion - turn up   | Frank Warmerdam, warmerdam@pobox.com
+light and sound - activate the windows | http://pobox.com/~warmerdam
+and watch the world go round - Rush    | Geospatial Programmer for Rent
+
+
+From Stv@new.com.fr Tue Mar  2 16:54:56 2004
+Received: from relay-6m.club-internet.fr (relay-6m.club-internet.fr [194.158.104.45])
+	by www.maptools.org (8.12.5/8.12.5) with ESMTP id i22Lsuw3004002
+	for <shapelib@lists.maptools.org>; Tue, 2 Mar 2004 16:54:56 -0500
+Received: from pitou (f05v-12-65.d1.club-internet.fr [195.36.223.65])
+	by relay-6m.club-internet.fr (Postfix) with SMTP id 0127A2569A
+	for <shapelib@lists.maptools.org>; Tue,  2 Mar 2004 22:54:54 +0100 (CET)
+Message-ID: <004501c400a1$00124af0$41df24c3@pitou>
+To: <shapelib@lists.maptools.org>
+References: <BEEGKKCGIOFCPAPMDOEGGENNCAAA.mphantom@gmx.net> <404501A0.9060506@pobox.com>
+Subject: Re: AW: AW: AW: [Shapelib] DLL -> access violation
+Date: Tue, 2 Mar 2004 22:54:55 +0100
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+X-Priority: 3
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook Express 6.00.2800.1106
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2800.1106
+From: shapelib-admin@lists.maptools.org
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+just in case of, is your .shp in a valid format ?
+
+try it with http://www.ouhlavache.com/stv/ShpReader_beta.rar (my tool for
+ready the shp files)
+
+and if it works, i'll upload the sources and you'll can see the project
+files !
+
+Best regards, Steve.
+
+
+
+From Stv@new.com.fr Tue Mar  2 17:02:48 2004
+Received: from relay-4m.club-internet.fr (relay-4m.club-internet.fr [194.158.104.43])
+	by www.maptools.org (8.12.5/8.12.5) with ESMTP id i22M2lw3004097
+	for <shapelib@lists.maptools.org>; Tue, 2 Mar 2004 17:02:48 -0500
+Received: from pitou (f05v-12-65.d1.club-internet.fr [195.36.223.65])
+	by relay-4m.club-internet.fr (Postfix) with SMTP id 58A8C10085
+	for <shapelib@lists.maptools.org>; Tue,  2 Mar 2004 23:02:46 +0100 (CET)
+Message-ID: <004b01c400a2$1a0f9fb0$41df24c3@pitou>
+To: <shapelib@lists.maptools.org>
+References: <BEEGKKCGIOFCPAPMDOEGGENNCAAA.mphantom@gmx.net> <404501A0.9060506@pobox.com> <004501c400a1$00124af0$41df24c3@pitou>
+Subject: Re: AW: AW: AW: [Shapelib] DLL -> access violation
+Date: Tue, 2 Mar 2004 23:02:49 +0100
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+X-Priority: 3
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook Express 6.00.2800.1106
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2800.1106
+From: shapelib-admin@lists.maptools.org
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+here is the last version, sorry
+
+http://www.ouhlavache.com/stv/ShpReader_v1_1.rar
+
+Good coding, steve.
+
+
+From mphantom@gmx.net Tue Mar  2 17:05:16 2004
+Received: from mail.gmx.net (pop.gmx.net [213.165.64.20])
+	by www.maptools.org (8.12.5/8.12.5) with SMTP id i22M5Fw3004125
+	for <shapelib@lists.maptools.org>; Tue, 2 Mar 2004 17:05:16 -0500
+Received: (qmail 4495 invoked by uid 65534); 2 Mar 2004 22:05:14 -0000
+Received: from ip182154.wh.uni-hannover.de (HELO phantom) (130.75.182.154)
+  by mail.gmx.net (mp004) with SMTP; 02 Mar 2004 23:05:14 +0100
+X-Authenticated: #5347413
+To: <shapelib@lists.maptools.org>
+Subject: AW: AW: AW: AW: [Shapelib] DLL -> access violation
+Date: Tue, 2 Mar 2004 23:10:59 +0100
+Message-ID: <BEEGKKCGIOFCPAPMDOEGGENOCAAA.mphantom@gmx.net>
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 8bit
+X-Priority: 3 (Normal)
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook IMO, Build 9.0.2416 (9.0.2910.0)
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2800.1165
+Importance: Normal
+In-Reply-To: <004501c400a1$00124af0$41df24c3@pitou>
+From: shapelib-admin@lists.maptools.org
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+hmm. If i try to open i get:
+The instruction at "0x10006e76" point on 0x0000000c" The Process "read" cant
+executed on memory.
+
+Hm im very surprised. This file was making by my employer (?? who pay for
+me), and he use a tool
+from arc... i think. Dont know the corect name.
+
+Would y say me whit what you files are created?
+
+
+michael
+
+-----Ursprüngliche Nachricht-----
+Von: shapelib-admin@lists.maptools.org
+[mailto:shapelib-admin@lists.maptools.org]
+Gesendet: Dienstag, 2. März 2004 22:55
+An: shapelib@lists.maptools.org
+Betreff: Re: AW: AW: AW: [Shapelib] DLL -> access violation
+
+
+just in case of, is your .shp in a valid format ?
+
+try it with http://www.ouhlavache.com/stv/ShpReader_beta.rar (my tool for
+ready the shp files)
+
+and if it works, i'll upload the sources and you'll can see the project
+files !
+
+Best regards, Steve.
+
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+
+From Stv@new.com.fr Tue Mar  2 17:17:07 2004
+Received: from relay-2m.club-internet.fr (relay-2m.club-internet.fr [194.158.104.41])
+	by www.maptools.org (8.12.5/8.12.5) with ESMTP id i22MH7w3004236
+	for <shapelib@lists.maptools.org>; Tue, 2 Mar 2004 17:17:07 -0500
+Received: from pitou (f05v-12-65.d1.club-internet.fr [195.36.223.65])
+	by relay-2m.club-internet.fr (Postfix) with SMTP id A74881699
+	for <shapelib@lists.maptools.org>; Tue,  2 Mar 2004 23:17:06 +0100 (CET)
+Message-ID: <005f01c400a4$1ade2860$41df24c3@pitou>
+To: <shapelib@lists.maptools.org>
+References: <BEEGKKCGIOFCPAPMDOEGGENOCAAA.mphantom@gmx.net>
+Subject: Re: AW: AW: AW: [Shapelib] DLL -> access violation
+Date: Tue, 2 Mar 2004 23:17:09 +0100
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 8bit
+X-Priority: 3
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook Express 6.00.2800.1106
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2800.1106
+From: shapelib-admin@lists.maptools.org
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+can you send me your file for testing ?
+
+----- Original Message -----
+From: <shapelib-admin@lists.maptools.org>
+To: <shapelib@lists.maptools.org>
+Sent: Tuesday, March 02, 2004 11:10 PM
+Subject: AW: AW: AW: AW: [Shapelib] DLL -> access violation
+
+
+hmm. If i try to open i get:
+The instruction at "0x10006e76" point on 0x0000000c" The Process "read" cant
+executed on memory.
+
+Hm im very surprised. This file was making by my employer (?? who pay for
+me), and he use a tool
+from arc... i think. Dont know the corect name.
+
+Would y say me whit what you files are created?
+
+
+michael
+
+-----Ursprüngliche Nachricht-----
+Von: shapelib-admin@lists.maptools.org
+[mailto:shapelib-admin@lists.maptools.org]
+Gesendet: Dienstag, 2. März 2004 22:55
+An: shapelib@lists.maptools.org
+Betreff: Re: AW: AW: AW: [Shapelib] DLL -> access violation
+
+
+just in case of, is your .shp in a valid format ?
+
+try it with http://www.ouhlavache.com/stv/ShpReader_beta.rar (my tool for
+ready the shp files)
+
+and if it works, i'll upload the sources and you'll can see the project
+files !
+
+Best regards, Steve.
+
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+
+
+
+From mphantom@gmx.net Tue Mar  2 17:22:52 2004
+Received: from mail.gmx.net (pop.gmx.net [213.165.64.20])
+	by www.maptools.org (8.12.5/8.12.5) with SMTP id i22MMow3004280
+	for <shapelib@lists.maptools.org>; Tue, 2 Mar 2004 17:22:51 -0500
+Received: (qmail 5254 invoked by uid 65534); 2 Mar 2004 22:22:49 -0000
+Received: from ip182154.wh.uni-hannover.de (HELO phantom) (130.75.182.154)
+  by mail.gmx.net (mp004) with SMTP; 02 Mar 2004 23:22:49 +0100
+X-Authenticated: #5347413
+To: <shapelib@lists.maptools.org>
+Subject: AW: AW: AW: AW: [Shapelib] DLL -> access violation
+Date: Tue, 2 Mar 2004 23:28:34 +0100
+Message-ID: <BEEGKKCGIOFCPAPMDOEGAENPCAAA.mphantom@gmx.net>
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+	boundary="----=_NextPart_000_000B_01C400AE.14F226E0"
+X-Priority: 3 (Normal)
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook IMO, Build 9.0.2416 (9.0.2910.0)
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2800.1165
+Importance: Normal
+In-Reply-To: <005f01c400a4$1ade2860$41df24c3@pitou>
+From: shapelib-admin@lists.maptools.org
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_000B_01C400AE.14F226E0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 8bit
+
+This is the only one i have at home. Othr i can show tomorow.
+
+-----Ursprüngliche Nachricht-----
+Von: shapelib-admin@lists.maptools.org
+[mailto:shapelib-admin@lists.maptools.org]
+Gesendet: Dienstag, 2. März 2004 23:17
+An: shapelib@lists.maptools.org
+Betreff: Re: AW: AW: AW: [Shapelib] DLL -> access violation
+
+
+can you send me your file for testing ?
+
+----- Original Message -----
+From: <shapelib-admin@lists.maptools.org>
+To: <shapelib@lists.maptools.org>
+Sent: Tuesday, March 02, 2004 11:10 PM
+Subject: AW: AW: AW: AW: [Shapelib] DLL -> access violation
+
+
+hmm. If i try to open i get:
+The instruction at "0x10006e76" point on 0x0000000c" The Process "read" cant
+executed on memory.
+
+Hm im very surprised. This file was making by my employer (?? who pay for
+me), and he use a tool
+from arc... i think. Dont know the corect name.
+
+Would y say me whit what you files are created?
+
+
+michael
+
+-----Ursprüngliche Nachricht-----
+Von: shapelib-admin@lists.maptools.org
+[mailto:shapelib-admin@lists.maptools.org]
+Gesendet: Dienstag, 2. März 2004 22:55
+An: shapelib@lists.maptools.org
+Betreff: Re: AW: AW: AW: [Shapelib] DLL -> access violation
+
+
+just in case of, is your .shp in a valid format ?
+
+try it with http://www.ouhlavache.com/stv/ShpReader_beta.rar (my tool for
+ready the shp files)
+
+and if it works, i'll upload the sources and you'll can see the project
+files !
+
+Best regards, Steve.
+
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+------=_NextPart_000_000B_01C400AE.14F226E0
+Content-Type: application/x-zip-compressed;
+	name="michael_lines.zip"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+	filename="michael_lines.zip"
+
+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
+QPCcuBT51/N7jnt0edboKWDPdsY39wuekOW9hfFK0MdpXdDdQ+VnHw9dPBv4NmR3cNrbeMETWMj2
+UPnZnzLlGV+htwqb9C4j4/QZ6gZ7huKk+OZ0zlkoXvGHhqb/v+K+O+Cuonh7iffcF6SJhCq9mRBK
+QJFIkQshEiAUKSlAaFGECIQiAhFkAUGQLog0f4QuIFJVQoBcEAi99yKhI6AUAWnit+feZ/adec7c
+E/Sfj3/CvvvMM7Oze/bs3bM7I+MryH685W6s6fgpt11jZ+Un4tX52uO1qNvV6SseT3XYxFvma8/P
+O9relrtbq5Cf9D4S+2ku/G7H/ZMwL567SZYr54FZyOhqrKX99hD119/Us8Z+e4ieQ/Lb2tpvN1ms
+yObnRfuNnhfS0yiPdPH4CmvZMZP7WY8vHov/pP6R8Sb3HWYbr7kb66r+ynO3PNNi8zXV/qq8T26E
+3jP8chBfnUHcXV0Nnf9dbJRxI33bsbm0w5yDoTGGfcDwTb+9Jv877YWZuYTHRR028bYUL9VZG3hc
+1GET7/rKL3KHuy13U7CG6fQt+YWxcv5d8k0Y2aRnAz0ONkBbkUMmYu3ZjtVxEEeoOiWb79FuBT17
+oX5ncE+03NDVGK7HgZyZlG9z+FbXPtQZBxNVXVnGvZb2JCsLrobJJ29tsFjurzps4i3zyefnGGuS
+uLHTVn6OGUtnTSvnR8lvOt985Zsm3s2tPZxxXYdNvCbfvNzNkxxkI+g9ofuDsfj9GXZ2ZJOeMt98
+/u6MO2tt3IGOsgd6/JDq7yRdV/4Bv2taWHfk76xHo17KkieGzjHL96gcm2Q+8GH8km2NjXV/y97K
+HhYbnHgqgg0S10T2aSQ/VAHZH/l6N9H9Mjv5eojCcr+Qb/Pvvh1JtsvVKPPZD+L+Hw3ZoQrLzwn1
+f8Z2ZRujtP04wxdxVsCcrWf7GSvnBa9xZJOezZQesSE/Y5som0gP2RvC+iiPsrLgapT56lvUnty3
+HyqbSz16/uzVnkuhV85HTkH9u8CfaLmhq1Hmt8/jcTN6B+Cd0LkbyeNxM1VX/gHn7OXev8jmPMj2
+/dLYUo+TTSyXcHd8xeOE5z1rR+N7epzInZmVHBt4nBA2l1fx7d9K22+/qVgutr8Om3i31vbznRG9
+p8X2E1b2u2W/hvbDGtso+8Oaftvjys78v6aqc+zfVtmfz0Z8x+krfn4IK89Ta32/n02+epGVWFLL
+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
+UEsFBgAAAAABAAEARAAAAN61AAAAAA==
+
+------=_NextPart_000_000B_01C400AE.14F226E0--
+
+
+From Stv@new.com.fr Tue Mar  2 17:25:53 2004
+Received: from relay-1m.club-internet.fr (relay-1m.club-internet.fr [194.158.104.40])
+	by www.maptools.org (8.12.5/8.12.5) with ESMTP id i22MPqw3004321
+	for <shapelib@lists.maptools.org>; Tue, 2 Mar 2004 17:25:52 -0500
+Received: from pitou (f05v-12-65.d1.club-internet.fr [195.36.223.65])
+	by relay-1m.club-internet.fr (Postfix) with SMTP id 868FA169D
+	for <shapelib@lists.maptools.org>; Tue,  2 Mar 2004 23:25:51 +0100 (CET)
+Message-ID: <006d01c400a5$53cd16d0$41df24c3@pitou>
+To: <shapelib@lists.maptools.org>
+References: <BEEGKKCGIOFCPAPMDOEGAENPCAAA.mphantom@gmx.net>
+Subject: Re: AW: AW: AW: [Shapelib] DLL -> access violation
+Date: Tue, 2 Mar 2004 23:25:54 +0100
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+X-Priority: 3
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook Express 6.00.2800.1106
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2800.1106
+From: shapelib-admin@lists.maptools.org
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+ok, it bug but i suspect the fact that the .shx and .dbf are not in the same
+directory...
+
+i'm wrong or you already did that ?
+
+
+
+From mphantom@gmx.net Tue Mar  2 17:46:16 2004
+Received: from mail.gmx.net (pop.gmx.net [213.165.64.20])
+	by www.maptools.org (8.12.5/8.12.5) with SMTP id i22MkGw3004419
+	for <shapelib@lists.maptools.org>; Tue, 2 Mar 2004 17:46:16 -0500
+Received: (qmail 23447 invoked by uid 65534); 2 Mar 2004 22:46:15 -0000
+Received: from ip182154.wh.uni-hannover.de (HELO phantom) (130.75.182.154)
+  by mail.gmx.net (mp006) with SMTP; 02 Mar 2004 23:46:15 +0100
+X-Authenticated: #5347413
+To: <shapelib@lists.maptools.org>
+Subject: AW: AW: AW: AW: [Shapelib] DLL -> access violation
+Date: Tue, 2 Mar 2004 23:51:56 +0100
+Message-ID: <BEEGKKCGIOFCPAPMDOEGIENPCAAA.mphantom@gmx.net>
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 8bit
+X-Priority: 3 (Normal)
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook IMO, Build 9.0.2416 (9.0.2910.0)
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2800.1165
+Importance: Normal
+In-Reply-To: <006d01c400a5$53cd16d0$41df24c3@pitou>
+From: shapelib-admin@lists.maptools.org
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+hmm what so you mean. I need all three files (shp,shx,dbf) to open the shp
+file??
+at the moment i don't have all this files in the same directory.
+
+Cant test, because havent all here.
+
+Michael
+
+-----Ursprüngliche Nachricht-----
+Von: shapelib-admin@lists.maptools.org
+[mailto:shapelib-admin@lists.maptools.org]
+Gesendet: Dienstag, 2. März 2004 23:26
+An: shapelib@lists.maptools.org
+Betreff: Re: AW: AW: AW: [Shapelib] DLL -> access violation
+
+
+ok, it bug but i suspect the fact that the .shx and .dbf are not in the same
+directory...
+
+i'm wrong or you already did that ?
+
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+
+From Stv@new.com.fr Tue Mar  2 17:57:20 2004
+Received: from relay-3m.club-internet.fr (relay-3m.club-internet.fr [194.158.104.42])
+	by www.maptools.org (8.12.5/8.12.5) with ESMTP id i22MvJw3004461
+	for <shapelib@lists.maptools.org>; Tue, 2 Mar 2004 17:57:20 -0500
+Received: from pitou (f05v-12-65.d1.club-internet.fr [195.36.223.65])
+	by relay-3m.club-internet.fr (Postfix) with SMTP id 61727E0B3
+	for <shapelib@lists.maptools.org>; Tue,  2 Mar 2004 23:57:18 +0100 (CET)
+Message-ID: <007901c400a9$b86953c0$41df24c3@pitou>
+To: <shapelib@lists.maptools.org>
+References: <BEEGKKCGIOFCPAPMDOEGIENPCAAA.mphantom@gmx.net>
+Subject: Re: AW: AW: AW: [Shapelib] DLL -> access violation
+Date: Tue, 2 Mar 2004 23:57:21 +0100
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 8bit
+X-Priority: 3
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook Express 6.00.2800.1106
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2800.1106
+From: shapelib-admin@lists.maptools.org
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+If i remenber correctly the SHPOpen() func try to open the .shx coming witth
+the shp file as specified
+here : http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf
+
+as you can see, all file in the datas folder in my app have their own .sgx
+and .dbf... it seems
+that the bug is from here ;-)
+
+Steve.
+
+----- Original Message -----
+From: <shapelib-admin@lists.maptools.org>
+To: <shapelib@lists.maptools.org>
+Sent: Tuesday, March 02, 2004 11:51 PM
+Subject: AW: AW: AW: AW: [Shapelib] DLL -> access violation
+
+
+hmm what so you mean. I need all three files (shp,shx,dbf) to open the shp
+file??
+at the moment i don't have all this files in the same directory.
+
+Cant test, because havent all here.
+
+Michael
+
+-----Ursprüngliche Nachricht-----
+Von: shapelib-admin@lists.maptools.org
+[mailto:shapelib-admin@lists.maptools.org]
+Gesendet: Dienstag, 2. März 2004 23:26
+An: shapelib@lists.maptools.org
+Betreff: Re: AW: AW: AW: [Shapelib] DLL -> access violation
+
+
+ok, it bug but i suspect the fact that the .shx and .dbf are not in the same
+directory...
+
+i'm wrong or you already did that ?
+
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+
+
+
+From mphantom@gmx.net Tue Mar  2 18:10:46 2004
+Received: from mail.gmx.net (pop.gmx.net [213.165.64.20])
+	by www.maptools.org (8.12.5/8.12.5) with SMTP id i22NAkw3004533
+	for <shapelib@lists.maptools.org>; Tue, 2 Mar 2004 18:10:46 -0500
+Received: (qmail 18168 invoked by uid 65534); 2 Mar 2004 23:10:44 -0000
+Received: from ip182154.wh.uni-hannover.de (HELO phantom) (130.75.182.154)
+  by mail.gmx.net (mp021) with SMTP; 03 Mar 2004 00:10:44 +0100
+X-Authenticated: #5347413
+To: <shapelib@lists.maptools.org>
+Subject: AW: AW: AW: AW: [Shapelib] DLL -> access violation
+Date: Wed, 3 Mar 2004 00:16:29 +0100
+Message-ID: <BEEGKKCGIOFCPAPMDOEGEEOACAAA.mphantom@gmx.net>
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 8bit
+X-Priority: 3 (Normal)
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook IMO, Build 9.0.2416 (9.0.2910.0)
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2800.1165
+Importance: Normal
+In-Reply-To: <007901c400a9$b86953c0$41df24c3@pitou>
+From: shapelib-admin@lists.maptools.org
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+the bug was in my brain :((
+(but i think my chef dont know this, i have to talk whit him)
+Ok thx for help, i will test it if i have all files.
+
+PS: if the question is allowed, were are you from (because y answer to this
+late time [lokal time: 00.16 GTM+1 i think])
+
+best regards
+Michael
+
+-----Ursprüngliche Nachricht-----
+Von: shapelib-admin@lists.maptools.org
+[mailto:shapelib-admin@lists.maptools.org]
+Gesendet: Dienstag, 2. März 2004 23:57
+An: shapelib@lists.maptools.org
+Betreff: Re: AW: AW: AW: [Shapelib] DLL -> access violation
+
+
+If i remenber correctly the SHPOpen() func try to open the .shx coming witth
+the shp file as specified
+here : http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf
+
+as you can see, all file in the datas folder in my app have their own .sgx
+and .dbf... it seems
+that the bug is from here ;-)
+
+Steve.
+
+----- Original Message -----
+From: <shapelib-admin@lists.maptools.org>
+To: <shapelib@lists.maptools.org>
+Sent: Tuesday, March 02, 2004 11:51 PM
+Subject: AW: AW: AW: AW: [Shapelib] DLL -> access violation
+
+
+hmm what so you mean. I need all three files (shp,shx,dbf) to open the shp
+file??
+at the moment i don't have all this files in the same directory.
+
+Cant test, because havent all here.
+
+Michael
+
+-----Ursprüngliche Nachricht-----
+Von: shapelib-admin@lists.maptools.org
+[mailto:shapelib-admin@lists.maptools.org]
+Gesendet: Dienstag, 2. März 2004 23:26
+An: shapelib@lists.maptools.org
+Betreff: Re: AW: AW: AW: [Shapelib] DLL -> access violation
+
+
+ok, it bug but i suspect the fact that the .shx and .dbf are not in the same
+directory...
+
+i'm wrong or you already did that ?
+
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+
+From Stv@new.com.fr Tue Mar  2 18:14:20 2004
+Received: from relay-5m.club-internet.fr (relay-5m.club-internet.fr [194.158.104.44])
+	by www.maptools.org (8.12.5/8.12.5) with ESMTP id i22NEKw3004560
+	for <shapelib@lists.maptools.org>; Tue, 2 Mar 2004 18:14:20 -0500
+Received: from pitou (f05v-12-65.d1.club-internet.fr [195.36.223.65])
+	by relay-5m.club-internet.fr (Postfix) with SMTP id 316CBE042
+	for <shapelib@lists.maptools.org>; Wed,  3 Mar 2004 00:14:19 +0100 (CET)
+Message-ID: <008501c400ac$18a3a810$41df24c3@pitou>
+To: <shapelib@lists.maptools.org>
+References: <BEEGKKCGIOFCPAPMDOEGEEOACAAA.mphantom@gmx.net>
+Subject: Re: AW: AW: AW: [Shapelib] DLL -> access violation
+Date: Wed, 3 Mar 2004 00:14:21 +0100
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 8bit
+X-Priority: 3
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook Express 6.00.2800.1106
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2800.1106
+From: shapelib-admin@lists.maptools.org
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+No problems mate :)
+if you wanna know, i'm French :)
+hope you'll solve out your bug tomorow ;)
+
+Steve.
+
+----- Original Message -----
+From: <shapelib-admin@lists.maptools.org>
+To: <shapelib@lists.maptools.org>
+Sent: Wednesday, March 03, 2004 12:16 AM
+Subject: AW: AW: AW: AW: [Shapelib] DLL -> access violation
+
+
+the bug was in my brain :((
+(but i think my chef dont know this, i have to talk whit him)
+Ok thx for help, i will test it if i have all files.
+
+PS: if the question is allowed, were are you from (because y answer to this
+late time [lokal time: 00.16 GTM+1 i think])
+
+best regards
+Michael
+
+-----Ursprüngliche Nachricht-----
+Von: shapelib-admin@lists.maptools.org
+[mailto:shapelib-admin@lists.maptools.org]
+Gesendet: Dienstag, 2. März 2004 23:57
+An: shapelib@lists.maptools.org
+Betreff: Re: AW: AW: AW: [Shapelib] DLL -> access violation
+
+
+If i remenber correctly the SHPOpen() func try to open the .shx coming witth
+the shp file as specified
+here : http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf
+
+as you can see, all file in the datas folder in my app have their own .sgx
+and .dbf... it seems
+that the bug is from here ;-)
+
+Steve.
+
+----- Original Message -----
+From: <shapelib-admin@lists.maptools.org>
+To: <shapelib@lists.maptools.org>
+Sent: Tuesday, March 02, 2004 11:51 PM
+Subject: AW: AW: AW: AW: [Shapelib] DLL -> access violation
+
+
+hmm what so you mean. I need all three files (shp,shx,dbf) to open the shp
+file??
+at the moment i don't have all this files in the same directory.
+
+Cant test, because havent all here.
+
+Michael
+
+-----Ursprüngliche Nachricht-----
+Von: shapelib-admin@lists.maptools.org
+[mailto:shapelib-admin@lists.maptools.org]
+Gesendet: Dienstag, 2. März 2004 23:26
+An: shapelib@lists.maptools.org
+Betreff: Re: AW: AW: AW: [Shapelib] DLL -> access violation
+
+
+ok, it bug but i suspect the fact that the .shx and .dbf are not in the same
+directory...
+
+i'm wrong or you already did that ?
+
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+
+
+
+From mphantom@gmx.net Tue Mar  2 18:31:05 2004
+Received: from mail.gmx.net (mail.gmx.net [213.165.64.20])
+	by www.maptools.org (8.12.5/8.12.5) with SMTP id i22NV4w3004633
+	for <shapelib@lists.maptools.org>; Tue, 2 Mar 2004 18:31:04 -0500
+Received: (qmail 12807 invoked by uid 65534); 2 Mar 2004 23:31:03 -0000
+Received: from ip182154.wh.uni-hannover.de (HELO phantom) (130.75.182.154)
+  by mail.gmx.net (mp027) with SMTP; 03 Mar 2004 00:31:03 +0100
+X-Authenticated: #5347413
+To: <shapelib@lists.maptools.org>
+Subject: AW: AW: AW: AW: [Shapelib] DLL -> access violation
+Date: Wed, 3 Mar 2004 00:36:48 +0100
+Message-ID: <BEEGKKCGIOFCPAPMDOEGMEOACAAA.mphantom@gmx.net>
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 8bit
+X-Priority: 3 (Normal)
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook IMO, Build 9.0.2416 (9.0.2910.0)
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2800.1165
+Importance: Normal
+In-Reply-To: <008501c400ac$18a3a810$41df24c3@pitou>
+From: shapelib-admin@lists.maptools.org
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+hmm i think you know were im from, dont you? (germany)
+Ok thx and good night.
+
+Michael
+
+-----Ursprüngliche Nachricht-----
+Von: shapelib-admin@lists.maptools.org
+[mailto:shapelib-admin@lists.maptools.org]
+Gesendet: Mittwoch, 3. März 2004 00:14
+An: shapelib@lists.maptools.org
+Betreff: Re: AW: AW: AW: [Shapelib] DLL -> access violation
+
+
+No problems mate :)
+if you wanna know, i'm French :)
+hope you'll solve out your bug tomorow ;)
+
+Steve.
+
+----- Original Message -----
+From: <shapelib-admin@lists.maptools.org>
+To: <shapelib@lists.maptools.org>
+Sent: Wednesday, March 03, 2004 12:16 AM
+Subject: AW: AW: AW: AW: [Shapelib] DLL -> access violation
+
+
+the bug was in my brain :((
+(but i think my chef dont know this, i have to talk whit him)
+Ok thx for help, i will test it if i have all files.
+
+PS: if the question is allowed, were are you from (because y answer to this
+late time [lokal time: 00.16 GTM+1 i think])
+
+best regards
+Michael
+
+-----Ursprüngliche Nachricht-----
+Von: shapelib-admin@lists.maptools.org
+[mailto:shapelib-admin@lists.maptools.org]
+Gesendet: Dienstag, 2. März 2004 23:57
+An: shapelib@lists.maptools.org
+Betreff: Re: AW: AW: AW: [Shapelib] DLL -> access violation
+
+
+If i remenber correctly the SHPOpen() func try to open the .shx coming witth
+the shp file as specified
+here : http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf
+
+as you can see, all file in the datas folder in my app have their own .sgx
+and .dbf... it seems
+that the bug is from here ;-)
+
+Steve.
+
+----- Original Message -----
+From: <shapelib-admin@lists.maptools.org>
+To: <shapelib@lists.maptools.org>
+Sent: Tuesday, March 02, 2004 11:51 PM
+Subject: AW: AW: AW: AW: [Shapelib] DLL -> access violation
+
+
+hmm what so you mean. I need all three files (shp,shx,dbf) to open the shp
+file??
+at the moment i don't have all this files in the same directory.
+
+Cant test, because havent all here.
+
+Michael
+
+-----Ursprüngliche Nachricht-----
+Von: shapelib-admin@lists.maptools.org
+[mailto:shapelib-admin@lists.maptools.org]
+Gesendet: Dienstag, 2. März 2004 23:26
+An: shapelib@lists.maptools.org
+Betreff: Re: AW: AW: AW: [Shapelib] DLL -> access violation
+
+
+ok, it bug but i suspect the fact that the .shx and .dbf are not in the same
+directory...
+
+i'm wrong or you already did that ?
+
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+
+
+_______________________________________________
+Shapelib mailing list
+Shapelib@lists.maptools.org
+http://lists.maptools.org/mailman/listinfo/shapelib
+
+
+From Stv@new.com.fr Wed Mar  3 09:01:36 2004
+Received: from relay-3v.club-internet.fr (relay-3v.club-internet.fr [194.158.96.114])
+	by www.maptools.org (8.12.5/8.12.5) with ESMTP id i23E1Zw3008155
+	for <shapelib@lists.maptools.org>; Wed, 3 Mar 2004 09:01:36 -0500
+Received: from pitou (f04v-8-157.d1.club-internet.fr [212.194.67.157])
+	by relay-3v.club-internet.fr (Postfix) with SMTP id E03AE3CEE
+	for <shapelib@lists.maptools.org>; Wed,  3 Mar 2004 15:01:30 +0100 (CET)
+Message-ID: <005a01c40128$0a0c89d0$9d43c2d4@pitou>
+To: <shapelib@lists.maptools.org>
+References: <BEEGKKCGIOFCPAPMDOEGMEOACAAA.mphantom@gmx.net>
+Subject: Re: AW: AW: AW: [Shapelib] DLL -> access violation
+Date: Wed, 3 Mar 2004 15:01:31 +0100
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+X-Priority: 3
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook Express 6.00.2800.1106
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2800.1106
+From: shapelib-admin@lists.maptools.org
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+Hi !
+
+    So, the bug was the fact the shx and dbf  was not in the same directory
+as the shp one ?
+
+Regards, Steve.
+
+
+
+From warmerdam@pobox.com Wed Mar  3 09:11:08 2004
+Received: from sabre.velocet.net (sabre.velocet.net [216.138.209.205])
+	by www.maptools.org (8.12.5/8.12.5) with ESMTP id i23EB8w3008219
+	for <shapelib@lists.maptools.org>; Wed, 3 Mar 2004 09:11:08 -0500
+Received: from pobox.com (H156.C195.tor.velocet.net [216.138.195.156])
+	by sabre.velocet.net (Postfix) with ESMTP id B3F62138627
+	for <shapelib@lists.maptools.org>; Wed,  3 Mar 2004 09:11:07 -0500 (EST)
+Message-ID: <4045E77A.4000002@pobox.com>
+Date: Wed, 03 Mar 2004 09:11:06 -0500
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.6) Gecko/20040113
+X-Accept-Language: en-us, en
+MIME-Version: 1.0
+To: shapelib@lists.maptools.org
+Subject: Re: AW: AW: AW: [Shapelib] DLL -> access violation
+References: <BEEGKKCGIOFCPAPMDOEGMEOACAAA.mphantom@gmx.net> <005a01c40128$0a0c89d0$9d43c2d4@pitou>
+In-Reply-To: <005a01c40128$0a0c89d0$9d43c2d4@pitou>
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
+From: shapelib-admin@lists.maptools.org
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+shapelib-admin@lists.maptools.org wrote:
+> Hi !
+> 
+>     So, the bug was the fact the shx and dbf  was not in the same directory
+> as the shp one ?
+
+Folks,
+
+I'm afraid I have gotten a bit lost in the flurry of email.  It is necessary
+to have at least the .shp and .shx file in the same directory with the same
+base name and appropriate extensions in order for SHPOpen() to work.  However,
+a missing .shx file shouldn't make SHPOpen() crash, just return with NULL.
+
+Looking through the shpopen.c CVS log I see I fixed a problem with missing .shx
+files causing a crash in Dec 2001 (rev 1.35).  That must be in the current
+public release.  If you are seeing other behaviour I would suggest debugging
+it and sending in a suggested patch.
+
+Best regards,
+-- 
+---------------------------------------+--------------------------------------
+I set the clouds in motion - turn up   | Frank Warmerdam, warmerdam@pobox.com
+light and sound - activate the windows | http://pobox.com/~warmerdam
+and watch the world go round - Rush    | Geospatial Programmer for Rent
+
+
+From Stv@new.com.fr Wed Mar  3 11:24:42 2004
+Received: from relay-4v.club-internet.fr (relay-4v.club-internet.fr [194.158.96.115])
+	by www.maptools.org (8.12.5/8.12.5) with ESMTP id i23GOfw3008927
+	for <shapelib@lists.maptools.org>; Wed, 3 Mar 2004 11:24:42 -0500
+Received: from pitou (f04v-8-157.d1.club-internet.fr [212.194.67.157])
+	by relay-4v.club-internet.fr (Postfix) with SMTP id 3E4094B06
+	for <shapelib@lists.maptools.org>; Wed,  3 Mar 2004 17:24:40 +0100 (CET)
+Message-ID: <007801c4013c$09ca60a0$9d43c2d4@pitou>
+To: <shapelib@lists.maptools.org>
+References: <BEEGKKCGIOFCPAPMDOEGMEOACAAA.mphantom@gmx.net> <005a01c40128$0a0c89d0$9d43c2d4@pitou> <4045E77A.4000002@pobox.com>
+Date: Wed, 3 Mar 2004 17:24:43 +0100
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+X-Priority: 3
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook Express 6.00.2800.1106
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2800.1106
+From: shapelib-admin@lists.maptools.org
+Subject: [Shapelib] Shp and real tme display
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+Hi folks !
+
+    Is someone interested to see in real time the shp file with OpenGL ?
+    because i've made a little class for that (need to be expanded)
+    but at last it work !
+
+    Please tell me :)
+
+    Regards, Steve.
+
+
+From mphantom@gmx.net Thu Mar  4 07:02:50 2004
+Received: from mail.gmx.net (imap.gmx.net [213.165.64.20])
+	by www.maptools.org (8.12.5/8.12.5) with SMTP id i24C2ow3013719
+	for <shapelib@lists.maptools.org>; Thu, 4 Mar 2004 07:02:50 -0500
+Received: (qmail 26649 invoked by uid 0); 4 Mar 2004 12:02:47 -0000
+Received: from 130.75.85.192 by www59.gmx.net with HTTP;
+	Thu, 4 Mar 2004 13:02:47 +0100 (MET)
+Date: Thu, 4 Mar 2004 13:02:47 +0100 (MET)
+To: shapelib@lists.maptools.org
+MIME-Version: 1.0
+X-Priority: 3 (Normal)
+X-Authenticated: #5347413
+Message-ID: <15226.1078401767@www59.gmx.net>
+X-Mailer: WWW-Mail 1.6 (Global Message Exchange)
+X-Flags: 0001
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8bit
+From: shapelib-admin@lists.maptools.org
+Subject: [Shapelib] SHPObject
+Sender: shapelib-admin@lists.maptools.org
+Errors-To: shapelib-admin@lists.maptools.org
+X-BeenThere: shapelib@lists.maptools.org
+X-Mailman-Version: 2.0.13
+Precedence: bulk
+Reply-To: shapelib@lists.maptools.org
+X-Reply-To: shapelib@lists.maptools.org
+List-Unsubscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=unsubscribe>
+List-Id: Shapelib Development <shapelib.lists.maptools.org>
+List-Post: <mailto:shapelib@lists.maptools.org>
+List-Help: <mailto:shapelib-request@lists.maptools.org?subject=help>
+List-Subscribe: <http://lists.maptools.org/mailman/listinfo/shapelib>,
+	<mailto:shapelib-request@lists.maptools.org?subject=subscribe>
+List-Archive: <http://lists.maptools.org/pipermail/shapelib/>
+
+Hi,
+i have a question to the SHPObject class.
+If i have a ployline whit 3 points (also two lines), what are the values of
+nParts and nVertics?
+Because im confused if the nVertics are whit or whitout the startvertex, who
+is saved separate in panPartStart.
+
+Michael
+
+-- 
++++ NEU bei GMX und erstmalig in Deutschland: TÜV-geprüfter Virenschutz +++
+100% Virenerkennung nach Wildlist. Infos: http://www.gmx.net/virenschutz
+

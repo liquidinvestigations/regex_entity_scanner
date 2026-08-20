@@ -1,0 +1,163 @@
+From b12mihai at gmail.com  Thu Mar  1 16:35:38 2018
+From: b12mihai at gmail.com (Mihai Barbulescu)
+Date: Thu, 1 Mar 2018 16:35:38 +0200
+Subject: [so] Publicare Tema 1 SO - Multi-platform development
+Message-ID: <CABO60nOZqEG_BFm2TxDZQ9bzXJpC72Udvei=F2VMyHeqR1wJ8Q@mail.gmail.com>
+
+Salut,
+
+Am publicat tema de casă nr. 1[1].
+
+Deadline-ul pentru trimiterea arhivei este 14 Martie 2018, ora 23:55; după
+depășirea deadline-ului, fiecare zi de întârziere va duce la o
+depunctare de 0.5p din 10. După 21 martie 2018 (ora 23:55) tema nu va
+mai putea fi trimisă.
+
+Pentru dezvoltarea temei e indicat să folosiți mașinile virtuale de
+aici [2].
+
+Vor fi aceleași ca pe vmchecker și sunt cele folosite și în cadrul
+laboratorului. De asemenea, este recomandat
+să urmăriți indicațiile de aici[3] și aici[4].
+
+Vă reamintim că pentru upload este folosită interfața vmchecker[5].
+
+Toate testele sunt publice și pot fi găsite în pagina temei[1] (respectiv pe
+github[7]).
+
+Orice modificare, problemă de care aflăm vă vom notifica pe lista de discuții.
+
+Orice neclaritate sau problemă pe care o aveti semnalați-o cu
+încredere pe lista de discuții. Dacă considerați că testele au erori
+ne puteți trimite la review un pull request pe github [6]. Furnizați
+cât mai clar detaliile motivului schimbării în commit message. Dacă
+aveți nevoie de ajutor cu pull-request trimiteți întrebări pe lista de
+discuții.
+
+[1] http://ocw.cs.pub.ro/courses/so/teme/tema-1
+[2] https://ocw.cs.pub.ro/courses/so/teme/tema-1#dezvoltarea_temei
+[3] http://ocw.cs.pub.ro/courses/so/teme/general
+[4] http://ocw.cs.pub.ro/courses/so/laboratoare/resurse/c_tips
+[5] https://elf.cs.pub.ro/vmchecker/ui/#SO
+[6] https://github.com/systems-cs-pub-ro/so-assignments/tree/master/1-multi
+[7] https://github.com/systems-cs-pub-ro/so-assignments/tree/master/1-multi/checker
+
+-- 
+Cu stimă,
+Mihai Bărbulescu
+
+From razvan.deaconescu at cs.pub.ro  Thu Mar  1 17:24:44 2018
+From: razvan.deaconescu at cs.pub.ro (Razvan Deaconescu)
+Date: Thu, 01 Mar 2018 17:24:44 +0200
+Subject: [so] Eveniment Stagii pe Bune: vineri, 2 martie 2018, 12:30,
+	biblioteca UPB etaj 3
+Message-ID: <87d10n7r9f.fsf@einherjar.cs.pub.ro>
+
+Salutare.
+
+Vineri, 2 martie 2018, începând cu ora 12.30 vă așteptăm în biblioteca
+UPB la etajul 3 la cel mai important eveniment dedicat exclusiv
+stagiilor de practică. 20 de companii printre care Bitdefender, Adobe,
+Amazon, Fitbit, Orange, Ubisoft vin să prezinte oferta de stagii de
+vară.
+
+Vă așteptăm cu ceai cald și pateuri și la final stăm la discuții la o
+pizza.
+
+În condițiile în care sălile au un număr limitat de locuri vă rugăm să
+vă înregistrați în prealabil[1]. Mai multe detalii despre eveniment
+puteți găsi pe pagina de Facebook[2] iar la stagii puteți aplica
+oricând pe site[3].
+
+[1] https://www.eventbrite.com/e/prezentari-stagii-pe-bune-2018-tickets-42596476207
+[2] https://www.facebook.com/events/170054326944543/
+[3] https://stagiipebune.ro/
+
+Vlad Posea & Echipa Stagii pe Bune
+
+From razvan.deaconescu at cs.pub.ro  Sat Mar  3 12:45:03 2018
+From: razvan.deaconescu at cs.pub.ro (Razvan Deaconescu)
+Date: Sat, 03 Mar 2018 12:45:03 +0200
+Subject: [so] Indisponibilitate elf.cs.pub.ro: vineri seara-luni seara,
+	2-5 martie 2018
+Message-ID: <m2y3j9saj4.fsf@cs.pub.ro>
+
+Salutare.
+
+Din cauza unor încărcări foarte mari al domeniului elf.cs.pub.ro vom
+face o migrare a acestuia de pe serverul curent pe un alt
+server. Serverul va fi indisponibil de vineri seară, 2 martie 2018 până
+luni seară, 5 martie 2018.
+
+Ne cerem scuze de inconveniențe, e cea mai potrivită perioadă (week end
+și începutul semestrului). În această perioadă serverul va fi
+indisponibil, însemnând site-urile elf.cs.pub.ro și vmchecker.cs.pub.ro.
+
+Răzvan
+
+From alexandru.cmilitaru at gmail.com  Sun Mar  4 18:55:18 2018
+From: alexandru.cmilitaru at gmail.com (Alexandru Militaru)
+Date: Sun, 4 Mar 2018 18:55:18 +0200
+Subject: [so] [Tema1][Checker] Probleme new line
+Message-ID: <CAHdP4k+VTd4qshWj=9EfPfPETuB5hGkRy=5y=fxdh2KmjA1GQg@mail.gmail.com>
+
+Salut,
+
+Deși după rulare manuală și diff pe fișiere totul este în regulă,
+checker-ul nu vrea sub nicio formă să îmi puncteze unele teste. Indiferent
+dacă pun newline sau nu, primesc, după cum se poate vedea și în poză,
+eroarea ”No new line at end of file”. Este vorba despre testele 2, 10, 13
+și 15. De asemenea, câteva teste pică din cauza unor linii goale în plus,
+cu toate că în enunțul temei se specifică că aceste linii vor fi trecute cu
+vederea (diff -B).
+
+Care ar putea fi cauza?
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://cursuri.cs.pub.ro/pipermail/so/attachments/20180304/4aed7939/attachment-0001.html>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: Screen Shot 2018-03-04 at 18.07.44.png
+Type: image/png
+Size: 25554 bytes
+Desc: not available
+URL: <http://cursuri.cs.pub.ro/pipermail/so/attachments/20180304/4aed7939/attachment-0001.png>
+
+From dariusmihaim at gmail.com  Sun Mar  4 19:02:52 2018
+From: dariusmihaim at gmail.com (Darius Mihai)
+Date: Sun, 4 Mar 2018 19:02:52 +0200
+Subject: [so] [Tema1][Checker] Probleme new line
+In-Reply-To: <CAHdP4k+VTd4qshWj=9EfPfPETuB5hGkRy=5y=fxdh2KmjA1GQg@mail.gmail.com>
+References: <CAHdP4k+VTd4qshWj=9EfPfPETuB5hGkRy=5y=fxdh2KmjA1GQg@mail.gmail.com>
+Message-ID: <CAPj=67upovg8FERwEckejzwJ1x50O2xSKSpq6wYHO04rYLp_oQ@mail.gmail.com>
+
+2018-03-04 18:55 GMT+02:00 Alexandru Militaru via so <so at cursuri.cs.pub.ro>:
+> Salut,
+>
+> Deși după rulare manuală și diff pe fișiere totul este în regulă, checker-ul
+> nu vrea sub nicio formă să îmi puncteze unele teste. Indiferent dacă pun
+> newline sau nu, primesc, după cum se poate vedea și în poză, eroarea ”No new
+> line at end of file”. Este vorba despre testele 2, 10, 13 și 15. De
+> asemenea, câteva teste pică din cauza unor linii goale în plus, cu toate că
+> în enunțul temei se specifică că aceste linii vor fi trecute cu vederea
+> (diff -B).
+>
+> Care ar putea fi cauza?
+>
+>
+> _______________________________________________
+> http://ocw.cs.pub.ro/courses/so/info/lista-discutii
+
+Salut,
+
+'No newline at end of file' nu este o eroare, este doar un mesaj
+afișat de diff ca să scoată în evidență o diferență pe care altfel nu
+ar putea să o arate (vezi și [1]). Ai încercat să rulezi manual diff
+pe fișiere și asta a fost singura diferență? (în output-ul tău pare că
+există niște linii în referință care nu există în fișierul cu care
+compară)
+
+[1]: https://stackoverflow.com/questions/5813311/no-newline-at-end-of-file
+
+Darius
+

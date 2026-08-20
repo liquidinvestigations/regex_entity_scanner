@@ -25,6 +25,8 @@ scorer.
 | `isemail.jsonl` | The extracted is_email cases, checked in. |
 | `extract_eth_utils.py` | Turns eth-utils' address tables and ERC-55's own vectors into Ethereum address cases. |
 | `eth-utils.jsonl` | The extracted eth-utils and ERC-55 cases, checked in. |
+| `extract_hoover_mail.py` | Turns the hoover mail slice into message-id, date, address and Received cases, with the header field itself as the fragment. |
+| `hoover-mail.jsonl` | The extracted hoover mail cases, checked in. |
 | `extract_pyais.py` | Turns pyais' decoded AIS expectations into MMSI cases. |
 | `pyais.jsonl` | The extracted pyais cases, checked in. |
 | `extract_advisory_database.py` | Turns one month of GitHub advisories into CVE cases: the identifier bare, and the same identifier inside a reference URL. |
@@ -84,7 +86,12 @@ uniformly and recorded in the file rather than reinvented by the runner:
   first would delete the finding.
 
 An origin whose own material is already free text keeps that text instead of the carrier, and takes
-the offsets upstream reports. Nothing is gained by re-housing a sentence somebody wrote to exercise
+the offsets upstream reports. The mail origin is the far end of that: its fragment is the header
+field itself, folding line breaks and all, and its labels come from RFC 5322 rather than from an
+upstream assertion — a `Message-ID:` field holds a message id, an address field holds addresses,
+and the fields are read with the standard library's mail and address parsers rather than with a
+pattern of ours, because a pattern of ours labelling the cases it is then scored against measures
+nothing. Nothing is gained by re-housing a sentence somebody wrote to exercise
 a recogniser, and the surrounding words are half of what the case is testing.
 
 A case whose token spans the whole fragment is an upstream input that one recogniser found nothing
@@ -116,6 +123,7 @@ tracked tree is a thumb on the scale. The run prints the exclusion count beside 
 ./shell.sh python3 tests/conformance/extract_crossref.py > tests/conformance/crossref.jsonl
 ./shell.sh python3 tests/conformance/extract_advisory_database.py > tests/conformance/advisory-database.jsonl
 ./shell.sh python3 tests/conformance/extract_pyais.py > tests/conformance/pyais.jsonl
+./shell.sh python3 tests/conformance/extract_hoover_mail.py > tests/conformance/hoover-mail.jsonl
 ```
 
 Each script reads its own directory under `vendored/reference/`, needs no network, and writes the

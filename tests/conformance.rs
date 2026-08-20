@@ -58,7 +58,7 @@ const DEFAULT_MAX_PER_SCHEME: usize = 500;
 /// An origin joining the corpus changes the denominator rather than the rules, so the aggregate
 /// floor is re-derived from the run at the commit that adds one. It is never lowered to let an
 /// unchanged corpus pass.
-const MIN_RECALL_PERCENT: f64 = 97.7;
+const MIN_RECALL_PERCENT: f64 = 97.5;
 const MIN_PRECISION_PERCENT: f64 = 99.5;
 
 /// The same ratchet per origin: minimum recall, then minimum precision. The aggregate floor alone
@@ -75,6 +75,7 @@ const ORIGIN_FLOORS: &[(&str, f64, f64)] = &[
     ("dateparser", 99.0, 99.0),
     ("eth-utils", 99.5, 99.5),
     ("grok", 99.0, 99.0),
+    ("hoover-mail", 95.0, 99.5),
     ("isemail", 78.0, 99.5),
     ("libphonenumber", 98.5, 99.5),
     ("open-location-code", 99.5, 99.5),
