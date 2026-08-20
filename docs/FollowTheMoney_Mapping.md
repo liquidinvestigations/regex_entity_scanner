@@ -58,6 +58,7 @@ document's text, so a mention this scanner adds is named the same way.
 | `bank_account` | `bank.iban` | `BankAccount.iban` | Defined upstream. `Analyzable.ibanMentioned` is the same value seen from the document's side, and a consumer building an account entity wants the account property. |
 | `bank_account` | `bank.bic` | `BankAccount.bic` | Defined upstream. |
 | `company_id` | `company.lei` | `LegalEntity.leiCode` | Defined upstream on the abstract parent, inherited by `Company` and `Organization`. |
+| `company_id` | `company.vat_eu` | `LegalEntity.vatCode` | Defined upstream on the same abstract parent, so a company, an organisation or a public body all carry it on one property. |
 | `security` | `security.isin` | `Security.isin` | Defined upstream. |
 | `security` | `security.cusip` | `Security.res:cusip` | `Security` has `isin`, `ticker` and `figiCode` but no CUSIP property, and a North American security is routinely identified by nothing else. |
 | `security` | `security.sedol` | `Security.res:sedol` | The same gap for the London Stock Exchange's own code. |

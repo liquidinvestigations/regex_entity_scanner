@@ -507,6 +507,76 @@ static RULE_DOCS: &[RuleDoc] = &[
         ],
     },
     RuleDoc {
+        rule_id: "company.vat_eu",
+        entity_type: EntityType::CompanyId,
+        title: "EU VAT identification number",
+        matches: "The tax number a business quotes for trade inside the European Union: a \
+                  two-letter member-state prefix followed by that state's own registration \
+                  number. Every member state is covered, each with the check-digit algorithm its \
+                  own tax administration publishes. Greece is the exception to the country code — \
+                  it writes EL where ISO 3166-1 writes GR.",
+        standards: &[
+            "Council Directive 2006/112/EC — the common system of value added tax",
+            "ISO 3166-1 alpha-2 — the prefix, with EL for Greece",
+            "ISO 7064 Mod 11, 10 — used by Germany and Croatia",
+            "ISO 7064 Mod 97, 10 — used by the current Dutch form",
+        ],
+        checks: &[
+            "the prefix is one of the twenty-seven member states, and the body's length and \
+             alphabet are the ones that state issues",
+            "the member state's own check digit, ported from python-stdnum: Luhn for Austria, \
+             Italy and Sweden, ISO 7064 for Germany, Croatia and the Netherlands, and a weighted \
+             sum for the rest",
+            "where a state admits a personal number as a VAT number — Bulgaria, Czechia, Latvia, \
+             Romania and Slovakia — the date of birth it encodes has to be a day that exists",
+            "component fields the state constrains: Italy's province code, Romania's county code, \
+             Lithuania's fixed digit before the check digit, Sweden's trailing 01",
+            "nothing alphanumeric runs into the match from either side, which is what keeps a \
+             prefix of a longer digit run out of the facet",
+        ],
+        not_checked: &[
+            "whether the number is registered, or registered for intra-community trade — that is \
+             a VIES query, and this service makes no network calls",
+            "whether the business still exists: a deregistered number keeps its arithmetic",
+            "numbers written with the separators an invoice often uses — only the compact form, \
+             prefix immediately followed by the body, is matched",
+            "bare national company registration numbers without their VAT prefix — a nine-digit \
+             run with a check digit is still a nine-digit run",
+            "Romanian numbers shorter than four digits, which the register does allocate: RO and \
+             two digits is a token ordinary text produces, and one check digit does not carry it",
+        ],
+        authorities: &[
+            Authority {
+                name: "European Commission, Directorate-General for Taxation and Customs Union",
+                role: "operates VIES, which answers whether a number is registered",
+                url: "https://ec.europa.eu/taxation_customs/vies/",
+            },
+            Authority {
+                name: "The national tax administration of the issuing member state",
+                role: "allocates the number and defines its check digit",
+                url: "https://taxation-customs.ec.europa.eu/national-tax-websites_en",
+            },
+        ],
+        ftm: FtmMapping {
+            schema: "LegalEntity",
+            property: "vatCode",
+            note: "FollowTheMoney defines vatCode on the abstract LegalEntity, so a company, an \
+                   organisation or a public body all carry it on the same property.",
+        },
+        references: &[
+            Reference {
+                title: "VIES VAT number validation",
+                url: "https://ec.europa.eu/taxation_customs/vies/",
+                note: "the Commission's service, which confirms registration rather than form",
+            },
+            Reference {
+                title: "python-stdnum",
+                url: "https://arthurdejong.org/python-stdnum/",
+                note: "the reference implementation the member-state arithmetic is ported from",
+            },
+        ],
+    },
+    RuleDoc {
         rule_id: "security.isin",
         entity_type: EntityType::Security,
         title: "International Securities Identification Number",

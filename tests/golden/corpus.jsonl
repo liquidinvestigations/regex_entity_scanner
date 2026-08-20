@@ -125,3 +125,15 @@
 {"name": "three capitals that are not a currency", "text": "The ISO 9001 audit is booked for spring.", "expect": []}
 {"name": "currency code that is an english word", "text": "TOP 40 singles of the year were remastered.", "expect": []}
 {"name": "part number beside a currency code", "text": "Part number EUR 1200X is out of stock.", "expect": []}
+{"name": "austrian vat number", "text": "supplier ATU13585627 on file", "expect": [{"type": "company_id", "text": "ATU13585627", "value": "ATU13585627"}]}
+{"name": "dutch vat number", "text": "factuur NL004495445B01 voldaan", "expect": [{"type": "company_id", "text": "NL004495445B01", "value": "NL004495445B01"}]}
+{"name": "italian vat number", "text": "partita IVA IT00743110157 iscritta", "expect": [{"type": "company_id", "text": "IT00743110157", "value": "IT00743110157"}]}
+{"name": "greek vat number under the el prefix", "text": "counterparty EL094259216 in Athens", "expect": [{"type": "company_id", "text": "EL094259216", "value": "EL094259216"}]}
+{"name": "french vat number", "text": "vendor FR23334175221 registered", "expect": [{"type": "company_id", "text": "FR23334175221", "value": "FR23334175221"}]}
+{"name": "german vat number with a bad check digit", "text": "invoice DE136695978 was rejected at entry", "expect": []}
+{"name": "polish vat number with a bad check digit", "text": "reference PL8567346216 failed validation", "expect": []}
+{"name": "luxembourg vat number with bad check digits", "text": "order LU15027443 cancelled", "expect": []}
+{"name": "czech vat number with a bad check digit", "text": "CZ25123890 could not be verified", "expect": []}
+{"name": "greek vat number written with the iso country code", "text": "GR094259216 is not how a Greek VAT number is written", "expect": []}
+{"name": "capitalised words opening with member state prefixes", "text": "ATTENTION DEADLINE ROUTINE PLATFORM ITEMISED", "expect": []}
+{"name": "short romanian tax number shape in prose", "text": "detour via route RO51 until Friday", "expect": []}
