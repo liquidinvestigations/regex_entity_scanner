@@ -101,3 +101,11 @@
 {"name": "bitcoin address with a broken checksum", "text": "send to 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNb within 48 hours", "expect": []}
 {"name": "checksummed ethereum address", "text": "wallet 0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed drained", "expect": [{"type": "crypto_wallet", "text": "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed", "value": "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"}]}
 {"name": "ethereum address with the wrong capitalisation", "text": "wallet 0x5aAeb6053f3E94C9b9A09f33669435E7Ef1BeAed drained", "expect": []}
+{"name": "codice fiscale in a contract", "text": "taxpayer RCCMNL83S18D969H filed late", "expect": [{"type": "national_id", "text": "RCCMNL83S18D969H", "value": "RCCMNL83S18D969H"}]}
+{"name": "codice fiscale with a broken check character", "text": "taxpayer RCCMNL83S18D969A filed late", "expect": []}
+{"name": "spanish nie on a register", "text": "foreign national X2482300W on the register", "expect": [{"type": "national_id", "text": "X2482300W", "value": "X2482300W"}]}
+{"name": "spanish number with a broken check letter", "text": "resident 54362315Z on the register", "expect": []}
+{"name": "curp in a filing", "text": "registered as BOXW310820HNERXN09", "expect": [{"type": "national_id", "text": "BOXW310820HNERXN09", "value": "BOXW310820HNERXN09"}]}
+{"name": "curp with a broken check digit", "text": "registered as BOXW310820HNERXN08", "expect": []}
+{"name": "pan beside its label", "text": "PAN ACUPA7085R on the return", "expect": [{"type": "national_id", "text": "ACUPA7085R", "value": "ACUPA7085R"}]}
+{"name": "pan shaped code with no label", "text": "code ACUPA7085R in the export", "expect": []}

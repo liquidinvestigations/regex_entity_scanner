@@ -1260,4 +1260,147 @@ static RULE_DOCS: &[RuleDoc] = &[
             note: "the segwit address format and its checksum",
         }],
     },
+    RuleDoc {
+        rule_id: "natid.it_codice_fiscale",
+        entity_type: EntityType::NationalId,
+        title: "Codice fiscale (Italy)",
+        matches: "The sixteen-character Italian tax code issued to individuals. Its fixed pattern \
+                  of letter and digit positions is what makes it recognisable in running text \
+                  without a label beside it.",
+        standards: &["Codice fiscale, as defined by the Agenzia delle Entrate"],
+        checks: &[
+            "the CIN check character, a two-table weighted sum modulo twenty-six",
+            "the fixed letter and digit pattern, including the omocodia substitutions that put \
+             letters into digit positions when two people would otherwise collide",
+            "nothing alphanumeric touches the match on either side",
+        ],
+        not_checked: &[
+            "the date of birth and the sex the identifier encodes: the validator does not read those positions, the value does not carry them, and this service derives no personal attribute from an identifier",
+            "the place-of-birth code, which resolves through a register this service does not carry",
+            "whether the code was issued, or that it belongs to the person the text names",
+        ],
+        authorities: &[Authority {
+            name: "Agenzia delle Entrate",
+            role: "issues codici fiscali and operates the tax register",
+            url: "https://www.agenziaentrate.gov.it/",
+        }],
+        ftm: FtmMapping {
+            schema: "LegalEntity",
+            property: "idNumber",
+            note: "FollowTheMoney's LegalEntity schema defines idNumber for a government-issued identifier; which scheme it is comes from the value's parts rather than from a new property.",
+        },
+        references: &[Reference {
+            title: "Agenzia delle Entrate",
+            url: "https://www.agenziaentrate.gov.it/",
+            note: "the issuing authority",
+        }],
+    },
+    RuleDoc {
+        rule_id: "natid.es_nif_nie",
+        entity_type: EntityType::NationalId,
+        title: "NIF and NIE (Spain)",
+        matches: "The Spanish tax identity number: eight digits and a check letter for a resident, \
+                  or a leading X, Y or Z for a foreign national and K, L or M for the residual \
+                  categories.",
+        standards: &["NIF and NIE, as administered by the Agencia Tributaria"],
+        checks: &[
+            "the check letter, selected from a twenty-three letter alphabet by the number modulo \
+             twenty-three, with X, Y and Z standing for a leading 0, 1 and 2",
+            "the check alphabet itself, which omits the letters that would be confused with \
+             digits and is written into the pattern",
+            "nothing alphanumeric touches the match on either side",
+        ],
+        not_checked: &[
+            "the CIF form issued to companies, which shares the length and uses a different check",
+            "whether the number was issued, or to whom",
+        ],
+        authorities: &[Authority {
+            name: "Agencia Estatal de Administración Tributaria",
+            role: "administers the NIF and the NIE",
+            url: "https://sede.agenciatributaria.gob.es/",
+        }],
+        ftm: FtmMapping {
+            schema: "LegalEntity",
+            property: "idNumber",
+            note: "FollowTheMoney's LegalEntity schema defines idNumber for a government-issued identifier; which scheme it is comes from the value's parts rather than from a new property.",
+        },
+        references: &[Reference {
+            title: "Agencia Tributaria",
+            url: "https://sede.agenciatributaria.gob.es/",
+            note: "the issuing authority",
+        }],
+    },
+    RuleDoc {
+        rule_id: "natid.mx_curp",
+        entity_type: EntityType::NationalId,
+        title: "CURP (Mexico)",
+        matches: "The eighteen-character Clave Única de Registro de Población, issued to citizens \
+                  and residents of Mexico. The fixed letter and digit pattern plus the state code \
+                  make it self-identifying.",
+        standards: &["CURP, as administered by RENAPO"],
+        checks: &[
+            "the check digit, each character's value in the registry alphabet weighted by its \
+             distance from the end",
+            "the two-character state code is one the registry uses, including NE for a birth \
+             registered abroad",
+            "the fixed pattern of four letters, six digits, six letters and two check positions",
+            "nothing alphanumeric touches the match on either side",
+        ],
+        not_checked: &[
+            "the date of birth and the sex the identifier encodes: the validator does not read those positions, the value does not carry them, and this service derives no personal attribute from an identifier",
+            "the name positions, and the blocked-word list the registry applies to them",
+            "whether the code was issued, or to whom",
+        ],
+        authorities: &[Authority {
+            name: "Registro Nacional de Población",
+            role: "assigns the CURP and operates the population register",
+            url: "https://www.gob.mx/curp/",
+        }],
+        ftm: FtmMapping {
+            schema: "LegalEntity",
+            property: "idNumber",
+            note: "FollowTheMoney's LegalEntity schema defines idNumber for a government-issued identifier; which scheme it is comes from the value's parts rather than from a new property.",
+        },
+        references: &[Reference {
+            title: "Consulta tu CURP",
+            url: "https://www.gob.mx/curp/",
+            note: "the registry's own lookup",
+        }],
+    },
+    RuleDoc {
+        rule_id: "natid.in_pan",
+        entity_type: EntityType::NationalId,
+        title: "PAN (India)",
+        matches: "The ten-character Permanent Account Number issued for Indian income tax, held by \
+                  individuals and by companies alike. Its fourth character says which.",
+        standards: &["Permanent Account Number, as issued by the Income Tax Department of India"],
+        checks: &[
+            "the fourth character is one of the holder-type letters the department assigns",
+            "the four-digit serial is not all zeroes, which the department does not issue",
+            "one of the words PAN, income tax, Aadhaar, ITR or assessee appears within 48 bytes \
+             either side",
+            "nothing alphanumeric touches the match on either side",
+        ],
+        not_checked: &[
+            "the check character, whose algorithm the department has never published — hence the \
+             no-checksum flag and the lower confidence",
+            "the fifth character, which is the first letter of a surname or of an entity name",
+            "whether the number was issued, or to whom",
+        ],
+        authorities: &[Authority {
+            name: "Income Tax Department, Government of India",
+            role: "issues Permanent Account Numbers",
+            url: "https://incometaxindia.gov.in/",
+        }],
+        ftm: FtmMapping {
+            schema: "LegalEntity",
+            property: "idNumber",
+            note: "FollowTheMoney's LegalEntity schema defines idNumber for a government-issued identifier; which scheme it is comes from the value's parts rather than from a new property.",
+        },
+        references: &[Reference {
+            title: "Permanent Account Number",
+            url: "https://incometaxindia.gov.in/tutorials/1.permanent%20account%20number%20(pan).pdf",
+            note: "the department's own description of the format",
+        }],
+    },
 ];

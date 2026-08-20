@@ -19,6 +19,7 @@ pattern, a validator and a fixture — not a new pipeline.
 | `extras.rs` | `vulnerability.cve`, `publication.doi`, `publication.orcid`, `message.rfc5322` |
 | `coordinates.rs` | `coord.decimal`, `coord.dms`, `coord.plus_code` |
 | `crypto.rs` | `crypto.ethereum`, `crypto.bitcoin` |
+| `national_id.rs` | `natid.it_codice_fiscale`, `natid.es_nif_nie`, `natid.mx_curp`, `natid.in_pan` |
 
 ## A date rule ships only when the match fixes the whole day
 
@@ -31,6 +32,21 @@ range query then cannot use. Bare `YYYYMMDD` is not matched either: it does fix 
 eight adjacent digits with a valid calendar reading is the noisiest date shape there is, and in an
 identifier-heavy corpus most of them are not dates. It is the same policy that keeps `2021-W09` out
 of `date.iso_week`, which names a week rather than a day.
+
+## National identity numbers are detected, never decoded
+
+Standing policy for the `national_id` type, and it has two halves.
+
+**Scope.** A scheme ships only when its surface form identifies itself — a fixed letter-and-digit
+pattern, a restricted check alphabet, or a holder-type position. A bare eleven-digit run with a
+check digit is still a bare eleven-digit run, and a facet built out of those is a facet of invoice
+numbers.
+
+**Depth.** Several of these identifiers encode their holder's date of birth and sex in fixed
+positions; the codice fiscale and the CURP both do. No validator reads those positions, no value
+carries them, and each catalogue entry says so. Detecting that a document mentions an identity
+number is a different act from deriving personal attributes out of it, and this service does only
+the first.
 
 ## The rule-set version
 

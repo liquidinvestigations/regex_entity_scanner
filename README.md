@@ -168,6 +168,10 @@ Compiled today:
 | `vulnerability` | `vulnerability.cve` | The literal `CVE-` prefix and a year inside the scheme's own window. |
 | `publication` | `publication.doi` | The `10.` directory code, a registrant code and a non-empty suffix; sentence punctuation is trimmed off the span. |
 | `publication` | `publication.orcid` | The ISO 7064 mod 11-2 check character, with a final `X` standing for ten. |
+| `national_id` | `natid.it_codice_fiscale` | The CIN check character over the sixteen positions, and the fixed letter/digit pattern including the omocodia substitutions. |
+| `national_id` | `natid.es_nif_nie` | The modulo-23 check letter, with `X`, `Y` and `Z` standing for a leading 0, 1 and 2 and `K`, `L`, `M` carrying the older algorithm. |
+| `national_id` | `natid.mx_curp` | The weighted check digit and a state code the registry uses. |
+| `national_id` | `natid.in_pan` | The holder-type letter, a serial that is not all zeroes, and a word — PAN, income tax, Aadhaar, ITR, assessee — nearby. The check character's algorithm is unpublished. |
 | `crypto_wallet` | `crypto.bitcoin` | The base58check or bech32 checksum, and a version byte or witness program the standard defines. |
 | `crypto_wallet` | `crypto.ethereum` | Where the address is mixed case, the EIP-55 checksum hidden in the capitalisation; where it is not, the shape only, reported with a lower confidence and the no-checksum flag. |
 | `coordinates` | `coord.decimal` | Latitude and longitude ranges, and at least four decimal places on both sides, because a coarser pair is a pair of measurements as often as a place. |
