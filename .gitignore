@@ -4,3 +4,4 @@ tmp/
 target/
 .container/
 vendored/gleif/data/
+__pycache__/

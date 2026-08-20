@@ -3,7 +3,7 @@
 Nothing is built or run on the host. There is no host Rust toolchain and no host Python; every
 build, test, script and server process runs in a container built from this repository.
 
-## The five scripts
+## The six scripts
 
 | Script | What it does |
 |---|---|
@@ -12,6 +12,11 @@ build, test, script and server process runs in a container built from this repos
 | `shell.sh [command…]` | Interactive shell in a throwaway dev container. With arguments, runs them instead: `./shell.sh cargo test`. |
 | `run-server.sh [--dev]` | Runs the server detached on `127.0.0.1:19705`, replacing any container already holding the name. `--dev` runs from the dev image against the working tree. |
 | `test.sh [filter…]` | The full battery in the dev container, building the image first if it is missing. Arguments pass through to `cargo test`. |
+| `test-long.sh [origin]` | The upstream conformance run in the dev container: the checked-in cases taken from the reference projects our rules were ported from, scored as recall, precision and coverage. An argument restricts the run to one origin, named by its case file's stem — `./test-long.sh stdnum`. |
+
+`test.sh` and `test-long.sh` are separate entry points and neither runs the other. The battery is
+held to two or three minutes because it runs on every rule change; the conformance run has a budget
+of fifteen to twenty minutes and samples each scheme deterministically rather than exceeding it.
 
 `common.sh` holds the image names, the published address and the shared helpers. It is sourced, not
 executed.

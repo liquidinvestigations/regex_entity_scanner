@@ -16,6 +16,7 @@ follows from that.
 ./build-dev.sh                              # the toolchain image
 ./shell.sh vendored/fetch-all.sh            # the vendored pattern data
 ./test.sh                                   # rustfmt, clippy, the battery
+./test-long.sh                              # agreement with the upstream projects
 ./run-server.sh                             # detached on 127.0.0.1:19705
 ```
 
@@ -204,6 +205,7 @@ Nothing is built or run on the host — no host toolchain, no host Python.
 | `shell.sh [command…]` | Throwaway dev container, interactive or running a command. |
 | `run-server.sh [--dev]` | Detached server on `127.0.0.1:19705`. |
 | `test.sh [filter…]` | rustfmt, clippy, the battery. |
+| `test-long.sh [origin]` | The upstream conformance run: our rules scored against the reference projects' own test cases. |
 
 The dev image holds no state: cargo's cache, `target/` and the shell history live under the mount,
 so deleting the container costs nothing. The release image carries no toolchain and no sources — it

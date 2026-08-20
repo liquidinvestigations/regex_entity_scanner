@@ -3,6 +3,8 @@
 ```sh
 ./test.sh              # everything: rustfmt, clippy, the test battery
 ./test.sh email        # filter, passed through to cargo test
+./test-long.sh         # the upstream conformance run, separately
+./test-long.sh stdnum  # one origin
 ```
 
 `test.sh` builds the dev image if it is missing, then runs `cargo fmt --check`, `cargo clippy` with
@@ -39,6 +41,26 @@ offsets were needed for.
 
 **Every rule change adds a case**: the input that motivated it, and the near-miss that must stay
 rejected. A rule change with no new fixture is a change nobody can defend later.
+
+## The upstream conformance run
+
+The golden corpus measures us against cases we wrote. `./test-long.sh` measures us against cases the
+upstream implementers wrote: every `python-stdnum` module docstring is a labelled valid/invalid
+corpus for its own scheme, and the reference projects beside it carry the same material. Agreement
+with upstream is the only evidence that a ported check digit means what its author meant.
+
+It is a separate entry point with its own budget of fifteen to twenty minutes, and the fast battery
+never triggers it — the two-to-three-minute budget above is not something a conformance sweep may
+spend. The runner samples each scheme deterministically rather than exceeding its budget, taking the
+first cases of a scheme in the case file's sorted order, so the sample is the same on every machine
+with no seed to carry.
+
+Three numbers are reported per scheme, per origin and in aggregate, and never blended: **recall**
+over upstream-valid cases in a scheme we implement, **precision** over upstream-invalid ones — did
+we stay silent — and **coverage**, how much of the extracted material was scored at all. Excluded
+cases are counted and listed with their reason beside every score, because a run that excludes its
+way to a good number measures nothing. `tests/conformance/Readme.md` has the case-file schema, the
+carrier and cue rules, and what may be excluded.
 
 ## One scanner per test binary
 

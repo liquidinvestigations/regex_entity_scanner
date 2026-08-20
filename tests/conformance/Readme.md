@@ -1,0 +1,67 @@
+# `tests/conformance/`
+
+The upstream conformance corpus: cases taken from the test material of the projects our rules were
+ported from, so a run answers "do we agree with the people who implement this scheme" rather than
+"do we agree with ourselves". `./test-long.sh` runs it; `tests/conformance.rs` is the runner and
+scorer.
+
+| File | What it holds |
+|---|---|
+| `extract_stdnum.py` | Turns the `python-stdnum` module docstrings into cases. Runs in the dev container. |
+| `stdnum.jsonl` | The extracted `python-stdnum` cases, checked in. |
+
+## The case file
+
+One JSON object per line, sorted by `id`, with the same shape for every origin. The file is checked
+in, so a run is reproducible without re-extracting — extraction is a separate step, taken when the
+upstream snapshot moves.
+
+| Field | Meaning |
+|---|---|
+| `id` | Stable, unique, and prefixed with the scheme, so sorting groups a scheme's cases together. |
+| `origin` | The upstream project the case came from. |
+| `source` | The upstream file, so a disagreement can be read in context. |
+| `scheme` | The upstream scheme or recogniser. This is the unit the report tables are grouped by. |
+| `token` | The upstream token, verbatim. |
+| `text` | The fragment we scan: the token inside a carrier sentence. |
+| `token_start`, `token_end` | Byte offsets of the token within `text`. |
+| `cue` | The cue word placed in the carrier, or `null` when the rule requires none. |
+| `valid` | Whether upstream considers the token valid. |
+| `rule_id`, `entity_type` | What we should produce, or `null` when we implement nothing for the scheme. |
+| `expect_value` | The normalised value we should produce, or `null` when upstream documents none. |
+| `exclusion` | Why the case is counted but not scored, or `null`. |
+
+## Turning an upstream test into a scan
+
+Upstream calls an API on a bare token; we scan free text. Three rules bridge that, applied
+uniformly and recorded in the file rather than reinvented by the runner:
+
+- **The carrier.** Every token goes into one neutral sentence — `The record shows <token> on the
+  form.` — which carries no digits, no currency symbol and no cue word of its own, so the only
+  thing the scanner can find in a case is the token.
+- **The cue.** Several rules refuse a bare token unless a cue word is nearby, because a check digit
+  alone is a one-in-ten filter and an invoice number passes it at that rate. Calling
+  `stdnum.cusip.validate` *is* the statement "this is a CUSIP", so that scheme's own documented cue
+  goes into the carrier. A cue is never supplied to a rule that does not require one — that would
+  be measuring a different rule than the one that runs in production.
+- **The token is verbatim.** Separators, case and punctuation are left exactly as upstream wrote
+  them. How a number survives contact with real prose is the property under test, so normalising it
+  first would delete the finding.
+
+## Exclusions
+
+A case is counted and listed but kept out of the scores when the scheme is one we implement no rule
+for, when the upstream call takes arguments our API does not offer, or when the token is in a
+format the matching rule's explainer card states it does not match. Every exclusion in the
+extractor names the documented limit it rests on, because an exclusion that cannot be traced to the
+tracked tree is a thumb on the scale. The run prints the exclusion count beside every score.
+
+## Re-extracting
+
+```sh
+./shell.sh python3 tests/conformance/extract_stdnum.py > tests/conformance/stdnum.jsonl
+```
+
+The script reads `vendored/reference/python-stdnum/`, needs no network, and writes the case file to
+stdout with a count on stderr. Re-run it when the vendored snapshot moves or when a scheme gains a
+rule, and commit the diff — the case file is the corpus, not a build artefact.

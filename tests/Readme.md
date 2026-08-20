@@ -6,6 +6,7 @@
 | `dates.rs`, `email.rs`, `identifiers_bank.rs`, `identifiers_company.rs`, `identifiers_security.rs`, `maritime.rs`, `devices_network.rs`, `extras.rs`, `national_ids.rs`, `phone.rs`, `money.rs` | One file per rule family: what each validator keeps, what it rejects, and what the value normalises to. |
 | `contract.rs` | Structural properties of the wire contract: an entity round-trips through JSON for every value kind, and no candidate pattern depends on its haystack boundaries. |
 | `golden.rs` | The labelled corpus, scored as precision and recall. |
+| `conformance.rs`, `conformance/` | Agreement with the upstream projects the rules were ported from, scored as recall, precision and coverage. |
 | `explain.rs` | Explainer cards, including that every compiled rule has a catalogue entry and that an entity round-trips from `/scan` into `/explain` unchanged. |
 | `http.rs` | The service surface over a real socket. |
 
@@ -29,6 +30,22 @@ offsets needed to prove.
 
 Add a case for every rule change: the input that motivated it, and the near-miss that must stay
 rejected.
+
+## The upstream conformance run
+
+`conformance/` holds cases taken from the reference projects' own test material and `conformance.rs`
+scores them; `./test-long.sh` is the entry point and `tests/conformance/Readme.md` describes the
+case-file schema and how an upstream test becomes a fragment we scan.
+
+It is a normal test target with its one test `#[ignore]`d, rather than a `[[bin]]` or a separate
+`[[test]]` with `harness = false`. That way the fast battery compiles it, rustfmt and clippy cover
+it, and `tests/support` is shared — so it cannot rot unnoticed — while `cargo test` still never runs
+it. `./test-long.sh` runs it by name with `--ignored`.
+
+The golden corpus and the conformance run answer different questions and neither replaces the
+other: the corpus is cases we wrote, and only a labelled corpus of our own can measure precision on
+running prose; the conformance run is cases upstream wrote, and only those can show that a ported
+check digit means what its author meant.
 
 ## Speed
 
