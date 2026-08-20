@@ -15,6 +15,10 @@ scorer.
 | `recognizers.jsonl` | The extracted Recognizers-Text cases, checked in. |
 | `extract_price_parser.py` | Turns price-parser's parametrised (text, currency, amount) rows into cases. |
 | `price-parser.jsonl` | The extracted price-parser cases, checked in. |
+| `extract_grok.py` | Turns the logstash-patterns-core specs — the log lines each grok pattern must match — into date cases. |
+| `grok.jsonl` | The extracted logstash-patterns-core cases, checked in. |
+| `extract_dateparser.py` | Turns dateparser's parametrised date strings, and the two tests that declare a string unparseable, into date cases. |
+| `dateparser.jsonl` | The extracted dateparser cases, checked in. |
 
 ## The case file
 
@@ -78,6 +82,8 @@ tracked tree is a thumb on the scale. The run prints the exclusion count beside 
 ./shell.sh python3 tests/conformance/extract_libphonenumber.py > tests/conformance/libphonenumber.jsonl
 ./shell.sh python3 tests/conformance/extract_recognizers.py > tests/conformance/recognizers.jsonl
 ./shell.sh python3 tests/conformance/extract_price_parser.py > tests/conformance/price-parser.jsonl
+./shell.sh python3 tests/conformance/extract_grok.py > tests/conformance/grok.jsonl
+./shell.sh python3 tests/conformance/extract_dateparser.py > tests/conformance/dateparser.jsonl
 ```
 
 Each script reads its own directory under `vendored/reference/`, needs no network, and writes the
