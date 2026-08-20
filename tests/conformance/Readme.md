@@ -19,6 +19,8 @@ scorer.
 | `grok.jsonl` | The extracted logstash-patterns-core cases, checked in. |
 | `extract_dateparser.py` | Turns dateparser's parametrised date strings, and the two tests that declare a string unparseable, into date cases. |
 | `dateparser.jsonl` | The extracted dateparser cases, checked in. |
+| `extract_presidio.py` | Turns Presidio's recogniser tests — parametrised free-text fragments with the spans upstream asserts are in them — into cases. |
+| `presidio.jsonl` | The extracted Presidio cases, checked in. |
 
 ## The case file
 
@@ -84,6 +86,7 @@ tracked tree is a thumb on the scale. The run prints the exclusion count beside 
 ./shell.sh python3 tests/conformance/extract_price_parser.py > tests/conformance/price-parser.jsonl
 ./shell.sh python3 tests/conformance/extract_grok.py > tests/conformance/grok.jsonl
 ./shell.sh python3 tests/conformance/extract_dateparser.py > tests/conformance/dateparser.jsonl
+./shell.sh python3 tests/conformance/extract_presidio.py > tests/conformance/presidio.jsonl
 ```
 
 Each script reads its own directory under `vendored/reference/`, needs no network, and writes the

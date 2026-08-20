@@ -45,14 +45,16 @@ rejected. A rule change with no new fixture is a change nobody can defend later.
 ## The upstream conformance run
 
 The golden corpus measures us against cases we wrote. `./test-long.sh` measures us against cases the
-upstream implementers wrote. Six origins carry it: `python-stdnum`, whose every module docstring is
+upstream implementers wrote. Seven origins carry it: `python-stdnum`, whose every module docstring is
 a labelled valid/invalid corpus for its own scheme; `libphonenumber`, whose metadata holds an
 example number for every region and line type and whose matcher test holds a free-text corpus;
 `recognizers-text`, whose specs are sentences with the extractions expected from them;
 `price-parser`, whose test data is several hundred price strings from real pages; `grok`, whose
 specs pair each log pattern with the log lines it must match, which is where machine date formats
 live; and `dateparser`, whose parser tests are a parametrised list of date strings with the
-datetime each parses to, and two tests that declare a string unparseable. Agreement with
+datetime each parses to, and two tests that declare a string unparseable; and `presidio`, whose
+recogniser tests are free-text fragments with the spans upstream asserts are in them, including the
+fragments it asserts hold nothing. Agreement with
 upstream is the only evidence that a ported check digit, or a ported separator rule, means what its
 author meant.
 
