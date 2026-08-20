@@ -99,6 +99,25 @@ A rule may not claim a number its checks do not earn. The catalogue entry's `che
 audit trail for the number it claims, which is what makes the ladder auditable rather than
 aspirational.
 
+## Identifiers are matched in the form the standard defines
+
+Case and separators are the two ways one identifier is written many ways, and the answer is the same
+across the rule set: **the surface form a rule matches is the one its issuing standard defines, in
+capitals.** A VAT number is matched compact, prefix against body; an ISO 6346 container number is
+matched with the single spaces the standard's own grouped form uses and in no other punctuation; a
+NIF is matched compact even though a Spanish form prints it with hyphens.
+
+The reason is that case folding and separator stripping are what a *caller* does once it already
+knows what the token is. A scanner does not know that yet — the guess is the whole job — and every
+character of tolerance multiplies the candidate space against a check digit that is often only a
+one-in-eleven or one-in-twenty-three filter. Upstream libraries face the opposite way: `compact()`
+is called after the caller has said "this string is a VAT number", so their tolerance costs them
+nothing and would cost a scanner precision.
+
+The cost is real and is written on the cards that carry it: a number typed in lower case, or split
+by the separators an invoice or a form prints, is not matched. Each of those cards says so, and says
+why, rather than leaving the limit to be discovered.
+
 ## Cue words
 
 A check digit on a bare digit run is a one-in-ten filter, and one in ten invoice numbers is far too

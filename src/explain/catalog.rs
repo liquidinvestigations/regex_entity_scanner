@@ -539,7 +539,10 @@ static RULE_DOCS: &[RuleDoc] = &[
              a VIES query, and this service makes no network calls",
             "whether the business still exists: a deregistered number keeps its arithmetic",
             "numbers written with the separators an invoice often uses — only the compact form, \
-             prefix immediately followed by the body, is matched",
+             prefix immediately followed by the body, is matched: a check digit over a short body \
+             is a weak filter, and a pattern loose enough to admit every national separator \
+             convention would reach far more ordinary prefixed digit runs than the arithmetic can \
+             turn away",
             "bare national company registration numbers without their VAT prefix — a nine-digit \
              run with a check digit is still a nine-digit run",
             "Romanian numbers shorter than four digits, which the register does allocate: RO and \
@@ -610,7 +613,10 @@ static RULE_DOCS: &[RuleDoc] = &[
              and this service makes no network calls",
             "whether the business still exists: a deregistered number keeps its arithmetic",
             "numbers written with the separators an invoice often uses — only the compact form, \
-             prefix immediately followed by the body, is matched",
+             prefix immediately followed by the body, is matched: a check digit over a short body \
+             is a weak filter, and a pattern loose enough to admit every national separator \
+             convention would reach far more ordinary prefixed digit runs than the arithmetic can \
+             turn away",
             "countries whose VAT number carries no check digit, such as Albania, Iceland and San \
              Marino: a prefix with no arithmetic behind it is a two-letter string in front of a \
              digit run, which is the shape this rule exists to avoid",
@@ -882,6 +888,10 @@ static RULE_DOCS: &[RuleDoc] = &[
             "whether the owner code is registered with the Bureau International des Containers",
             "the size and type code, which is stencilled beside the number and is not part of it",
             "whether the container exists or what it holds",
+            "the number written in lower case: the standard's alphabet is capitals, that is how a \
+             container is stencilled and how a bill of lading prints it, and a lower-case eleven \
+             character run in running text is a hash fragment or a file name far more often than \
+             it is a container",
         ],
         authorities: &[Authority {
             name: "Bureau International des Containers et du Transport Intermodal",
@@ -1470,6 +1480,10 @@ static RULE_DOCS: &[RuleDoc] = &[
         not_checked: &[
             "the CIF form issued to companies, which shares the length and uses a different check",
             "whether the number was issued, or to whom",
+            "the number written in lower case, or split by hyphens as a form often prints it — \
+             X-5253868-R: one check letter over a seven-digit body turns away twenty-two in \
+             twenty-three, and the hyphenated shape is also the shape of a part number, so only \
+             the compact upper-case form is matched",
         ],
         authorities: &[Authority {
             name: "Agencia Estatal de Administración Tributaria",
