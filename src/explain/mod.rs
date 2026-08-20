@@ -52,6 +52,12 @@ impl ExplainRequest {
     pub fn value_bool(&self, field: &str) -> Option<bool> {
         self.value.get(field)?.as_bool()
     }
+
+    /// One entry of an identifier value's `parts` map — the bank code inside an IBAN, the issuing
+    /// unit inside an LEI. Nested one level, so it needs its own accessor.
+    pub fn value_part(&self, name: &str) -> Option<&str> {
+        self.value.get("parts")?.get(name)?.as_str()
+    }
 }
 
 /// The card. `title`, `subtitle` and `body` are the three text fields a UI renders; `facts` and

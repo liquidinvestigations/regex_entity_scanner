@@ -11,6 +11,7 @@
 
 pub mod bank;
 pub mod checksum;
+pub mod company;
 pub mod context;
 pub mod date_iso;
 pub mod date_machine;
@@ -95,5 +96,6 @@ pub fn all() -> Vec<Box<dyn Rule>> {
         Box::new(date_machine::IsoWeekRule),
         Box::new(bank::IbanRule),
         Box::new(bank::BicRule),
+        Box::new(company::LeiRule),
     ]
 }

@@ -48,3 +48,6 @@
 {"name": "uuid", "text": "trace id 3f2504e0-4f89-11d3-9a0c-0305e82c3301", "expect": []}
 {"name": "semantic version string", "text": "upgraded to release 12.04.2019 build 4471", "expect": []}
 {"name": "invoice number", "text": "invoice INV2021030400012 issued", "expect": []}
+{"name": "lei in a counterparty list", "text": "counterparty LEI 213800KUD8LAJWSQ9D15 on file", "expect": [{"type": "company_id", "text": "213800KUD8LAJWSQ9D15", "value": "213800KUD8LAJWSQ9D15"}]}
+{"name": "lei with one character changed", "text": "counterparty LEI 213800KUD8LXJWSQ9D15 on file", "expect": []}
+{"name": "sha-1 digest", "text": "sha1 DA39A3EE5E6B4B0D3255BFEF95601890AFD80709", "expect": []}

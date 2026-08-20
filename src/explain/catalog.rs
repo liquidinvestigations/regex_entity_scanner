@@ -437,4 +437,61 @@ static RULE_DOCS: &[RuleDoc] = &[
             },
         ],
     },
+    RuleDoc {
+        rule_id: "company.lei",
+        entity_type: EntityType::CompanyId,
+        title: "Legal Entity Identifier",
+        matches: "The twenty-character code that identifies a party to a financial transaction — \
+                  four characters naming the unit that issued it, thirteen identifying the \
+                  organisation, and two check digits. It is the closest thing to a global company \
+                  key, and it resolves to a named legal entity with a jurisdiction and an address.",
+        standards: &[
+            "ISO 17442 — Legal entity identifier (LEI)",
+            "ISO 7064 Mod 97, 10 — the check character system it uses",
+        ],
+        checks: &[
+            "ISO 7064 mod-97-10 over all twenty characters, with letters counting as their base-36 \
+             value",
+            "the length is exactly twenty, and the last two positions are digits",
+            "nothing alphanumeric runs into the match from either side, which is what keeps \
+             twenty characters of a hash from being read as a code",
+        ],
+        not_checked: &[
+            "whether the identifier was ever issued — the arithmetic agrees for numbers GLEIF has \
+             never allocated",
+            "whether the registration is current: an LEI can lapse, and the code stays valid \
+             arithmetic",
+            "which company it names — the card links to GLEIF's search rather than resolving it",
+        ],
+        authorities: &[
+            Authority {
+                name: "Global Legal Entity Identifier Foundation",
+                role: "operates the LEI system and publishes the full population as open data",
+                url: "https://www.gleif.org/",
+            },
+            Authority {
+                name: "International Organization for Standardization",
+                role: "publishes ISO 17442",
+                url: "https://www.iso.org/standard/78829.html",
+            },
+        ],
+        ftm: FtmMapping {
+            schema: "LegalEntity",
+            property: "leiCode",
+            note: "FollowTheMoney defines leiCode on the abstract LegalEntity, which every \
+                   concrete company or organisation schema inherits.",
+        },
+        references: &[
+            Reference {
+                title: "GLEIF search",
+                url: "https://search.gleif.org/",
+                note: "the public register, where a code resolves to the entity it names",
+            },
+            Reference {
+                title: "ISO 17442 at ISO",
+                url: "https://www.iso.org/standard/78829.html",
+                note: "the standard that defines the structure and the check digits",
+            },
+        ],
+    },
 ];

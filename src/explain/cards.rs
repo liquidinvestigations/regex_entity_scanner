@@ -32,6 +32,7 @@ pub fn build(doc: &'static RuleDoc, request: &ExplainRequest, data: &VendoredDat
     let specifics = match doc.rule_id {
         "date.iso8601" => date_iso(&mut card, request),
         "email.basic" => email(&mut card, request, data),
+        "company.lei" => company_lei(&mut card, request),
         _ => None,
     };
 
@@ -156,6 +157,35 @@ fn date_iso(card: &mut Explanation, request: &ExplainRequest) -> Option<String> 
         ));
     }
     Some(specifics)
+}
+
+/// LEI: the checksum says the code is well-formed and nothing about which company it names. GLEIF
+/// publishes that answer for free, so the card links straight to the entry for this exact code
+/// rather than leaving the reader to find the register.
+fn company_lei(card: &mut Explanation, request: &ExplainRequest) -> Option<String> {
+    let compact = request.value_str("compact")?;
+    let lou = request.value_part("lou").unwrap_or_default();
+
+    card.subtitle = format!("{compact} · issued by LOU {lou}");
+    card.facts.push(Fact::new("Identifier", compact));
+    if !lou.is_empty() {
+        card.facts.push(Fact::new("Issuing unit", lou));
+    }
+
+    card.references.insert(
+        0,
+        Link::new(
+            format!("GLEIF record for {compact}"),
+            format!("https://search.gleif.org/#/record/{compact}"),
+            "the register entry: legal name, jurisdiction, address and registration status",
+        ),
+    );
+
+    Some(format!(
+        "The check digits agree, so `{compact}` is a well-formed Legal Entity Identifier. Whether \
+         it was ever issued, and to whom, is a question for the register — the link above goes to \
+         the entry for this exact code."
+    ))
 }
 
 /// Email: the domain is the interesting part, because it is the only part anything was verified
