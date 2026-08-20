@@ -120,6 +120,17 @@ fn shrinking_a_candidate_does_not_defeat_the_adjacent_digit_guard() {
     assert!(entities.is_empty(), "{entities:?}");
 }
 
+/// Two timestamps run together carry no boundary, so neither of them is reported. The trap is the
+/// retry: the whole run is refused for the digit behind it, and the window then shrinks to a span
+/// that ends at a field boundary — a real-looking instant with its offset amputated, which is a
+/// wrong value rather than a miss.
+#[test]
+fn a_timestamp_is_never_carved_out_of_a_longer_one() {
+    let scanner = support::scanner();
+    let entities = scanner.scan("2015-03-17t16:37:51+00:002015-03-17t15:24:37+00:00", 0);
+    assert!(entities.is_empty(), "{entities:?}");
+}
+
 /// The weekday is the strong half of a mail header date: a header whose day of the week disagrees
 /// with its calendar date has been mangled or invented.
 #[test]

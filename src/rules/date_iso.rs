@@ -33,12 +33,15 @@ impl Rule for Iso8601Rule {
     }
 
     fn validate(&self, candidate: &Candidate<'_>) -> Option<Verdict> {
-        // Stripped `(?<!\d)` and `(?!\d)` guards: a date wedged between digits is part of a longer
-        // number, which is how identifiers and hashes turn into a corrupted date facet.
-        if candidate.byte_before().is_some_and(|b| b.is_ascii_digit()) {
+        // Stripped `(?<!\w)` and `(?!\w)` guards: a date wedged into a longer alphanumeric run is
+        // part of an identifier or a hash, which is how those turn into a corrupted date facet.
+        if candidate
+            .byte_before()
+            .is_some_and(|b| b.is_ascii_alphanumeric())
+        {
             return None;
         }
-        if candidate.byte_after().is_some_and(|b| b.is_ascii_digit()) {
+        if continues_right(candidate) {
             return None;
         }
 
@@ -103,6 +106,48 @@ impl Rule for Iso8601Rule {
             flags,
         })
     }
+}
+
+/// Whether the text after the match could have been part of the same timestamp.
+///
+/// The digit test alone is not enough, because a candidate that fails it is retried one character
+/// shorter: `2015-03-17t16:37:51+00:002015-…` is refused whole, and the retry offers
+/// `2015-03-17t16:37:51`, whose right-hand neighbour is now a harmless-looking `+`. A timestamp cut
+/// short at a field boundary reads as a real instant and carries the wrong one, so a separator with
+/// a digit behind it refuses the span as firmly as a digit does.
+fn continues_right(candidate: &Candidate<'_>) -> bool {
+    let Some(next) = candidate.byte_after() else {
+        return false;
+    };
+    if next.is_ascii_digit() {
+        return true;
+    }
+    let rest = &candidate.fragment[candidate.end + 1..];
+    match next {
+        // A field separator with a digit behind it: the match stops in the middle of a field the
+        // format defines, so it is a slice of a timestamp rather than a timestamp.
+        b'+' | b'-' | b'.' | b':' => rest.as_bytes().first().is_some_and(u8::is_ascii_digit),
+        // A date carved out of a timestamp whose clock is perfectly good. The day alone is a
+        // truncation there, and it is reported without the instant it was written with. When the
+        // clock is *not* a real time of day the date is a salvage rather than a truncation, which
+        // is the case the scan loop's shrink-and-retry exists to rescue.
+        b'T' | b't' | b' ' => clock_follows(rest),
+        _ => false,
+    }
+}
+
+/// Whether the text opens with a real `HH:MM` time of day.
+fn clock_follows(rest: &str) -> bool {
+    let Some(clock) = rest.get(0..5) else {
+        return false;
+    };
+    let (Some(hour), Some(minute)) = (
+        clock.get(0..2).and_then(|f| f.parse::<u8>().ok()),
+        clock.get(3..5).and_then(|f| f.parse::<u8>().ok()),
+    ) else {
+        return false;
+    };
+    clock.as_bytes()[2] == b':' && hour < 24 && minute < 60
 }
 
 /// Splits the clock from a trailing `Z` or `±HH:MM`, which the pattern allows to be attached

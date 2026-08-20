@@ -111,8 +111,12 @@ static RULE_DOCS: &[RuleDoc] = &[
             "the clock is a real time of day, so hour 24 and minute 61 are rejected",
             "the year falls inside a plausibility window, which is what keeps version strings and \
              identifier fragments out of the date facet",
-            "no digit runs into the match from either side, so a date embedded in a longer number \
-             is not treated as a date",
+            "nothing that could have continued the timestamp runs into the match — a digit or a \
+             letter on either side, or a field separator with a digit behind it — so neither a \
+             date embedded in a longer number nor a slice of a longer timestamp is reported",
+            "a day carved out of a timestamp whose clock is a real time of day is refused, because \
+             the day alone would be reported without the instant it was written with; where the \
+             clock is not a real time of day the day is a salvage and is kept",
         ],
         not_checked: &[
             "whether the date is correct — only that it is a date that exists",
