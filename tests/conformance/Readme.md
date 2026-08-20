@@ -25,6 +25,8 @@ scorer.
 | `isemail.jsonl` | The extracted is_email cases, checked in. |
 | `extract_eth_utils.py` | Turns eth-utils' address tables and ERC-55's own vectors into Ethereum address cases. |
 | `eth-utils.jsonl` | The extracted eth-utils and ERC-55 cases, checked in. |
+| `extract_pyais.py` | Turns pyais' decoded AIS expectations into MMSI cases. |
+| `pyais.jsonl` | The extracted pyais cases, checked in. |
 | `extract_advisory_database.py` | Turns one month of GitHub advisories into CVE cases: the identifier bare, and the same identifier inside a reference URL. |
 | `advisory-database.jsonl` | The extracted GitHub Advisory Database cases, checked in. |
 | `extract_crossref.py` | Turns the reduced Crossref slice — DOIs and the ORCID identifiers on author records — into publication cases. |
@@ -113,6 +115,7 @@ tracked tree is a thumb on the scale. The run prints the exclusion count beside 
 ./shell.sh python3 tests/conformance/extract_eth_utils.py > tests/conformance/eth-utils.jsonl
 ./shell.sh python3 tests/conformance/extract_crossref.py > tests/conformance/crossref.jsonl
 ./shell.sh python3 tests/conformance/extract_advisory_database.py > tests/conformance/advisory-database.jsonl
+./shell.sh python3 tests/conformance/extract_pyais.py > tests/conformance/pyais.jsonl
 ```
 
 Each script reads its own directory under `vendored/reference/`, needs no network, and writes the

@@ -80,6 +80,7 @@ const ORIGIN_FLOORS: &[(&str, f64, f64)] = &[
     ("open-location-code", 99.5, 99.5),
     ("presidio", 98.9, 99.5),
     ("price-parser", 98.0, 99.5),
+    ("pyais", 99.5, 99.5),
     ("python-stdnum", 86.0, 99.5),
     ("recognizers-text", 78.5, 99.5),
 ];
