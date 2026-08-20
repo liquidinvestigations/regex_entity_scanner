@@ -19,6 +19,12 @@ scorer.
 | `grok.jsonl` | The extracted logstash-patterns-core cases, checked in. |
 | `extract_dateparser.py` | Turns dateparser's parametrised date strings, and the two tests that declare a string unparseable, into date cases. |
 | `dateparser.jsonl` | The extracted dateparser cases, checked in. |
+| `extract_open_location_code.py` | Turns the Open Location Code test data into plus-code and decimal-coordinate cases. |
+| `open-location-code.jsonl` | The extracted Open Location Code cases, checked in. |
+| `extract_isemail.py` | Turns the is_email test set — an address with the category and diagnosis upstream returns for it — into email cases. |
+| `isemail.jsonl` | The extracted is_email cases, checked in. |
+| `extract_eth_utils.py` | Turns eth-utils' address tables and ERC-55's own vectors into Ethereum address cases. |
+| `eth-utils.jsonl` | The extracted eth-utils and ERC-55 cases, checked in. |
 | `extract_presidio.py` | Turns Presidio's recogniser tests — parametrised free-text fragments with the spans upstream asserts are in them — into cases. |
 | `presidio.jsonl` | The extracted Presidio cases, checked in. |
 
@@ -98,11 +104,24 @@ tracked tree is a thumb on the scale. The run prints the exclusion count beside 
 ./shell.sh python3 tests/conformance/extract_grok.py > tests/conformance/grok.jsonl
 ./shell.sh python3 tests/conformance/extract_dateparser.py > tests/conformance/dateparser.jsonl
 ./shell.sh python3 tests/conformance/extract_presidio.py > tests/conformance/presidio.jsonl
+./shell.sh python3 tests/conformance/extract_open_location_code.py > tests/conformance/open-location-code.jsonl
+./shell.sh python3 tests/conformance/extract_isemail.py > tests/conformance/isemail.jsonl
+./shell.sh python3 tests/conformance/extract_eth_utils.py > tests/conformance/eth-utils.jsonl
 ```
 
 Each script reads its own directory under `vendored/reference/`, needs no network, and writes the
 case file to stdout with a count on stderr. Re-run one when the vendored snapshot moves or when a
 scheme gains a rule, and commit the diff — the case file is the corpus, not a build artefact.
+
+## What a flag would say, and the one origin that needs it to
+
+An Ethereum address written in a single case carries no EIP-55 checksum, and the rule says so: it
+reports the address with the no-checksum flag and a markedly lower confidence, because nothing about
+it was verified. The case schema has no field for a flag, so that address scores as a plain
+agreement on the type and the corpus cannot tell the verified reading from the unverified one. It is
+a blind spot rather than a disagreement, and it is the reason upstream's `is_checksum_address`
+answering False about such an address is an exclusion here: that answer is about the capitalisation,
+not about whether the token is an address.
 
 ## National form, and the numbers that are only written in it
 

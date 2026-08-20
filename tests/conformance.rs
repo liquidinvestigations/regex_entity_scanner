@@ -54,7 +54,11 @@ const DEFAULT_MAX_PER_SCHEME: usize = 500;
 /// Regression floors, in percent. They are a ratchet, not a target: they sit just under the
 /// numbers the current rule set produces, so a rule change that loses upstream agreement fails the
 /// run instead of quietly eroding it. Raise them when a fix moves the real number up.
-const MIN_RECALL_PERCENT: f64 = 96.2;
+///
+/// An origin joining the corpus changes the denominator rather than the rules, so the aggregate
+/// floor is re-derived from the run at the commit that adds one. It is never lowered to let an
+/// unchanged corpus pass.
+const MIN_RECALL_PERCENT: f64 = 96.4;
 const MIN_PRECISION_PERCENT: f64 = 99.5;
 
 /// The same ratchet per origin: minimum recall, then minimum precision. The aggregate floor alone
@@ -67,8 +71,11 @@ const MIN_PRECISION_PERCENT: f64 = 99.5;
 /// still written down, and is simply not asserted until such a case exists.
 const ORIGIN_FLOORS: &[(&str, f64, f64)] = &[
     ("dateparser", 99.0, 99.0),
+    ("eth-utils", 99.5, 99.5),
     ("grok", 99.0, 99.0),
+    ("isemail", 78.0, 99.5),
     ("libphonenumber", 98.5, 99.5),
+    ("open-location-code", 99.5, 99.5),
     ("presidio", 98.9, 99.5),
     ("price-parser", 98.0, 99.5),
     ("python-stdnum", 86.0, 99.5),

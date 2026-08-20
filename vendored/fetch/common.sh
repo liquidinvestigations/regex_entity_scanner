@@ -77,3 +77,10 @@ stamp() {
 git_head() {
     git -C "$1" rev-parse HEAD
 }
+
+# The upstream's HEAD commit, for a fetch that downloads individual files instead of cloning. A
+# stamp naming a commit is what makes the vendored subset diffable against its upstream later, and
+# a handful of raw files is not worth a clone of the tree they sit in.
+remote_head() {
+    git ls-remote "$1" HEAD | cut -f1
+}
