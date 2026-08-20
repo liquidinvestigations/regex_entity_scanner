@@ -33,6 +33,7 @@ pub fn build(doc: &'static RuleDoc, request: &ExplainRequest, data: &VendoredDat
         "date.iso8601" => date_iso(&mut card, request),
         "email.basic" => email(&mut card, request, data),
         "company.lei" => company_lei(&mut card, request),
+        "company.vat_eu" | "company.vat_non_eu" => company_vat(&mut card, request, data),
         "bank.iban" => bank_iban(&mut card, request, data),
         "bank.bic" => bank_bic(&mut card, request, data),
         "security.isin" => security_isin(&mut card, request, data),
@@ -230,6 +231,45 @@ fn bank_iban(
          letters. The check digits agree with the account number, so the two were written down \
          together correctly. The country is where the account is held, which is not necessarily \
          where its holder lives."
+    ))
+}
+
+/// VAT: the prefix is the tax administration that issued the number, and it is the only part of
+/// the code that is a country. Greece writes `EL` where ISO 3166-1 writes `GR`, so the prefix as
+/// written and the country in the value are not always the same two letters.
+fn company_vat(
+    card: &mut Explanation,
+    request: &ExplainRequest,
+    data: &VendoredData,
+) -> Option<String> {
+    let compact = request.value_str("compact")?;
+    let (alpha2, country) = encoded_country(request, data)?;
+    let prefix = request.value_part("prefix").unwrap_or_default();
+
+    card.subtitle = format!("{compact} · {country}");
+    card.facts.push(Fact::new("Identifier", compact));
+    card.facts.push(Fact::new("Country", country.as_str()));
+    if !prefix.is_empty() {
+        card.facts.push(Fact::new("Tax prefix", prefix));
+    }
+    if let Some(number) = request.value_part("number") {
+        card.facts.push(Fact::new("National number", number));
+    }
+
+    let spelling = if prefix.is_empty() || prefix == alpha2 {
+        String::new()
+    } else {
+        format!(
+            " The prefix is written `{prefix}`, which is what that administration uses; the value \
+             carries `{alpha2}` so the number joins with every other identifier that encodes a \
+             country."
+        )
+    };
+    Some(format!(
+        "The number is registered with the tax administration of {country}, whose own check-digit \
+         rule the digits satisfy.{spelling} A valid number is one that was formed correctly — \
+         whether it is currently registered, and to whom, is a question for that administration's \
+         own register."
     ))
 }
 

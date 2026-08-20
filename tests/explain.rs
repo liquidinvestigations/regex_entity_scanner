@@ -101,6 +101,23 @@ fn an_email_card_resolves_the_country_code_domain() {
 }
 
 #[test]
+fn a_vat_card_resolves_the_prefix_the_administration_writes() {
+    let scanner = support::scanner();
+    let request = round_trip("counterparty EL094259216 in Athens", 0);
+    let card = explain::explain(&request, scanner.data()).expect("a card for company.vat_eu");
+
+    assert_eq!(card.subtitle, "EL094259216 · Greece");
+    let country = card
+        .facts
+        .iter()
+        .find(|fact| fact.label == "Country")
+        .expect("a country fact");
+    assert_eq!(country.value, "Greece");
+    // The prefix as written and the country in the value are different two letters here.
+    assert!(card.body.contains("The prefix is written `EL`"));
+}
+
+#[test]
 fn a_phone_card_names_the_country_and_the_line_type() {
     let scanner = support::scanner();
     let request = round_trip("Call +40 21 555 0100 for details.", 0);

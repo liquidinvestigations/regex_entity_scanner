@@ -120,7 +120,8 @@ pub enum Value {
     Phone {
         /// E.164 form, `+` then country calling code then the national number.
         e164: String,
-        /// ISO 3166-1 alpha-2 region the number belongs to.
+        /// ISO 3166-1 alpha-2 region the number belongs to, or `001` for the global services —
+        /// freephone, satellite — that the ITU allocates to no country.
         country: String,
         /// The national significant number, without the country calling code.
         national: String,
