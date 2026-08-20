@@ -912,4 +912,153 @@ static RULE_DOCS: &[RuleDoc] = &[
             note: "the allocated blocks and the registry each belongs to",
         }],
     },
+    RuleDoc {
+        rule_id: "vulnerability.cve",
+        entity_type: EntityType::Vulnerability,
+        title: "CVE identifier",
+        matches: "The public identifier of a disclosed software vulnerability — CVE-2021-44228 and \
+                  its kind. The literal prefix makes it unmistakable, which is why it needs no \
+                  check digit and no word beside it.",
+        standards: &["The CVE Program's identifier syntax, CVE-YYYY-NNNN with four or more digits"],
+        checks: &[
+            "the literal prefix CVE- is part of the match",
+            "the year falls between 1999, when the scheme started, and 2100",
+            "the sequence is at least four digits, which is the minimum the syntax allows",
+            "nothing alphanumeric and no hyphen touches the match on either side",
+        ],
+        not_checked: &[
+            "whether the identifier has been assigned, published or rejected — a reserved entry \
+             looks exactly like a published one",
+            "the severity, the affected product, or whether the vulnerability applies to anything \
+             the surrounding text names",
+        ],
+        authorities: &[Authority {
+            name: "The CVE Program, operated by MITRE for CISA",
+            role: "assigns identifiers through its CVE Numbering Authorities",
+            url: "https://www.cve.org/",
+        }],
+        ftm: FtmMapping {
+            schema: "Analyzable",
+            property: "res:vulnerabilityMentioned",
+            note: "FollowTheMoney models people, companies and documents and has no vulnerability \
+                   property, so this is a local extension in the res: namespace.",
+        },
+        references: &[Reference {
+            title: "CVE record lookup",
+            url: "https://www.cve.org/CVERecord",
+            note: "where a record can be read, including whether it is reserved",
+        }],
+    },
+    RuleDoc {
+        rule_id: "publication.doi",
+        entity_type: EntityType::Publication,
+        title: "DOI (Digital Object Identifier)",
+        matches: "The persistent identifier of a published work: the directory code 10, a \
+                  registrant code, and a suffix the registrant chooses. It resolves to a document \
+                  long after the URL it was published at has gone.",
+        standards: &["ISO 26324 — Digital object identifier system"],
+        checks: &[
+            "the directory code is 10 and is followed by a registrant code of four to nine digits",
+            "a slash and a non-empty suffix follow the registrant code",
+            "sentence punctuation the suffix collected in prose is trimmed off the span",
+            "nothing alphanumeric and no dot runs into the match from the left",
+        ],
+        not_checked: &[
+            "a check digit, because the format has none — hence the no-checksum flag",
+            "whether the DOI resolves, or that the registrant code was ever allocated",
+            "the suffix, which is opaque by design and may hold almost any character",
+        ],
+        authorities: &[Authority {
+            name: "International DOI Foundation",
+            role: "governs the DOI system; registration agencies such as Crossref allocate prefixes",
+            url: "https://www.doi.org/",
+        }],
+        ftm: FtmMapping {
+            schema: "Analyzable",
+            property: "res:doiMentioned",
+            note: "FollowTheMoney's Document schema has no DOI property, so this is a local \
+                   extension in the res: namespace.",
+        },
+        references: &[Reference {
+            title: "DOI resolution",
+            url: "https://doi.org/",
+            note: "resolves an identifier to the work it names",
+        }],
+    },
+    RuleDoc {
+        rule_id: "publication.orcid",
+        entity_type: EntityType::Publication,
+        title: "ORCID identifier",
+        matches: "The sixteen-digit identifier that distinguishes one researcher from another with \
+                  the same name, written in four hyphenated groups. It is the closest thing \
+                  academic publishing has to a persistent author key.",
+        standards: &["ISO 27729 — International Standard Name Identifier, of which ORCID is a block"],
+        checks: &[
+            "the ISO 7064 mod 11-2 check character, where a final X stands for the value ten",
+            "the four groups of four and the hyphens between them",
+            "nothing alphanumeric and no hyphen touches the match on either side, which is what \
+             keeps it out of longer hyphenated digit runs",
+        ],
+        not_checked: &[
+            "whether the identifier was issued, or whom it belongs to — the ORCID registry answers \
+             that and is not consulted here",
+            "whether the record is public: many are restricted, and the identifier looks the same",
+        ],
+        authorities: &[Authority {
+            name: "ORCID",
+            role: "issues the identifiers and runs the registry",
+            url: "https://orcid.org/",
+        }],
+        ftm: FtmMapping {
+            schema: "Analyzable",
+            property: "res:orcidMentioned",
+            note: "FollowTheMoney's Person schema has no ORCID property, so this is a local \
+                   extension in the res: namespace.",
+        },
+        references: &[Reference {
+            title: "ORCID registry",
+            url: "https://orcid.org/",
+            note: "where an identifier resolves to a researcher record",
+        }],
+    },
+    RuleDoc {
+        rule_id: "message.rfc5322",
+        entity_type: EntityType::MessageId,
+        title: "Message-ID",
+        matches: "The globally unique identifier a mail or news client puts on a message, written \
+                  in angle brackets. It is what threads a conversation together, and what says two \
+                  copies of a mail in two archives are the same mail.",
+        standards: &["RFC 5322 — Internet Message Format, section 3.6.4"],
+        checks: &[
+            "the angle brackets, which are what distinguish a message id from an address and are \
+             part of the span but not of the value",
+            "an at sign separating a non-empty left side from a right side",
+            "the right side's last label is a registered top-level domain, the same membership \
+             test the email rule uses",
+            "one of the header names Message-ID, In-Reply-To, References or Resent-Message-ID \
+             appears within 48 bytes either side — without one, an angle-bracketed address in a \
+             From or To line has exactly the same shape",
+        ],
+        not_checked: &[
+            "whether the message exists, or that the generating host owns the domain — the right \
+             side is conventionally a domain and is not required to be one",
+            "uniqueness, which the standard asks of the generator and nobody can verify from the \
+             text",
+        ],
+        authorities: &[Authority {
+            name: "Internet Engineering Task Force",
+            role: "publishes RFC 5322, which defines the field",
+            url: "https://www.ietf.org/",
+        }],
+        ftm: FtmMapping {
+            schema: "Document",
+            property: "messageId",
+            note: "FollowTheMoney's Document schema defines messageId for exactly this identifier.",
+        },
+        references: &[Reference {
+            title: "RFC 5322 section 3.6.4",
+            url: "https://www.rfc-editor.org/rfc/rfc5322#section-3.6.4",
+            note: "the identification fields and what a message id is required to be",
+        }],
+    },
 ];

@@ -17,6 +17,7 @@ pub mod date_iso;
 pub mod date_machine;
 pub mod device;
 pub mod email;
+pub mod extras;
 pub mod maritime;
 pub mod network;
 pub mod security;
@@ -111,5 +112,9 @@ pub fn all() -> Vec<Box<dyn Rule>> {
         Box::new(device::MacRule),
         Box::new(network::IpRule),
         Box::new(network::AsnRule),
+        Box::new(extras::CveRule),
+        Box::new(extras::DoiRule),
+        Box::new(extras::OrcidRule),
+        Box::new(extras::MessageIdRule),
     ]
 }

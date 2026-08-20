@@ -165,6 +165,10 @@ Compiled today:
 | `device` | `device.mac` | Consistent separators and twelve hex digits. The bare twelve-hex spelling is not matched: it is indistinguishable from half a hash. |
 | `network` | `network.ip` | The address parses through `std::net`, which is the definition of both formats; a CIDR prefix is range-checked, and words like version or firmware nearby reject a dotted quad that is a release number. |
 | `network` | `network.asn` | The literal `AS`/`ASN` prefix is part of the match, and the number fits the allocated 32-bit space. |
+| `vulnerability` | `vulnerability.cve` | The literal `CVE-` prefix and a year inside the scheme's own window. |
+| `publication` | `publication.doi` | The `10.` directory code, a registrant code and a non-empty suffix; sentence punctuation is trimmed off the span. |
+| `publication` | `publication.orcid` | The ISO 7064 mod 11-2 check character, with a final `X` standing for ten. |
+| `message_id` | `message.rfc5322` | Angle brackets, a registered top-level domain on the right-hand side, and a header name — Message-ID, In-Reply-To, References — nearby, because a `From` line has the same shape. |
 
 Full RFC 5322 is deliberately not the target for email: it accepts a great deal nobody writes, and
 on real corpora the TLD membership test is where the precision actually comes from.

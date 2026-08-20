@@ -16,6 +16,7 @@ pattern, a validator and a fixture — not a new pipeline.
 | `maritime.rs` | `vessel.imo`, `vessel.mmsi`, `container.iso6346` |
 | `device.rs` | `device.imei`, `device.mac` |
 | `network.rs` | `network.ip`, `network.asn` |
+| `extras.rs` | `vulnerability.cve`, `publication.doi`, `publication.orcid`, `message.rfc5322` |
 
 ## A date rule ships only when the match fixes the whole day
 
