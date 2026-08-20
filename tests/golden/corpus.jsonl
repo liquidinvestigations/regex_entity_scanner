@@ -109,3 +109,19 @@
 {"name": "curp with a broken check digit", "text": "registered as BOXW310820HNERXN08", "expect": []}
 {"name": "pan beside its label", "text": "PAN ACUPA7085R on the return", "expect": [{"type": "national_id", "text": "ACUPA7085R", "value": "ACUPA7085R"}]}
 {"name": "pan shaped code with no label", "text": "code ACUPA7085R in the export", "expect": []}
+{"name": "amount with a leading iso code", "text": "The invoice total is EUR 1.234,56 excluding VAT.", "expect": [{"type": "money", "text": "EUR 1.234,56", "value": "EUR 123456"}]}
+{"name": "amount with a trailing iso code", "text": "We were billed 1,234.56 USD for the quarter.", "expect": [{"type": "money", "text": "1,234.56 USD", "value": "USD 123456"}]}
+{"name": "amount with a space thousands group", "text": "The price agreed was USD 1 234,56 per unit.", "expect": [{"type": "money", "text": "USD 1 234,56", "value": "USD 123456"}]}
+{"name": "currency with no minor unit", "text": "A handling fee of JPY 1200 was applied.", "expect": [{"type": "money", "text": "JPY 1200", "value": "JPY 1200"}]}
+{"name": "currency with three minor units", "text": "The fee came to BHD 1,234.567 in total.", "expect": [{"type": "money", "text": "BHD 1,234.567", "value": "BHD 1234567"}]}
+{"name": "unambiguous currency symbol", "text": "The price is €1.234,56 including delivery.", "expect": [{"type": "money", "text": "€1.234,56", "value": "EUR 123456"}]}
+{"name": "shared currency symbol", "text": "The price is $1,200.00 in the catalogue.", "expect": [{"type": "money", "text": "$1,200.00", "value": "USD 120000"}]}
+{"name": "symbol with a distinguishing capital", "text": "The price is R$49,90 in Sao Paulo.", "expect": [{"type": "money", "text": "R$49,90", "value": "BRL 4990"}]}
+{"name": "capitals that are not part of the symbol", "text": "The price is US$40 at the door.", "expect": [{"type": "money", "text": "$40", "value": "USD 4000"}]}
+{"name": "ambiguous separator is still money", "text": "The total was EUR 1.234 exactly.", "expect": [{"type": "money", "text": "EUR 1.234", "value": "EUR 123400"}]}
+{"name": "version string beside a currency code", "text": "The connector was upgraded to USD 1.2.3 in staging.", "expect": []}
+{"name": "page range beside a currency code", "text": "See USD 120-134 for the payment schedule.", "expect": []}
+{"name": "conversion rate is not a price", "text": "Amounts were converted at USD 1.2345 per unit.", "expect": []}
+{"name": "three capitals that are not a currency", "text": "The ISO 9001 audit is booked for spring.", "expect": []}
+{"name": "currency code that is an english word", "text": "TOP 40 singles of the year were remastered.", "expect": []}
+{"name": "part number beside a currency code", "text": "Part number EUR 1200X is out of stock.", "expect": []}

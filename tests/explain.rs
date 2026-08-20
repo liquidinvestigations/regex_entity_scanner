@@ -220,3 +220,26 @@ fn the_confidence_note_is_the_same_on_every_card() {
     let card = explain::explain(&request, scanner.data()).expect("a card from the catalogue alone");
     assert!(!card.body.contains(catalog::CONFIDENCE_NOTE));
 }
+
+/// A money card puts the decimal point back: the scaled integer is the right thing to index and
+/// the wrong thing to show, and the currency's own exponent is where the point goes.
+#[test]
+fn a_money_card_writes_the_amount_out_and_names_the_currency() {
+    let scanner = support::scanner();
+    let request = round_trip("the invoice total is EUR 1.234,56 net", 0);
+    let card = explain::explain(&request, scanner.data()).expect("a card for money.iso_code");
+
+    assert!(card.subtitle.contains("1234.56 EUR"), "{}", card.subtitle);
+    assert!(card.subtitle.contains("Euro"), "{}", card.subtitle);
+    let amount = card
+        .facts
+        .iter()
+        .find(|fact| fact.label == "Amount")
+        .expect("an amount fact");
+    assert_eq!(amount.value, "1234.56");
+
+    let request = round_trip("a handling fee of JPY 1200 was applied", 0);
+    let card = explain::explain(&request, scanner.data()).expect("a card for money.iso_code");
+    // The yen has no minor unit, so there is no point to put back.
+    assert!(card.subtitle.contains("1200 JPY"), "{}", card.subtitle);
+}

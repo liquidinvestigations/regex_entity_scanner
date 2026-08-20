@@ -71,6 +71,8 @@ document's text, so a mention this scanner adds is named the same way.
 | `vulnerability` | `vulnerability.cve` | `Analyzable.res:vulnerabilityMentioned` | FollowTheMoney models people, companies and documents. A CVE identifier is none of those. |
 | `publication` | `publication.doi` | `Analyzable.res:doiMentioned` | `Document` has no DOI property. |
 | `publication` | `publication.orcid` | `Analyzable.res:orcidMentioned` | `Person` has no ORCID property. |
+| `money` | `money.iso_code` | `Value.amount` | Defined upstream on the abstract parent, alongside `Value.currency`, and inherited by `Payment`. One match supplies both: the scaled integer and the ISO 4217 code travel in the same value. |
+| `money` | `money.symbol` | `Value.amount` | As above. Where the symbol names more than one currency the code is the most widely used of them, and the ambiguous-currency flag says so — a consumer that cannot tolerate that should threshold on the flag rather than on the amount. |
 | `message_id` | `message.rfc5322` | `Document.messageId` | Defined upstream, and the rule only fires behind a mail header name, which is the same context the property assumes. |
 | `coordinates` | `coord.decimal` | `Address.latitude` | Defined upstream. One match supplies both `latitude` and `longitude`; the mapping names a single property, so it names the first. |
 | `coordinates` | `coord.dms` | `Address.latitude` | As above. |
@@ -81,6 +83,13 @@ document's text, so a mention this scanner adds is named the same way.
 | `national_id` | `natid.es_nif_nie` | `LegalEntity.idNumber` | As above. |
 | `national_id` | `natid.mx_curp` | `LegalEntity.idNumber` | As above. |
 | `national_id` | `natid.in_pan` | `LegalEntity.idNumber` | As above. |
+
+## Money is two properties from one match
+
+`Value` defines `amount` and `currency` separately and a money match supplies both, the same shape
+the coordinate rules have. The mapping names `amount`; the code is in the value beside the scaled
+integer and the exponent, and setting the amount without the currency produces a number nobody can
+interpret.
 
 ## The coordinate pair
 

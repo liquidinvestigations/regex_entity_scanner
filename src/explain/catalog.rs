@@ -1415,4 +1415,100 @@ static RULE_DOCS: &[RuleDoc] = &[
             note: "the department's own description of the format",
         }],
     },
+    RuleDoc {
+        rule_id: "money.iso_code",
+        entity_type: EntityType::Money,
+        title: "Sum of money, ISO 4217 code",
+        matches: "An amount written beside its three-letter currency code — EUR 1.234,56, \
+                  1,234.56 USD. The code is the unambiguous way to write a currency, which makes \
+                  this the high-precision half of the money facet.",
+        standards: &[
+            "ISO 4217 — Codes for the representation of currencies",
+            "Unicode CLDR supplemental currency data, for the minor units each code divides into",
+        ],
+        checks: &[
+            "the code is in current use: a CLDR region entry with no end date and tender status, \
+             which leaves out withdrawn codes and the non-tender metals and funds",
+            "every thousands group is exactly three digits, which is what rejects version \
+             strings, chapter numbers and dotted reference numbers",
+            "the fraction is no longer than the currency's own minor units, so a four-decimal \
+             rate is not read as a price",
+            "a code that is also an ordinary English capitalised word — ALL, TOP, CUP, TRY, PEN, \
+             GEL, MOP, COP, MAD, BOB, SOS — additionally needs a word about money within 48 bytes",
+            "nothing alphanumeric and no separator touches the match on either side",
+        ],
+        not_checked: &[
+            "that the amount is correct, or that the transaction happened",
+            "the decimal convention where the number allows both readings: a single separator \
+             followed by three digits is read as a thousands group and reported with the \
+             separator-inferred flag",
+            "currency names and national symbols spelled out in words — lei, złoty, kroner",
+        ],
+        authorities: &[
+            Authority {
+                name: "International Organization for Standardization",
+                role: "publishes ISO 4217 and maintains the code list",
+                url: "https://www.iso.org/iso-4217-currency-codes.html",
+            },
+            Authority {
+                name: "Unicode CLDR",
+                role: "publishes the minor-unit digits and the symbols for each code",
+                url: "https://cldr.unicode.org/",
+            },
+        ],
+        ftm: FtmMapping {
+            schema: "Value",
+            property: "amount",
+            note: "FollowTheMoney defines amount and currency on the abstract Value schema, which Payment and the other monetary schemas inherit; the code travels in the same value as the scaled integer, so both properties come from one match.",
+        },
+        references: &[Reference {
+            title: "ISO 4217 currency codes",
+            url: "https://www.iso.org/iso-4217-currency-codes.html",
+            note: "the code list this rule tests membership of",
+        }],
+    },
+    RuleDoc {
+        rule_id: "money.symbol",
+        entity_type: EntityType::Money,
+        title: "Sum of money, currency symbol",
+        matches: "An amount written beside a currency sign — €1.234,56, $1,200, R$49,90. Most \
+                  money in running text is written this way, and most currency signs are shared \
+                  by several currencies.",
+        standards: &[
+            "ISO 4217 — Codes for the representation of currencies",
+            "Unicode CLDR currency display data, for the sign each code is written with",
+        ],
+        checks: &[
+            "the sign is one CLDR publishes for a currency in current use, in either its standard \
+             or its narrow form",
+            "capitals in front of the sign are kept only where the pair is a symbol somebody \
+             writes — A$, CN¥, R$; otherwise the span narrows to the sign alone",
+            "every thousands group is exactly three digits",
+            "the fraction is no longer than the currency's own minor units",
+            "nothing alphanumeric and no separator touches the match on either side",
+        ],
+        not_checked: &[
+            "which currency a shared sign means: $ is written for twenty-nine currencies and £ \
+             for six, so the value names the most widely used of them and carries the \
+             ambiguous-currency flag, which is the case that flag exists for",
+            "the decimal convention where the number allows both readings, reported with the \
+             separator-inferred flag",
+            "currency names spelled out in words, and the letter-only symbols such as kr and zł",
+        ],
+        authorities: &[Authority {
+            name: "Unicode CLDR",
+            role: "publishes the currency signs and the minor-unit digits",
+            url: "https://cldr.unicode.org/",
+        }],
+        ftm: FtmMapping {
+            schema: "Value",
+            property: "amount",
+            note: "FollowTheMoney defines amount and currency on the abstract Value schema, which Payment and the other monetary schemas inherit; a symbol that resolves to more than one code sets the ambiguous-currency flag rather than picking silently.",
+        },
+        references: &[Reference {
+            title: "CLDR currency display data",
+            url: "https://github.com/unicode-org/cldr-json",
+            note: "where the symbol table is transformed from",
+        }],
+    },
 ];

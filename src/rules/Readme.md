@@ -19,6 +19,7 @@ pattern, a validator and a fixture — not a new pipeline.
 | `extras.rs` | `vulnerability.cve`, `publication.doi`, `publication.orcid`, `message.rfc5322` |
 | `coordinates.rs` | `coord.decimal`, `coord.dms`, `coord.plus_code` |
 | `crypto.rs` | `crypto.ethereum`, `crypto.bitcoin` |
+| `money.rs` | `money.iso_code`, `money.symbol` |
 | `national_id.rs` | `natid.it_codice_fiscale`, `natid.es_nif_nie`, `natid.mx_curp`, `natid.in_pan` |
 
 ## A date rule ships only when the match fixes the whole day

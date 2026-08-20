@@ -30,6 +30,19 @@ pub struct IbanCountry {
     pub bank: Option<[usize; 2]>,
 }
 
+/// One ISO 4217 code: how many minor units it divides into, and what it is called.
+///
+/// The exponent is the whole reason this is data rather than a constant. A sum of money is stored
+/// as a scaled integer, and the scale is three for the Bahraini dinar, zero for the Japanese yen
+/// and two for most of the rest — so `1.5` is 1500, 1 or 150 depending only on the code beside it.
+#[derive(Debug, Deserialize)]
+pub struct Currency {
+    /// ISO 4217 minor units: the number of decimal places the amount is scaled by.
+    pub exponent: u8,
+    /// The English name, for the explainer card.
+    pub name: String,
+}
+
 /// The IANA list and whatever else the validators and the explainer need to distinguish a real
 /// match from a plausible-looking one, and to say what it belongs to.
 #[derive(Debug, Default)]
@@ -42,6 +55,11 @@ pub struct VendoredData {
     iban_registry: HashMap<String, IbanCountry>,
     /// ITU Maritime Identification Digits to the ISO 3166-1 alpha-2 code of the flag state.
     maritime_ids: HashMap<String, String>,
+    /// ISO 4217 code to its minor units and name, restricted to the codes in current use.
+    currencies: HashMap<String, Currency>,
+    /// Currency symbol to the codes it can mean, most widely used first. A one-entry list is an
+    /// unambiguous symbol; a longer one is what the ambiguous-currency flag reports.
+    currency_symbols: HashMap<String, Vec<String>>,
 }
 
 impl VendoredData {
@@ -121,11 +139,45 @@ impl VendoredData {
             maritime_ids.len()
         );
 
+        let currency_file: PathBuf = root.join("data/cldr/iso4217.json");
+        let raw = std::fs::read_to_string(&currency_file).with_context(|| {
+            format!(
+                "reading the vendored currency table at {}",
+                currency_file.display()
+            )
+        })?;
+        let currencies: HashMap<String, Currency> =
+            serde_json::from_str(&raw).context("parsing the vendored currency table")?;
+
+        anyhow::ensure!(
+            currencies.len() > 120,
+            "the vendored currency table holds only {} codes, which means it is truncated",
+            currencies.len()
+        );
+
+        let symbol_file: PathBuf = root.join("data/cldr/currency-symbols.json");
+        let raw = std::fs::read_to_string(&symbol_file).with_context(|| {
+            format!(
+                "reading the vendored currency symbols at {}",
+                symbol_file.display()
+            )
+        })?;
+        let currency_symbols: HashMap<String, Vec<String>> =
+            serde_json::from_str(&raw).context("parsing the vendored currency symbols")?;
+
+        anyhow::ensure!(
+            currency_symbols.len() > 40,
+            "the vendored currency symbol table holds only {} symbols, which means it is truncated",
+            currency_symbols.len()
+        );
+
         Ok(Self {
             tlds,
             territories,
             iban_registry,
             maritime_ids,
+            currencies,
+            currency_symbols,
         })
     }
 
@@ -169,6 +221,18 @@ impl VendoredData {
 
     /// The IBAN registry entry for a country code, or `None` for a country that issues no IBANs —
     /// which is itself a rejection, and a decisive one.
+    /// The minor units and name for an ISO 4217 code in current use. A code this returns `None`
+    /// for is either historical or not a currency, and both are reasons to reject the candidate.
+    pub fn currency(&self, code: &str) -> Option<&Currency> {
+        self.currencies.get(code)
+    }
+
+    /// The codes a symbol can mean, most widely used first. `€` yields one code; `$` yields
+    /// twenty-nine, and nothing in the text decides between them.
+    pub fn currency_symbol(&self, symbol: &str) -> Option<&[String]> {
+        self.currency_symbols.get(symbol).map(Vec::as_slice)
+    }
+
     pub fn iban_country(&self, alpha2: &str) -> Option<&IbanCountry> {
         self.iban_registry.get(&alpha2.to_uppercase())
     }

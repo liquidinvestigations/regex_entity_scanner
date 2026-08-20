@@ -1,7 +1,8 @@
 # regex-entity-scanner
 
 A stateless Rust service that reads UTF-8 text and returns typed, normalised entity spans: dates,
-email addresses, network and cryptocurrency addresses, coordinates, and the large tier of
+sums of money, email addresses, network and cryptocurrency addresses, coordinates, and the large
+tier of
 checksummed structured identifiers — IBAN, BIC, LEI, ISIN, IMO, MMSI, container, IMEI, DOI, ORCID
 and national identity numbers among them.
 
@@ -182,6 +183,8 @@ Compiled today:
 | `coordinates` | `coord.decimal` | Latitude and longitude ranges, and at least four decimal places on both sides, because a coarser pair is a pair of measurements as often as a place. |
 | `coordinates` | `coord.dms` | Both hemispheres present, minutes and seconds below sixty, and the ranges after the sign is applied. Normalises to decimal degrees. |
 | `coordinates` | `coord.plus_code` | The vowel-free Open Location Code alphabet, the separator's position, and the first pair's range. Decodes to the centre of the cell. |
+| `money` | `money.iso_code` | The three-letter code is in ISO 4217 and in current use; every thousands group is exactly three digits; the fraction is no longer than the currency's own minor units. A code that is also an English word — ALL, TOP, CUP, TRY — additionally needs a word about money nearby. |
+| `money` | `money.symbol` | The sign is one CLDR publishes for a currency in current use, in its standard or narrow form. A sign shared by several currencies names the most widely used one and carries the ambiguous-currency flag. |
 | `message_id` | `message.rfc5322` | Angle brackets, a registered top-level domain on the right-hand side, and a header name — Message-ID, In-Reply-To, References — nearby, because a `From` line has the same shape. |
 
 Full RFC 5322 is deliberately not the target for email: it accepts a great deal nobody writes, and

@@ -37,6 +37,7 @@ pub fn build(doc: &'static RuleDoc, request: &ExplainRequest, data: &VendoredDat
         "bank.bic" => bank_bic(&mut card, request, data),
         "security.isin" => security_isin(&mut card, request, data),
         "vessel.mmsi" => vessel_mmsi(&mut card, request, data),
+        "money.iso_code" | "money.symbol" => money(&mut card, request, data),
         _ => None,
     };
 
@@ -325,6 +326,48 @@ fn vessel_mmsi(
          no check digit and is reassigned when a vessel changes flag or owner, so it identifies a \
          radio station at a point in time rather than a hull for life."
     ))
+}
+
+/// Money: the stored value is a scaled integer, which is the right thing to index and the wrong
+/// thing to show. The card puts the digits back where a reader expects them and names the currency
+/// the code stands for.
+fn money(card: &mut Explanation, request: &ExplainRequest, data: &VendoredData) -> Option<String> {
+    let code = request.value_str("currency")?;
+    let minor = request.value_str("amount_minor")?;
+    let exponent = usize::try_from(request.value.get("exponent")?.as_u64()?).ok()?;
+
+    let name = data.currency(code).map(|currency| currency.name.as_str());
+    let readable = with_decimal_point(minor, exponent);
+
+    card.subtitle = match name {
+        Some(name) => format!("{readable} {code} · {name}"),
+        None => format!("{readable} {code}"),
+    };
+    card.facts.push(Fact::new("Amount", readable.clone()));
+    card.facts.push(Fact::new("Currency", code));
+    if let Some(name) = name {
+        card.facts.push(Fact::new("Currency name", name));
+    }
+    card.facts.push(Fact::new("Minor units", minor));
+    card.facts
+        .push(Fact::new("Minor unit digits", exponent.to_string()));
+
+    Some(format!(
+        "The value is stored as `{minor}`, an integer number of minor units, together with the \
+         code `{code}` and the {exponent} decimal places that code divides into — never as a \
+         decimal fraction, because binary floating point cannot hold one exactly and a sum of \
+         money that has lost a cent has lost it silently. Written out, that is {readable} {code}."
+    ))
+}
+
+/// The minor-unit integer with its decimal point put back, for display only.
+fn with_decimal_point(minor: &str, exponent: usize) -> String {
+    if exponent == 0 {
+        return minor.to_string();
+    }
+    let padded = format!("{minor:0>width$}", width = exponent + 1);
+    let split = padded.len() - exponent;
+    format!("{}.{}", &padded[..split], &padded[split..])
 }
 
 /// The country an identifier carries in its own characters, resolved to a name a reader knows.
