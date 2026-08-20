@@ -200,4 +200,137 @@ static RULE_DOCS: &[RuleDoc] = &[
             },
         ],
     },
+    RuleDoc {
+        rule_id: "date.rfc2822",
+        entity_type: EntityType::Date,
+        title: "Mail header date",
+        matches: "The date line of an email or news message — Tue, 04 Mar 2021 09:12:00 +0200. \
+                  Written by mail software rather than by people, so it is consistently spelled, \
+                  and it carries the day of the week alongside the date.",
+        standards: &[
+            "RFC 5322 §3.3 — Internet Message Format, the date and time specification",
+            "RFC 2822 §3.3 — the previous revision, whose obsolete zone abbreviations are still \
+             emitted",
+        ],
+        checks: &[
+            "the day of the week agrees with the calendar date, which a mangled or fabricated \
+             header rarely does",
+            "the date exists in the proleptic Gregorian calendar, and the clock is a real time of \
+             day",
+            "the year falls inside a plausibility window",
+            "the zone is a numeric offset no further than eighteen hours from UTC, or one of the \
+             North American abbreviations the obsolete grammar allows",
+            "nothing alphanumeric runs into the match from either side",
+        ],
+        not_checked: &[
+            "whether the message exists, was sent, or was sent when it says",
+            "which named time zone the offset belongs to — many zones share an offset at different \
+             times of year",
+        ],
+        authorities: &[Authority {
+            name: "Internet Engineering Task Force",
+            role: "publishes the Internet Message Format specification",
+            url: "https://www.ietf.org/",
+        }],
+        ftm: FtmMapping {
+            schema: "Analyzable",
+            property: "res:dateMentioned",
+            note: "FollowTheMoney has Document.date for the date a document carries as its own, \
+                   and no property for a date mentioned in its text, so the mention is a local \
+                   extension alongside the other Analyzable mention properties.",
+        },
+        references: &[
+            Reference {
+                title: "RFC 5322 §3.3",
+                url: "https://www.rfc-editor.org/rfc/rfc5322#section-3.3",
+                note: "the grammar this rule matches",
+            },
+            Reference {
+                title: "RFC 5322 §4.3",
+                url: "https://www.rfc-editor.org/rfc/rfc5322#section-4.3",
+                note: "the obsolete zone abbreviations and what they mean",
+            },
+        ],
+    },
+    RuleDoc {
+        rule_id: "date.clf",
+        entity_type: EntityType::Date,
+        title: "Web server log timestamp",
+        matches: "The bracketed timestamp of the Common Log Format — [04/Mar/2021:09:12:00 +0200] \
+                  — emitted by Apache, nginx and everything that imitates them. The brackets and \
+                  the colon between date and clock make it self-identifying, which is why it needs \
+                  no cue word.",
+        standards: &[
+            "NCSA Common Log Format, as implemented by the Apache HTTP Server mod_log_config \
+             %t directive",
+        ],
+        checks: &[
+            "the surrounding brackets are present, which is what distinguishes the format from a \
+             slashed date somebody wrote by hand",
+            "the date exists in the proleptic Gregorian calendar, and the clock is a real time of \
+             day",
+            "the year falls inside a plausibility window",
+            "the zone is a numeric offset no further than eighteen hours from UTC",
+        ],
+        not_checked: &[
+            "whether the request being logged happened, or happened then",
+            "which named time zone the offset belongs to",
+        ],
+        authorities: &[Authority {
+            name: "The Apache Software Foundation",
+            role: "documents the log format the rest of the ecosystem copies",
+            url: "https://httpd.apache.org/docs/current/mod/mod_log_config.html",
+        }],
+        ftm: FtmMapping {
+            schema: "Analyzable",
+            property: "res:dateMentioned",
+            note: "FollowTheMoney has Document.date for the date a document carries as its own, \
+                   and no property for a date mentioned in its text, so the mention is a local \
+                   extension alongside the other Analyzable mention properties.",
+        },
+        references: &[Reference {
+            title: "Apache mod_log_config",
+            url: "https://httpd.apache.org/docs/current/mod/mod_log_config.html",
+            note: "the %t directive that produces this timestamp",
+        }],
+    },
+    RuleDoc {
+        rule_id: "date.iso_week",
+        entity_type: EntityType::Date,
+        title: "ISO week date",
+        matches: "A day named by its ISO week and weekday — 2021-W09-4, or 2021W094 in the basic \
+                  spelling. Common in manufacturing, logistics and payroll data, where the week is \
+                  the planning unit.",
+        standards: &["ISO 8601 §4.1.4 — week date representations"],
+        checks: &[
+            "the week exists in that ISO year, so week 53 is accepted only in the years that have \
+             one",
+            "the weekday is 1 to 7 counted from Monday, as ISO numbers them",
+            "the year falls inside a plausibility window",
+            "nothing alphanumeric runs into the match from either side, which is what keeps the \
+             shape out of serial numbers",
+        ],
+        not_checked: &[
+            "the time of day, which the format does not carry",
+            "that the ISO year is the calendar year — the first days of January can belong to the \
+             previous ISO year, and the value is the calendar date it resolves to",
+        ],
+        authorities: &[Authority {
+            name: "International Organization for Standardization",
+            role: "publishes ISO 8601",
+            url: "https://www.iso.org/iso-8601-date-and-time-format.html",
+        }],
+        ftm: FtmMapping {
+            schema: "Analyzable",
+            property: "res:dateMentioned",
+            note: "FollowTheMoney has Document.date for the date a document carries as its own, \
+                   and no property for a date mentioned in its text, so the mention is a local \
+                   extension alongside the other Analyzable mention properties.",
+        },
+        references: &[Reference {
+            title: "ISO 8601 at ISO",
+            url: "https://www.iso.org/iso-8601-date-and-time-format.html",
+            note: "the standard that defines the week numbering",
+        }],
+    },
 ];

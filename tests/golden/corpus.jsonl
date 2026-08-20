@@ -28,3 +28,13 @@
 {"name": "hash is neither", "text": "sha256:9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08", "expect": []}
 {"name": "impossible clock beside a bare date", "text": "logged 2021-03-04T25:00:00Z then 2021-03-05", "expect": [{"type": "date", "text": "2021-03-04", "value": "2021-03-04"}, {"type": "date", "text": "2021-03-05", "value": "2021-03-05"}]}
 {"name": "unregistered tld beside a real address", "text": "notes@example.zzz billing@example.com", "expect": [{"type": "email", "text": "billing@example.com", "value": "billing@example.com"}]}
+{"name": "mail header date", "text": "Date: Thu, 04 Mar 2021 09:12:00 +0200", "expect": [{"type": "date", "text": "Thu, 04 Mar 2021 09:12:00 +0200", "value": "2021-03-04T09:12:00+02:00"}]}
+{"name": "mail header date with a wrong weekday", "text": "Date: Mon, 04 Mar 2021 09:12:00 +0200", "expect": []}
+{"name": "common log format line", "text": "10.0.0.4 - - [04/Mar/2021:09:12:00 +0200] \"GET /index HTTP/1.1\" 200 512", "expect": [{"type": "date", "text": "04/Mar/2021:09:12:00 +0200", "value": "2021-03-04T09:12:00+02:00"}]}
+{"name": "slashed date without the log brackets", "text": "invoice dated 04/Mar/2021 and paid", "expect": []}
+{"name": "iso week date", "text": "shipped in 2021-W09-4 per the plan", "expect": [{"type": "date", "text": "2021-W09-4", "value": "2021-03-04"}]}
+{"name": "iso week date in the basic spelling", "text": "lot code 2021W094 on the label", "expect": [{"type": "date", "text": "2021W094", "value": "2021-03-04"}]}
+{"name": "a week that does not exist in that year", "text": "shipped in 2021-W53-1 per the plan", "expect": []}
+{"name": "a week without a weekday names no day", "text": "reporting period 2021-W09", "expect": []}
+{"name": "yearless syslog stamp", "text": "Mar  4 09:12:00 host sshd[2114]: accepted", "expect": []}
+{"name": "bare eight digit date shape", "text": "batch 20210304 released", "expect": []}

@@ -3,6 +3,26 @@
 One module per entity type. A rule is a candidate pattern plus a validator, and adding a type is a
 pattern, a validator and a fixture — not a new pipeline.
 
+## The inventory
+
+| Module | Rules |
+|---|---|
+| `email.rs` | `email.basic` |
+| `date_iso.rs` | `date.iso8601` |
+| `date_machine.rs` | `date.rfc2822`, `date.clf`, `date.iso_week` |
+
+## A date rule ships only when the match fixes the whole day
+
+Standing policy for the `date` type, and the reason there are four date rules rather than six: **a
+date rule emits nothing unless the match itself determines year, month and day.**
+
+Yearless formats are therefore not matched — a syslog line's `Mar  4 09:12:00` would have to have
+its year invented, taken from document state this service does not hold, or left out of a value a
+range query then cannot use. Bare `YYYYMMDD` is not matched either: it does fix the whole day, but
+eight adjacent digits with a valid calendar reading is the noisiest date shape there is, and in an
+identifier-heavy corpus most of them are not dates. It is the same policy that keeps `2021-W09` out
+of `date.iso_week`, which names a week rather than a day.
+
 ## The rule-set version
 
 `RULE_SET_VERSION` ships on every scan response and on `/health` and `/rules`, and it is what makes

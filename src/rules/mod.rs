@@ -12,6 +12,7 @@
 pub mod checksum;
 pub mod context;
 pub mod date_iso;
+pub mod date_machine;
 pub mod email;
 
 use crate::data::VendoredData;
@@ -85,5 +86,11 @@ pub trait Rule: Send + Sync {
 
 /// Every rule the scanner knows about.
 pub fn all() -> Vec<Box<dyn Rule>> {
-    vec![Box::new(email::EmailRule), Box::new(date_iso::Iso8601Rule)]
+    vec![
+        Box::new(email::EmailRule),
+        Box::new(date_iso::Iso8601Rule),
+        Box::new(date_machine::Rfc2822Rule),
+        Box::new(date_machine::ClfRule),
+        Box::new(date_machine::IsoWeekRule),
+    ]
 }

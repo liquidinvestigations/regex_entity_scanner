@@ -119,3 +119,75 @@ fn shrinking_a_candidate_does_not_defeat_the_adjacent_digit_guard() {
     let entities = scanner.scan("ref 992021-03-0412 recorded", 0);
     assert!(entities.is_empty(), "{entities:?}");
 }
+
+/// The weekday is the strong half of a mail header date: a header whose day of the week disagrees
+/// with its calendar date has been mangled or invented.
+#[test]
+fn a_mail_header_date_needs_a_consistent_weekday() {
+    let (rfc3339, precision, tz_known) =
+        date_value("Date: Thu, 04 Mar 2021 09:12:00 +0200\r\nFrom: ops");
+    assert_eq!(rfc3339, "2021-03-04T09:12:00+02:00");
+    assert_eq!(precision, DatePrecision::Second);
+    assert!(tz_known);
+
+    let scanner = support::scanner();
+    let entities = scanner.scan("Date: Tue, 04 Mar 2021 09:12:00 +0200", 0);
+    assert!(entities.is_empty(), "{entities:?}");
+}
+
+/// The obsolete zone abbreviations are still emitted by real mail software, and two spellings of
+/// the same instant have to land on one value.
+#[test]
+fn obsolete_zone_abbreviations_normalise() {
+    let (rfc3339, ..) = date_value("Sent Thu, 04 Mar 2021 09:12:00 GMT by the gateway");
+    assert_eq!(rfc3339, "2021-03-04T09:12:00Z");
+    let (rfc3339, ..) = date_value("Sent Thu, 04 Mar 2021 09:12:00 PST by the gateway");
+    assert_eq!(rfc3339, "2021-03-04T09:12:00-08:00");
+}
+
+/// The brackets make the log timestamp self-identifying, and they are not part of the date the
+/// reader sees highlighted.
+#[test]
+fn a_log_timestamp_reports_the_span_inside_its_brackets() {
+    let scanner = support::scanner();
+    let entities = scanner.scan(
+        r#"10.0.0.4 - - [04/Mar/2021:09:12:00 +0200] "GET / HTTP/1.1" 200"#,
+        0,
+    );
+    assert_eq!(entities.len(), 1, "{entities:?}");
+    assert_eq!(entities[0].text, "04/Mar/2021:09:12:00 +0200");
+    match &entities[0].value {
+        Value::Date { rfc3339, .. } => assert_eq!(rfc3339, "2021-03-04T09:12:00+02:00"),
+        other => panic!("expected a date value, got {other:?}"),
+    }
+}
+
+/// Week 53 exists only in the years that have one, which is the arithmetic that makes an ISO week
+/// date a checked format rather than a shape.
+#[test]
+fn iso_week_dates_resolve_to_a_calendar_day() {
+    let (rfc3339, precision, tz_known) = date_value("run 2021-W09-4 of the batch");
+    assert_eq!(rfc3339, "2021-03-04");
+    assert_eq!(precision, DatePrecision::Day);
+    assert!(!tz_known);
+
+    let (rfc3339, ..) = date_value("run 2021W094 of the batch");
+    assert_eq!(rfc3339, "2021-03-04");
+
+    let scanner = support::scanner();
+    for text in ["batch 2021-W53-1", "batch 2021-W09-8", "batch 2021-W00-1"] {
+        let entities = scanner.scan(text, 0);
+        assert!(entities.is_empty(), "{text:?} produced {entities:?}");
+    }
+}
+
+/// A date rule emits nothing unless the match fixes year, month and day. A week without a weekday
+/// names a week, and a syslog line names no year at all.
+#[test]
+fn formats_that_do_not_fix_a_whole_day_are_not_matched() {
+    let scanner = support::scanner();
+    for text in ["reported in 2021-W09", "Mar  4 09:12:00 host sshd[1]: ok"] {
+        let entities = scanner.scan(text, 0);
+        assert!(entities.is_empty(), "{text:?} produced {entities:?}");
+    }
+}

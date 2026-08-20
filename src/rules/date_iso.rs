@@ -134,5 +134,8 @@ fn normalise_offset(offset: &str) -> Option<String> {
     if hours > 18 || minutes > 59 {
         return None;
     }
+    if hours == 0 && minutes == 0 {
+        return Some("Z".to_string());
+    }
     Some(format!("{sign}{hours:02}:{minutes:02}"))
 }

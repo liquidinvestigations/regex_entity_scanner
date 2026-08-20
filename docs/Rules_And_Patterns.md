@@ -109,6 +109,26 @@ matched case-insensitively and on ASCII word boundaries. The window is 48 bytes,
 The cue list lives with the rule and appears verbatim in its catalogue entry: "this was accepted
 because the word IMO was nearby" is exactly what a reader needs in order to weigh the match.
 
+## A date rule ships only when the match fixes the whole day
+
+Standing policy for the `date` type: **a date rule emits nothing unless the match itself determines
+year, month and day.** A format that leaves any of the three to be inferred is not matched at all.
+
+Two consequences, both deliberate:
+
+- **Yearless formats are not matched.** A syslog line's `Mar  4 09:12:00` carries no year, and the
+  only ways to supply one are to invent it, to take it from the surrounding document, or to emit a
+  partial value. The first is a silently wrong date in an investigative index, the second is state
+  a stateless scanner does not have, and the third puts a value in a date field that a range query
+  cannot use. So the rule does not exist, and the model needs no partial-date flag.
+- **Bare `YYYYMMDD` is not matched.** Eight adjacent digits with a valid calendar reading is the
+  noisiest date shape there is, and in an identifier-heavy corpus most of them are not dates. It
+  determines the whole day, so it does not fail the rule above — it fails on precision, which is a
+  different and equally sufficient reason. An honest version of it needs a cue word or a
+  document-level format prior.
+
+The same policy is what keeps `2021-W09` out of `date.iso_week`: it names a week, not a day.
+
 ## At most six rules per entity type
 
 An entity type is a facet somebody indexes, and a facet fed by a dozen loosely related rules stops
