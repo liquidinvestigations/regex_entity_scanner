@@ -96,3 +96,8 @@
 {"name": "decimal coordinates in a note", "text": "meet at 48.8583, 2.2945 tomorrow", "expect": [{"type": "coordinates", "text": "48.8583, 2.2945", "value": "48.8583,2.2945"}]}
 {"name": "coarse number pair is not a coordinate", "text": "readings of 12.345, 67.890 were logged", "expect": []}
 {"name": "plus code in an address line", "text": "the office is at 8FVC9G8F+6W", "expect": [{"type": "coordinates", "text": "8FVC9G8F+6W", "value": "47.3655625,8.524812500000001"}]}
+{"name": "bitcoin address in a ransom note", "text": "send to 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa within 48 hours", "expect": [{"type": "crypto_wallet", "text": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", "value": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"}]}
+{"name": "segwit address in an invoice", "text": "pay bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4 today", "expect": [{"type": "crypto_wallet", "text": "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4", "value": "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4"}]}
+{"name": "bitcoin address with a broken checksum", "text": "send to 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNb within 48 hours", "expect": []}
+{"name": "checksummed ethereum address", "text": "wallet 0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed drained", "expect": [{"type": "crypto_wallet", "text": "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed", "value": "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"}]}
+{"name": "ethereum address with the wrong capitalisation", "text": "wallet 0x5aAeb6053f3E94C9b9A09f33669435E7Ef1BeAed drained", "expect": []}

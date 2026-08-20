@@ -168,6 +168,8 @@ Compiled today:
 | `vulnerability` | `vulnerability.cve` | The literal `CVE-` prefix and a year inside the scheme's own window. |
 | `publication` | `publication.doi` | The `10.` directory code, a registrant code and a non-empty suffix; sentence punctuation is trimmed off the span. |
 | `publication` | `publication.orcid` | The ISO 7064 mod 11-2 check character, with a final `X` standing for ten. |
+| `crypto_wallet` | `crypto.bitcoin` | The base58check or bech32 checksum, and a version byte or witness program the standard defines. |
+| `crypto_wallet` | `crypto.ethereum` | Where the address is mixed case, the EIP-55 checksum hidden in the capitalisation; where it is not, the shape only, reported with a lower confidence and the no-checksum flag. |
 | `coordinates` | `coord.decimal` | Latitude and longitude ranges, and at least four decimal places on both sides, because a coarser pair is a pair of measurements as often as a place. |
 | `coordinates` | `coord.dms` | Both hemispheres present, minutes and seconds below sixty, and the ranges after the sign is applied. Normalises to decimal degrees. |
 | `coordinates` | `coord.plus_code` | The vowel-free Open Location Code alphabet, the separator's position, and the first pair's range. Decodes to the centre of the cell. |

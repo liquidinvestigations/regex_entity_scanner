@@ -14,6 +14,7 @@ pub mod checksum;
 pub mod company;
 pub mod context;
 pub mod coordinates;
+pub mod crypto;
 pub mod date_iso;
 pub mod date_machine;
 pub mod device;
@@ -120,5 +121,7 @@ pub fn all() -> Vec<Box<dyn Rule>> {
         Box::new(coordinates::DecimalRule),
         Box::new(coordinates::DmsRule),
         Box::new(coordinates::PlusCodeRule),
+        Box::new(crypto::EthereumRule),
+        Box::new(crypto::BitcoinRule),
     ]
 }

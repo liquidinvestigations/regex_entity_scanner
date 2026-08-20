@@ -1178,4 +1178,86 @@ static RULE_DOCS: &[RuleDoc] = &[
             note: "the alphabet, the encoding and the cell sizes",
         }],
     },
+    RuleDoc {
+        rule_id: "crypto.ethereum",
+        entity_type: EntityType::CryptoWallet,
+        title: "Ethereum address",
+        matches: "The twenty-byte account address used by Ethereum and by every chain that copied \
+                  its address format, written as 0x and forty hexadecimal characters.",
+        standards: &[
+            "EIP-55 — Mixed-case checksum address encoding",
+            "The Ethereum yellow paper's account address definition",
+        ],
+        checks: &[
+            "0x followed by exactly forty hexadecimal characters, with nothing alphanumeric \
+             touching the match on either side",
+            "where the address is written in mixed case, the EIP-55 checksum: each hex letter's \
+             capitalisation is the corresponding nibble of the Keccak-256 hash of the lower-case \
+             address, above or below eight",
+        ],
+        not_checked: &[
+            "an address written entirely in one case, which carries no checksum at all — those \
+             are reported with the no-checksum flag and a markedly lower confidence, because \
+             nothing about them was verified",
+            "whether the account exists, holds a balance, or is a contract rather than a wallet",
+            "which chain it belongs to: the same address is valid on every EVM network",
+        ],
+        authorities: &[Authority {
+            name: "Ethereum Foundation",
+            role: "stewards the specification and the EIP process",
+            url: "https://ethereum.org/",
+        }],
+        ftm: FtmMapping {
+            schema: "CryptoWallet",
+            property: "publicKey",
+            note: "FollowTheMoney's CryptoWallet schema uses publicKey as the address; the chain \
+                   is carried in the value's parts rather than invented as a property.",
+        },
+        references: &[Reference {
+            title: "EIP-55",
+            url: "https://eips.ethereum.org/EIPS/eip-55",
+            note: "the mixed-case checksum, and why a lower-case address cannot be checked",
+        }],
+    },
+    RuleDoc {
+        rule_id: "crypto.bitcoin",
+        entity_type: EntityType::CryptoWallet,
+        title: "Bitcoin address",
+        matches: "A Bitcoin payment address in any of the forms in use: the legacy base58check \
+                  addresses beginning 1 or 3, and the native segwit addresses beginning bc1.",
+        standards: &[
+            "BIP-13 — Address format for pay-to-script-hash",
+            "BIP-173 and BIP-350 — Bech32 and bech32m addresses for native segwit",
+        ],
+        checks: &[
+            "for a base58 address, the base58check checksum: the last four bytes are the first \
+             four of the double SHA-256 of everything before them",
+            "the version byte is 0 or 5, so a test-network address is not reported as a Bitcoin one",
+            "for a bc1 address, the bech32 or bech32m checksum, plus a witness version and program \
+             length the standard actually defines",
+            "nothing alphanumeric touches the match on either side",
+        ],
+        not_checked: &[
+            "whether the address has ever been used, holds a balance, or belongs to anyone the \
+             surrounding text names",
+            "addresses of other chains that share the base58check format — the version byte is \
+             what excludes them, and it excludes them silently",
+        ],
+        authorities: &[Authority {
+            name: "The Bitcoin Improvement Proposal process",
+            role: "publishes the address format specifications",
+            url: "https://github.com/bitcoin/bips",
+        }],
+        ftm: FtmMapping {
+            schema: "CryptoWallet",
+            property: "publicKey",
+            note: "FollowTheMoney's CryptoWallet schema uses publicKey as the address; the chain \
+                   is carried in the value's parts rather than invented as a property.",
+        },
+        references: &[Reference {
+            title: "BIP-173, bech32 addresses",
+            url: "https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki",
+            note: "the segwit address format and its checksum",
+        }],
+    },
 ];

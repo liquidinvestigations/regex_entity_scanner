@@ -18,6 +18,7 @@ pattern, a validator and a fixture — not a new pipeline.
 | `network.rs` | `network.ip`, `network.asn` |
 | `extras.rs` | `vulnerability.cve`, `publication.doi`, `publication.orcid`, `message.rfc5322` |
 | `coordinates.rs` | `coord.decimal`, `coord.dms`, `coord.plus_code` |
+| `crypto.rs` | `crypto.ethereum`, `crypto.bitcoin` |
 
 ## A date rule ships only when the match fixes the whole day
 

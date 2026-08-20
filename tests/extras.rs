@@ -7,7 +7,7 @@
 
 mod support;
 
-use regex_entity_scanner::model::{EntityType, Value};
+use regex_entity_scanner::model::{EntityType, Flag, Value};
 
 fn only_match(text: &str) -> (String, String) {
     let scanner = support::scanner();
@@ -184,4 +184,60 @@ fn rejects_plus_codes_outside_the_alphabet_or_the_range() {
     rejects("code XFVC9G8F+6W is not a place");
     // The alphabet has no vowels, so this is a word with a plus after it.
     rejects("code 8FVCAG8F+6W is not a place");
+}
+
+/// EIP-55 hides the checksum in the capitalisation, so a mixed-case address is verified and a
+/// single-case one is only structurally valid — which is what the confidence and the flag say.
+#[test]
+fn a_mixed_case_ethereum_address_is_verified_and_a_lower_case_one_is_not() {
+    let scanner = support::scanner();
+    let entities = scanner.scan("send to 0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed", 0);
+    assert_eq!(entities.len(), 1, "{entities:?}");
+    assert_eq!(entities[0].entity_type, EntityType::CryptoWallet);
+    assert!(entities[0].confidence > 0.98, "{entities:?}");
+    assert!(entities[0].flags.is_empty(), "{entities:?}");
+
+    let entities = scanner.scan("send to 0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed", 0);
+    assert_eq!(entities.len(), 1, "{entities:?}");
+    assert!(entities[0].confidence < 0.9, "{entities:?}");
+    assert!(
+        entities[0].flags.contains(&Flag::NoChecksum),
+        "{entities:?}"
+    );
+}
+
+#[test]
+fn rejects_an_ethereum_address_whose_capitalisation_disagrees() {
+    rejects("send to 0x5aAeb6053f3E94C9b9A09f33669435E7Ef1BeAed");
+}
+
+#[test]
+fn accepts_bitcoin_addresses_in_each_form() {
+    assert_eq!(
+        only_match("paid to 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"),
+        (
+            "bitcoin".to_string(),
+            "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa".to_string()
+        )
+    );
+    assert_eq!(
+        only_match("paid to 3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy"),
+        (
+            "bitcoin".to_string(),
+            "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy".to_string()
+        )
+    );
+    assert_eq!(
+        only_match("paid to bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4"),
+        (
+            "bitcoin".to_string(),
+            "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4".to_string()
+        )
+    );
+}
+
+#[test]
+fn rejects_bitcoin_addresses_whose_checksum_disagrees() {
+    rejects("paid to 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNb");
+    rejects("paid to bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t5");
 }
