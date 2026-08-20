@@ -38,7 +38,7 @@ use crate::model::{EntityType, Flag, Value};
 /// What bumps it: any change to a candidate pattern, any change to a validator's accept or reject
 /// boundary or to the value it normalises to, and any rule added or removed. What does not: card
 /// text, a doc comment, a catalogue entry, because none of those change what a document yields.
-pub const RULE_SET_VERSION: u32 = 12;
+pub const RULE_SET_VERSION: u32 = 13;
 
 /// A span the prefilter proposed, with the surrounding fragment available for the guard checks.
 pub struct Candidate<'a> {
@@ -94,6 +94,23 @@ pub trait Rule: Send + Sync {
 
     /// Decides whether the candidate is real and what it means. `None` rejects it.
     fn validate(&self, candidate: &Candidate<'_>) -> Option<Verdict>;
+
+    /// Whether rejecting a candidate of this rule should resume the search past it, instead of
+    /// only looking inside it.
+    ///
+    /// The scan loop's recovery re-runs the pattern over a rejected candidate's **interior**,
+    /// which by construction cannot find a match ending past the candidate's right edge. That edge
+    /// matters only for a pattern whose marker may *trail* its number. The engine is
+    /// leftmost-first, so in `1 $10 dollars` the trailing-sign alternative matches `1 $` at offset
+    /// 0 before the leading-sign alternative can match `$10` at offset 2; the interior of `1 $`
+    /// holds nothing, and `$10` is never proposed at all.
+    ///
+    /// The two money rules are the only patterns in the set with a trailing-marker alternation, so
+    /// they are the only ones that buy the extra linear pass. It is off by default because the
+    /// pass is real work and a rule that cannot need it should not pay for it.
+    fn resumes_past_rejection(&self) -> bool {
+        false
+    }
 }
 
 /// Every rule the scanner knows about.

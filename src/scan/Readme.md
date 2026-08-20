@@ -46,11 +46,19 @@ the adjacent-byte guards read the real neighbours rather than the edges of a sli
 
 The recovery searches the rejected candidate's **interior**, which is what bounds its cost, and that
 bound has a visible edge: a match that begins inside a rejected candidate and ends past its right
-edge is not recovered. In `1 $10 dollars bill` a money pattern's trailing-sign alternative matches
-`1 $` first — the engine is leftmost-first, so a match at offset 0 wins over the better one at
-offset 2 — the validator rejects it because a digit follows, and `$10` is never proposed at all.
-Recovering it means re-searching the rest of the fragment on every rejection, which is linear work
-per rejection and is exactly the cost the caps exist to refuse.
+edge is not there to be found. That edge matters for one shape — a pattern whose marker may *trail*
+its number. In `1 $10 dollars bill` a money pattern's trailing-sign alternative matches `1 $` first,
+because the engine is leftmost-first and a match at offset 0 wins over the better one at offset 2;
+the validator rejects it, the interior of `1 $` holds nothing, and `$10` is never proposed at all.
+
+A rule that has that shape says so — `Rule::resumes_past_rejection` — and rejection then also queues
+the rule's next match at or after one character past the rejection, searched over the **whole
+fragment** rather than a slice of it, so the boundaries the pattern sees stay the real ones. The two
+money rules are the only patterns in the set with a trailing-marker alternation, and they are the
+only ones that pay for the extra pass. Its budget is separate and much smaller than the interior
+retry's, thirty-two per fragment, because a resume is a linear pass rather than a look inside one
+candidate: the budget is what keeps the worst case a small constant multiple of a scan instead of a
+quadratic in the fragment.
 
 The retry is capped at eight per candidate and two hundred and fifty-six per fragment, which makes
 it best-effort by construction. That is deliberate: unbounded retry is quadratic in the fragment on

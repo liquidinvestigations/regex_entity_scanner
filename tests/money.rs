@@ -104,6 +104,26 @@ fn capitals_in_front_of_a_sign_are_part_of_the_symbol_only_when_they_are_one() {
     assert_eq!(entities[0].text, "$40", "{entities:?}");
 }
 
+/// A bare number to the left of a sign — a list item, a table row, a quantity column — makes the
+/// trailing-sign reading the leftmost one, and the engine proposes leftmost first. Rejecting it has
+/// to leave the price behind it reachable, which the interior of a rejected candidate never is.
+#[test]
+fn a_price_is_found_past_a_bare_number_on_its_left() {
+    for (text, code, minor, surface) in [
+        ("1 $10 dollars bill", "USD", "1000", "$10"),
+        ("Item 3 $45.00 each", "USD", "4500", "$45.00"),
+        ("Lot 12 £250 reserve", "GBP", "25000", "£250"),
+        ("row 7 $1,200 total", "USD", "120000", "$1,200"),
+    ] {
+        let scanner = support::scanner();
+        let entities = scanner.scan(text, 0);
+        assert_eq!(entities.len(), 1, "{text:?} produced {entities:?}");
+        assert_eq!(entities[0].text, surface, "{text:?}");
+        let (found_code, found_minor, _, _) = money(text);
+        assert_eq!((found_code.as_str(), found_minor.as_str()), (code, minor));
+    }
+}
+
 /// The negatives are the point. Every one of these reaches a money pattern and none of them is a
 /// sum of money.
 #[test]

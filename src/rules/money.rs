@@ -71,6 +71,10 @@ impl Rule for IsoCodeRule {
         ISO_CODE_PATTERN
     }
 
+    fn resumes_past_rejection(&self) -> bool {
+        true
+    }
+
     fn validate(&self, candidate: &Candidate<'_>) -> Option<Verdict> {
         if continues_left(candidate) || continues_right(candidate) {
             return None;
@@ -145,6 +149,10 @@ impl Rule for SymbolRule {
 
     fn candidate_pattern(&self) -> &'static str {
         SYMBOL_PATTERN
+    }
+
+    fn resumes_past_rejection(&self) -> bool {
+        true
     }
 
     fn validate(&self, candidate: &Candidate<'_>) -> Option<Verdict> {

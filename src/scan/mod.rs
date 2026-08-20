@@ -30,6 +30,13 @@ const RETRY_PER_CANDIDATE: usize = 8;
 /// unbounded work a few retries at a time.
 const RETRY_PER_FRAGMENT: usize = 256;
 
+/// The budget for resuming the search past a rejection, which only the rules whose marker can
+/// trail their number ask for. It is separate from [`RETRY_PER_FRAGMENT`] and much smaller,
+/// because a resume searches the rest of the fragment rather than the inside of one candidate:
+/// each one is a linear pass, so the budget is what keeps the worst case a small constant multiple
+/// of a scan instead of a quadratic in the fragment.
+const RETRY_RESUME_PER_FRAGMENT: usize = 32;
+
 /// Compiled rules plus the vendored data their validators consult. Built once, shared by every
 /// request; scanning takes `&self` and holds no mutable state.
 pub struct Scanner {
@@ -67,10 +74,16 @@ impl Scanner {
     /// first reading ends in a top-level domain that does not exist. Rejection therefore re-runs
     /// the rule's own pattern over the candidate's interior and queues whatever it finds, bounded
     /// by [`RETRY_PER_CANDIDATE`] and [`RETRY_PER_FRAGMENT`].
+    ///
+    /// The interior is the wrong place to look when the better reading ends past the rejected
+    /// candidate, which is possible for a rule whose marker may trail its number. Those rules ask
+    /// for the search to resume past the rejection instead, on their own budget
+    /// ([`RETRY_RESUME_PER_FRAGMENT`]).
     pub fn scan(&self, fragment: &str, base_offset: usize) -> Vec<Entity> {
         let mut accepted = Vec::new();
         let mut visited: HashSet<(usize, usize, usize)> = HashSet::new();
         let mut fragment_retries = 0usize;
+        let mut fragment_resumes = 0usize;
 
         // `(rule index, span, how many times this candidate's lineage has already been shrunk)`.
         let mut queue: Vec<(usize, (usize, usize), usize)> = self
@@ -108,6 +121,20 @@ impl Scanner {
                 continue;
             }
 
+            // For a rule whose marker can trail its number, the better reading can begin inside
+            // the rejected candidate and end past it, where the interior search cannot reach: the
+            // engine is leftmost-first, so `2 EUR` is proposed before `EUR 30` and rejecting it
+            // leaves nothing behind. Resuming the rule's own search one character to the right of
+            // the rejection is what proposes it.
+            if rule.resumes_past_rejection() && fragment_resumes < RETRY_RESUME_PER_FRAGMENT {
+                fragment_resumes += 1;
+                if let Some(from) = next_boundary(fragment, start) {
+                    if let Some(span) = self.prefilter.find_from(rule_index, fragment, from) {
+                        queue.push((rule_index, span, retries));
+                    }
+                }
+            }
+
             if retries >= RETRY_PER_CANDIDATE || fragment_retries >= RETRY_PER_FRAGMENT {
                 continue;
             }
@@ -138,6 +165,15 @@ impl Scanner {
         }
         entities
     }
+}
+
+/// The smallest character boundary strictly above `at`, or `None` at the end of the fragment.
+fn next_boundary(fragment: &str, at: usize) -> Option<usize> {
+    let mut boundary = at.checked_add(1)?;
+    while boundary < fragment.len() && !fragment.is_char_boundary(boundary) {
+        boundary += 1;
+    }
+    (boundary < fragment.len()).then_some(boundary)
 }
 
 /// The largest character boundary strictly below `end`, or `None` when that would not leave a

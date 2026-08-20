@@ -183,3 +183,7 @@
 {"name": "iban in the grouped spelling a statement prints", "text": "credit LC55 HEMM 0001 0001 0012 0012 0002 3015 on receipt", "expect": [{"type": "bank_account", "text": "LC55 HEMM 0001 0001 0012 0012 0002 3015", "value": "LC55HEMM000100010012001200023015"}]}
 {"name": "hyphenated part number is not an iban", "text": "part number AB12-3456-7890-1234-5678 on the order", "expect": []}
 {"name": "hyphenated ticket reference is not an iban", "text": "ticket XX00-0000-0000-0000 raised", "expect": []}
+{"name": "a price after a list number", "text": "1 $10 dollars bill", "expect": [{"type": "money", "text": "$10", "value": "USD 1000"}]}
+{"name": "a price after an item number", "text": "Item 3 $45.00 each", "expect": [{"type": "money", "text": "$45.00", "value": "USD 4500"}]}
+{"name": "a price after a lot number", "text": "Lot 12 £250 reserve", "expect": [{"type": "money", "text": "£250", "value": "GBP 25000"}]}
+{"name": "a price after a row number", "text": "row 7 $1,200 total", "expect": [{"type": "money", "text": "$1,200", "value": "USD 120000"}]}

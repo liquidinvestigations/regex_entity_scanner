@@ -65,6 +65,24 @@ impl Prefilter {
             .map(|m| (m.start(), m.end()))
             .collect()
     }
+
+    /// One rule's next match at or after `at`, as offsets into the **whole fragment**.
+    ///
+    /// The haystack stays the whole fragment and only the search start moves, which is the
+    /// difference that matters: a slice would move the boundaries the pattern sees, and the
+    /// candidate patterns are compiled on the promise that they never depend on where their
+    /// haystack begins or ends. One match, not an iterator — the scan loop queues it, and a
+    /// further resume is a further rejection with a budget of its own.
+    pub fn find_from(
+        &self,
+        rule_index: usize,
+        fragment: &str,
+        at: usize,
+    ) -> Option<(usize, usize)> {
+        self.per_rule[rule_index]
+            .find_at(fragment, at)
+            .map(|m| (m.start(), m.end()))
+    }
 }
 
 /// A candidate pattern is re-run over a slice of a fragment when the scan loop looks inside a
