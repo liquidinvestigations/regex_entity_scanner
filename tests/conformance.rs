@@ -54,8 +54,8 @@ const DEFAULT_MAX_PER_SCHEME: usize = 500;
 /// Regression floors, in percent. They are a ratchet, not a target: they sit just under the
 /// numbers the current rule set produces, so a rule change that loses upstream agreement fails the
 /// run instead of quietly eroding it. Raise them when a fix moves the real number up.
-const MIN_RECALL_PERCENT: f64 = 85.0;
-const MIN_PRECISION_PERCENT: f64 = 95.0;
+const MIN_RECALL_PERCENT: f64 = 93.0;
+const MIN_PRECISION_PERCENT: f64 = 99.0;
 
 #[derive(Debug, Deserialize)]
 struct Case {

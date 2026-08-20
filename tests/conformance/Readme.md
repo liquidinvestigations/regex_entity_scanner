@@ -13,6 +13,8 @@ scorer.
 | `libphonenumber.jsonl` | The extracted libphonenumber cases, checked in. |
 | `extract_recognizers.py` | Turns the Recognizers-Text English specs — dates, currency, IP, phone, email — into cases. |
 | `recognizers.jsonl` | The extracted Recognizers-Text cases, checked in. |
+| `extract_price_parser.py` | Turns price-parser's parametrised (text, currency, amount) rows into cases. |
+| `price-parser.jsonl` | The extracted price-parser cases, checked in. |
 
 ## The case file
 
@@ -75,6 +77,7 @@ tracked tree is a thumb on the scale. The run prints the exclusion count beside 
 ./shell.sh python3 tests/conformance/extract_stdnum.py > tests/conformance/stdnum.jsonl
 ./shell.sh python3 tests/conformance/extract_libphonenumber.py > tests/conformance/libphonenumber.jsonl
 ./shell.sh python3 tests/conformance/extract_recognizers.py > tests/conformance/recognizers.jsonl
+./shell.sh python3 tests/conformance/extract_price_parser.py > tests/conformance/price-parser.jsonl
 ```
 
 Each script reads its own directory under `vendored/reference/`, needs no network, and writes the
