@@ -4,7 +4,7 @@
 ./test.sh              # everything: rustfmt, clippy, the test battery
 ./test.sh email        # filter, passed through to cargo test
 ./test-long.sh         # the upstream conformance run, separately
-./test-long.sh stdnum  # one origin
+./test-long.sh stdnum  # one origin, named by its case file's stem
 ```
 
 `test.sh` builds the dev image if it is missing, then runs `cargo fmt --check`, `cargo clippy` with
@@ -45,9 +45,13 @@ rejected. A rule change with no new fixture is a change nobody can defend later.
 ## The upstream conformance run
 
 The golden corpus measures us against cases we wrote. `./test-long.sh` measures us against cases the
-upstream implementers wrote: every `python-stdnum` module docstring is a labelled valid/invalid
-corpus for its own scheme, and the reference projects beside it carry the same material. Agreement
-with upstream is the only evidence that a ported check digit means what its author meant.
+upstream implementers wrote. Four origins carry it: `python-stdnum`, whose every module docstring is
+a labelled valid/invalid corpus for its own scheme; `libphonenumber`, whose metadata holds an
+example number for every region and line type and whose matcher test holds a free-text corpus;
+`recognizers-text`, whose specs are sentences with the extractions expected from them; and
+`price-parser`, whose test data is several hundred price strings from real pages. Agreement with
+upstream is the only evidence that a ported check digit, or a ported separator rule, means what its
+author meant.
 
 It is a separate entry point with its own budget of fifteen to twenty minutes, and the fast battery
 never triggers it — the two-to-three-minute budget above is not something a conformance sweep may
