@@ -1578,8 +1578,9 @@ static RULE_DOCS: &[RuleDoc] = &[
             "the country calling code is one the ITU has assigned, and the national number matches \
              a pattern that country actually issues, both taken from Google's libphonenumber \
              metadata",
-            "the number is reported as the line type the metadata gives it — mobile, fixed line, \
-             toll free and the rest",
+            "where no line type claims the digits but the region's own pattern still accepts them, \
+             the number is reported at the lower confidence rather than dropped — that is where a \
+             number written before a renumbering lands",
             "brackets open, hold digits and close, so a number is not assembled across two pieces \
              of text",
             "the span is not the page range and year of a citation, and not the leading half of a \

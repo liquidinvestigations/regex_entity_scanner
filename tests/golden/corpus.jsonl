@@ -167,3 +167,8 @@
 {"name": "digits no country issues", "text": "Fax +40 999 999 999 in Bucharest", "expect": []}
 {"name": "plus addressed mailbox is an address", "text": "user+40712345678@example.com wrote in", "expect": [{"type": "email", "text": "user+40712345678@example.com", "value": "user+40712345678@example.com"}]}
 {"name": "timestamp whose minutes follow the digits", "text": "logged at +41 2012-01-02 08:30 today", "expect": [{"type": "date", "text": "2012-01-02 08:30", "value": "2012-01-02T08:30"}]}
+{"name": "three international numbers in one line", "text": "phone list: +40 21 555 0100, +44 20 7123 4567, +1 202-555-0143", "expect": [{"type": "phone", "text": "+40 21 555 0100", "value": "+40215550100"}, {"type": "phone", "text": "+44 20 7123 4567", "value": "+442071234567"}, {"type": "phone", "text": "+1 202-555-0143", "value": "+12025550143"}]}
+{"name": "number with an extension after it", "text": "the switchboard is +1 (202) 555-0143 x4321", "expect": [{"type": "phone", "text": "+1 (202) 555-0143", "value": "+12025550143"}]}
+{"name": "semantic version with build metadata", "text": "semver v1.2.3+20130313144700 metadata", "expect": []}
+{"name": "bank reference with two leading zeros", "text": "bank ref 00447891234567890123 posted", "expect": []}
+{"name": "grouped order number starting with zeros", "text": "order 00-1234-5678-9012 shipped", "expect": []}
