@@ -6,7 +6,8 @@
 
 use std::sync::Arc;
 
-use axum::extract::{Path, State};
+use axum::extract::rejection::JsonRejection;
+use axum::extract::{DefaultBodyLimit, Path, State};
 use axum::http::StatusCode;
 use axum::routing::{get, post};
 use axum::{Json, Router};
@@ -14,7 +15,24 @@ use serde::{Deserialize, Serialize};
 
 use crate::explain::{self, catalog, ExplainRequest, Explanation};
 use crate::model::Entity;
+use crate::rules::RULE_SET_VERSION;
 use crate::scan::Scanner;
+
+/// Everything a handler needs. The size limit lives here rather than in a global because it is an
+/// operational parameter of this process, and a test builds a router with a small one.
+pub struct AppState {
+    pub scanner: Arc<Scanner>,
+    /// The largest fragment this process will scan. Applied twice, deliberately: as the router's
+    /// body limit, which is what protects memory because it rejects before buffering, and against
+    /// the `text` field, which is what turns an oversized fragment into a precise error instead of
+    /// a generic transport failure.
+    pub max_body_bytes: usize,
+}
+
+/// The router's body limit is the fragment limit plus room for the JSON around it. Without the
+/// allowance a fragment of exactly the advertised size could never be submitted, because the quotes
+/// and the field names push its body over the line, and the precise error would be unreachable.
+const JSON_ENVELOPE_ALLOWANCE: usize = 1_024;
 
 #[derive(Debug, Deserialize)]
 pub struct ScanRequest {
@@ -29,6 +47,9 @@ pub struct ScanRequest {
 #[derive(Debug, Serialize)]
 pub struct ScanResponse {
     pub entities: Vec<Entity>,
+    /// Which rule set produced these entities, so a consumer can compute what a reindex has to
+    /// cover instead of reprocessing everything.
+    pub rule_set_version: u32,
 }
 
 #[derive(Debug, Serialize)]
@@ -36,11 +57,13 @@ pub struct HealthResponse {
     pub status: &'static str,
     pub rules: usize,
     pub tlds: usize,
+    pub rule_set_version: u32,
 }
 
 #[derive(Debug, Serialize)]
 pub struct RulesResponse {
     pub rules: Vec<RuleSummary>,
+    pub rule_set_version: u32,
 }
 
 /// Enough to populate a rule picker without pulling every catalogue entry.
@@ -58,27 +81,31 @@ pub struct ErrorResponse {
     pub error: String,
 }
 
-pub fn router(scanner: Arc<Scanner>) -> Router {
+pub fn router(state: Arc<AppState>) -> Router {
+    let max_body_bytes = state.max_body_bytes + JSON_ENVELOPE_ALLOWANCE;
     Router::new()
         .route("/health", get(health))
         .route("/rules", get(rules))
         .route("/rules/{rule_id}", get(rule))
         .route("/scan", post(scan))
         .route("/explain", post(explain_entity))
-        .with_state(scanner)
+        .layer(DefaultBodyLimit::max(max_body_bytes))
+        .with_state(state)
 }
 
-async fn health(State(scanner): State<Arc<Scanner>>) -> Json<HealthResponse> {
+async fn health(State(state): State<Arc<AppState>>) -> Json<HealthResponse> {
     Json(HealthResponse {
         status: "ok",
-        rules: scanner.rule_ids().len(),
-        tlds: scanner.data().tld_count(),
+        rules: state.scanner.rule_ids().len(),
+        tlds: state.scanner.data().tld_count(),
+        rule_set_version: RULE_SET_VERSION,
     })
 }
 
-async fn rules(State(scanner): State<Arc<Scanner>>) -> Json<RulesResponse> {
-    let compiled = scanner.rule_ids();
+async fn rules(State(state): State<Arc<AppState>>) -> Json<RulesResponse> {
+    let compiled = state.scanner.rule_ids();
     Json(RulesResponse {
+        rule_set_version: RULE_SET_VERSION,
         rules: catalog::all()
             .iter()
             .map(|doc| RuleSummary {
@@ -112,10 +139,10 @@ async fn rule(
 /// clicked it. An undocumented `rule_id` is a 404 rather than an empty card, so a client shows
 /// nothing instead of showing an empty box.
 async fn explain_entity(
-    State(scanner): State<Arc<Scanner>>,
+    State(state): State<Arc<AppState>>,
     Json(request): Json<ExplainRequest>,
 ) -> Result<Json<Explanation>, (StatusCode, Json<ErrorResponse>)> {
-    explain::explain(&request, scanner.data())
+    explain::explain(&request, state.scanner.data())
         .map(Json)
         .ok_or_else(|| {
             (
@@ -127,10 +154,37 @@ async fn explain_entity(
         })
 }
 
+/// A request that is too large is refused at two layers. The router's body limit is the one that
+/// protects memory, because it rejects before the body is buffered; the check on `text` is the one
+/// that gives a precise error instead of a generic one. Both answer in the same error shape, so a
+/// client parses one thing.
 async fn scan(
-    State(scanner): State<Arc<Scanner>>,
-    Json(request): Json<ScanRequest>,
-) -> (StatusCode, Json<ScanResponse>) {
-    let entities = scanner.scan(&request.text, request.offset);
-    (StatusCode::OK, Json(ScanResponse { entities }))
+    State(state): State<Arc<AppState>>,
+    request: Result<Json<ScanRequest>, JsonRejection>,
+) -> Result<Json<ScanResponse>, (StatusCode, Json<ErrorResponse>)> {
+    let Json(request) = request.map_err(|rejection| {
+        (
+            rejection.status(),
+            Json(ErrorResponse {
+                error: rejection.body_text(),
+            }),
+        )
+    })?;
+    if request.text.len() > state.max_body_bytes {
+        return Err((
+            StatusCode::PAYLOAD_TOO_LARGE,
+            Json(ErrorResponse {
+                error: format!(
+                    "the fragment is {} bytes and the limit is {}",
+                    request.text.len(),
+                    state.max_body_bytes
+                ),
+            }),
+        ));
+    }
+    let entities = state.scanner.scan(&request.text, request.offset);
+    Ok(Json(ScanResponse {
+        entities,
+        rule_set_version: RULE_SET_VERSION,
+    }))
 }

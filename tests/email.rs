@@ -72,3 +72,30 @@ fn rejects_local_parts_that_are_not_addressable() {
         assert!(entities.is_empty(), "{text:?} produced {entities:?}");
     }
 }
+
+/// The first address ends in a top-level domain that does not exist, and the pattern's longest
+/// match ends with it. Rejecting that candidate must not cost the real address beside it.
+#[test]
+fn a_rejected_address_does_not_hide_the_real_one() {
+    let scanner = support::scanner();
+    let entities = scanner.scan("notes@example.zzz billing@example.com", 0);
+
+    assert_eq!(entities.len(), 1, "{entities:?}");
+    assert_eq!(entities[0].text, "billing@example.com");
+}
+
+/// Looking inside a rejected candidate is a search for a shorter match, and a great many short
+/// strings are registered top-level domains. The right-hand boundary guard is what stops the search
+/// from landing on `.pn` inside a file name.
+#[test]
+fn shrinking_a_filename_does_not_uncover_a_country_domain() {
+    let scanner = support::scanner();
+    for text in [
+        "background: url(sprite@2x.png)",
+        "see figure@1.5x.jpeg for detail",
+        "the module lives at handler@v2.internal",
+    ] {
+        let entities = scanner.scan(text, 0);
+        assert!(entities.is_empty(), "{text:?} produced {entities:?}");
+    }
+}

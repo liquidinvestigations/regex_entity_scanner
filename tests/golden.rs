@@ -39,6 +39,19 @@ fn observed(entity: &Entity) -> Expected {
     let value = match &entity.value {
         Value::Date { rfc3339, .. } => rfc3339.clone(),
         Value::Email { address, .. } => address.clone(),
+        Value::Phone { e164, .. } => e164.clone(),
+        Value::Money {
+            currency,
+            amount_minor,
+            ..
+        } => format!("{currency} {amount_minor}"),
+        Value::Identifier { compact, .. } => compact.clone(),
+        Value::NetworkAddress { address, .. } => address.clone(),
+        Value::GeoPoint {
+            latitude,
+            longitude,
+            ..
+        } => format!("{latitude},{longitude}"),
     };
     Expected {
         entity_type: serde_json::to_value(entity.entity_type)

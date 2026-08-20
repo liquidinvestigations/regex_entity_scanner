@@ -7,8 +7,8 @@ a fixture — not a new pipeline.
 
 **The candidate pattern** is compiled into the prefilter alongside every other rule's and runs over
 raw document text. It must be expressible in a linear-time engine: no lookaround, no
-backreferences. It is expected to over-match — being generous here is free, because everything it
-proposes is checked.
+backreferences, and no `^`, `$` or `\b` — see below. It is expected to over-match — being generous
+here is free, because everything it proposes is checked.
 
 **The validator** sees one candidate at a time, with the surrounding fragment available, and may be
 as expensive as it likes. It returns nothing to reject the candidate, or a verdict carrying the
@@ -24,6 +24,42 @@ and the scanning pass stays linear.
 
 The same move handles trailing punctuation. A pattern that tries to exclude the full stop at the end
 of a sentence becomes unreadable; a validator that trims a trailing `.` is one line.
+
+## No anchors, no `\b`
+
+A candidate pattern must not depend on where its haystack begins or ends, because it is re-run over
+a **slice** of the fragment whenever the scan loop looks inside a rejected candidate. `^`, `$` and
+`\b` all mean something different against a slice than against the whole fragment, and the
+difference is silent. The prefilter refuses to compile a pattern containing any of them at startup,
+so the constraint is enforced rather than remembered.
+
+Nothing is lost by it. A boundary condition is validator work and always was: the validator holds
+the whole fragment and absolute offsets, so "the preceding byte is not a digit" is one comparison,
+and it is the same move that strips a lookbehind out of the pattern.
+
+## Looking inside a rejected candidate
+
+The prefilter takes leftmost-longest per rule, so a long over-matched candidate that fails its
+validator routinely contains a shorter one that would pass — an identifier-shaped run whose tail is
+a page number, a timestamp with an impossible clock wrapped around a perfectly good date, an address
+ending in a top-level domain that does not exist. If rejection were terminal all of those would be
+lost.
+
+So a rejection shrinks the candidate by one character from the right, re-runs the rule's own pattern
+over the interior, and queues whatever it finds. That yields both cases in one mechanism: the
+shorter match at the same start, and the nested match that starts later. The validator is unchanged
+— it still receives the whole fragment and absolute offsets, so the adjacent-byte guards read the
+real neighbours rather than the edges of a slice.
+
+**The recovery is bounded and therefore best-effort: eight retries per candidate, two hundred and
+fifty-six per fragment.** A valid match nested more deeply than that is still lost, and that is the
+right trade: unbounded retry is quadratic in the fragment on adversarial input, which is exactly the
+property the linear-time prefilter exists to protect.
+
+One consequence for new rules: a shortened re-scan is a search for a shorter match, and short
+strings are far more likely to be accidentally valid — a great many two-letter sequences are
+registered top-level domains. A rule whose format has a variable length needs its right-hand
+boundary guard as much as its left.
 
 ## Guards that earn their keep
 

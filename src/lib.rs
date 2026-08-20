@@ -19,4 +19,5 @@ pub mod service;
 
 pub use explain::Explanation;
 pub use model::{Entity, EntityType, Flag, Value};
+pub use rules::RULE_SET_VERSION;
 pub use scan::Scanner;

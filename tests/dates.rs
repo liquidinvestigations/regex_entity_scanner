@@ -97,3 +97,25 @@ fn a_timestamp_is_emitted_once() {
     assert_eq!(entities.len(), 1);
     assert_eq!(entities[0].text, "2021-03-04T09:12:00Z");
 }
+
+/// A rejected candidate is not the end of the story. The prefilter takes the longest match, so an
+/// impossible clock swallows the perfectly good date in front of it; the scan loop looks inside the
+/// rejection and the day survives.
+#[test]
+fn an_impossible_clock_leaves_the_date_inside_it() {
+    let scanner = support::scanner();
+    let entities = scanner.scan("logged 2021-03-04T25:00:00Z then 2021-03-05", 0);
+
+    let texts: Vec<&str> = entities.iter().map(|e| e.text.as_str()).collect();
+    assert_eq!(texts, ["2021-03-04", "2021-03-05"], "{entities:?}");
+}
+
+/// The recovery is bounded, and it does not turn a guard into a suggestion: a date wedged in a
+/// longer digit run stays rejected however many times the window is shrunk, because the validator
+/// still sees the whole fragment and the real neighbouring bytes.
+#[test]
+fn shrinking_a_candidate_does_not_defeat_the_adjacent_digit_guard() {
+    let scanner = support::scanner();
+    let entities = scanner.scan("ref 992021-03-0412 recorded", 0);
+    assert!(entities.is_empty(), "{entities:?}");
+}

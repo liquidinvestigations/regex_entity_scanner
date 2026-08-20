@@ -1,7 +1,7 @@
 # regex-entity-scanner
 
 A stateless Rust service that reads UTF-8 text and returns typed, normalised entity spans: dates
-today, with money, physical quantities, phone numbers and the large tier of checksummed structured
+and email addresses today, with money, phone numbers and the large tier of checksummed structured
 identifiers built on the same two-stage frame.
 
 It exists because matching is the cheap half of this problem. A pattern that finds every date in a
@@ -25,7 +25,10 @@ $ curl -sS -X POST http://127.0.0.1:19705/scan -H 'content-type: application/jso
     "type": "date",
     "start": 3, "end": 27,
     "text": "2021-03-04T09:12:00+0200",
-    "value": { "rfc3339": "2021-03-04T09:12:00+02:00", "precision": "second", "tz_known": true },
+    "value": {
+      "kind": "date",
+      "rfc3339": "2021-03-04T09:12:00+02:00", "precision": "second", "tz_known": true
+    },
     "confidence": 0.99,
     "rule_id": "date.iso8601"
   },
@@ -33,7 +36,10 @@ $ curl -sS -X POST http://127.0.0.1:19705/scan -H 'content-type: application/jso
     "type": "email",
     "start": 28, "end": 43,
     "text": "ops@Example.ORG",
-    "value": { "address": "ops@example.org", "local": "ops", "domain": "example.org" },
+    "value": {
+      "kind": "email",
+      "address": "ops@example.org", "local": "ops", "domain": "example.org"
+    },
     "confidence": 0.95,
     "rule_id": "email.basic"
   }
@@ -75,7 +81,7 @@ Details in [docs/Architecture.md](docs/Architecture.md).
 | `GET /health` | Liveness, the number of compiled rules, and the size of the loaded TLD list. |
 | `GET /rules` | Every documented rule: identifier, type, human-readable title, and whether this build has it compiled. |
 | `GET /rules/{rule_id}` | The full static documentation for one rule. |
-| `POST /scan` | `{"text": "…", "offset": 0}` → `{"entities": [...]}`. |
+| `POST /scan` | `{"text": "…", "offset": 0}` → `{"entities": [...], "rule_set_version": 1}`. |
 | `POST /explain` | An entity, posted back exactly as `/scan` returned it → an explainer card. |
 
 `offset` is the byte offset of the fragment's first byte in the source document; it is added to
@@ -89,8 +95,13 @@ reported `text`.
 Full contract, including what `confidence`, `rule_id` and the flags mean:
 [docs/Entity_Contract.md](docs/Entity_Contract.md).
 
-Configuration is three environment variables: `RES_BIND` (default `0.0.0.0:19705`),
-`RES_VENDORED_DIR`, and `RES_LOG` for a tracing filter.
+`rule_set_version` also rides on `/health` and `/rules`. Extraction is not idempotent across rule
+sets, so it is what makes the scope of a reindex computable rather than guessed.
+
+Configuration is four environment variables: `RES_BIND` (default `0.0.0.0:19705`),
+`RES_VENDORED_DIR`, `RES_MAX_BODY_BYTES` (default `10485760`, applied to both the request body and
+the `text` field; an oversized request is a `413`), and `RES_LOG` for a tracing filter. A
+`RES_MAX_BODY_BYTES` that does not parse fails startup rather than falling back silently.
 
 ## Explainer cards
 
@@ -126,10 +137,18 @@ Details in [docs/Explainer_Cards.md](docs/Explainer_Cards.md).
 
 ## Entity types
 
+A type is a facet a consumer would build, not a value shape: several types share one `value` shape,
+which is why the value carries its own `kind` tag. `date`, `email`, `phone`, `money`,
+`bank_account`, `company_id`, `security`, `vessel`, `cargo_container`, `device`, `network`,
+`publication`, `vulnerability`, `crypto_wallet`, `coordinates`, `national_id` and `message_id` are
+the categories; each holds at most six rules, which is the budget a new rule is measured against.
+
+Compiled today:
+
 | Type | Rule | What the validator checks |
 |---|---|---|
 | `date` | `date.iso8601` | Real calendar date, real clock time, year inside a plausibility window, no adjacent digits. Normalises to RFC 3339 with an explicit precision, and canonicalises `Z`, `+0200` and `+02:00` to one spelling. |
-| `email` | `email.basic` | RFC 5321 length limits, an addressable local part, no adjacent addressable characters to the left, and — the largest single precision win — the top-level domain must be in the IANA list. |
+| `email` | `email.basic` | RFC 5321 length limits, an addressable local part, no adjacent addressable characters on either side, and — the largest single precision win — the top-level domain must be in the IANA list. |
 
 Full RFC 5322 is deliberately not the target for email: it accepts a great deal nobody writes, and
 on real corpora the TLD membership test is where the precision actually comes from.

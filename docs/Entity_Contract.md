@@ -8,7 +8,9 @@ What `POST /scan` returns, and what a consumer may rely on.
   "start": 1234,                      // byte offset in the source document
   "end": 1244,                        // one past the last byte
   "text": "2021-03-04",               // surface form exactly as it appears
-  "value": { "rfc3339": "2021-03-04", "precision": "day", "tz_known": false },
+  "value": {                          // internally tagged on `kind`
+    "kind": "date", "rfc3339": "2021-03-04", "precision": "day", "tz_known": false
+  },
   "confidence": 0.99,
   "rule_id": "date.iso8601",          // which rule produced this
   "flags": ["no_timezone"]            // machine-readable caveats; omitted when empty
@@ -27,6 +29,32 @@ scanned and not character indices. A caller scanning a large document:
 
 Windows must never split a UTF-8 codepoint. `text[start..end]` on the original bytes is always
 exactly the reported `text`; the test suite asserts it on every corpus case.
+
+## The value shapes
+
+`value` is internally tagged on `kind`, so an entity deserialises back into a typed value by
+construction and a consumer dispatches on the shape without knowing the rule set. The tag is the
+**shape of the fields**, not the facet: many identifier rules across several entity types all
+produce `identifier`, and one type may produce more than one shape.
+
+| `kind` | Fields |
+|---|---|
+| `date` | `rfc3339`, `precision`, `tz_known` |
+| `email` | `address`, `local`, `domain` |
+| `phone` | `e164`, `country`, `national`, `number_type` |
+| `money` | `currency`, `amount_minor`, `exponent` |
+| `identifier` | `scheme`, `compact`, `country?`, `parts` |
+| `network_address` | `family`, `address`, `prefix_length?` |
+| `geo_point` | `latitude`, `longitude`, `datum` |
+
+`identifier.parts` is a string map of scheme-specific components — bank code, check digits, issuer —
+omitted when empty. A named field per scheme across two dozen schemes would force a model change for
+every new identifier. `country` is promoted out of that map because it is cross-scheme and maps to a
+property of its own.
+
+`money.amount_minor` is a string-encoded integer because a JSON number is a double in most
+consumers, and a sum of money is not a float. `exponent` is the ISO 4217 minor-unit count, so the
+major-unit value is `amount_minor / 10^exponent` computed in integers by whoever needs it.
 
 ## The value is the point
 
@@ -70,5 +98,9 @@ keep nothing but the entity itself. See [Explainer_Cards.md](Explainer_Cards.md)
 ## Versioning
 
 Extraction is not idempotent across rule versions: changing a rule changes what a document yields.
-Record which version of the rule set produced a document's entities, so that the scope of a reindex
-can be computed rather than guessed.
+`rule_set_version` is returned on every scan response and on `/health` and `/rules`. Store it beside
+a document's entities, and the scope of a reindex becomes computable rather than guessed.
+
+It is bumped by any change to a candidate pattern, to a validator's accept or reject boundary, to a
+normalised value, or to the rule inventory. Card text, doc comments and catalogue entries do not
+bump it, because none of them change what a document yields.

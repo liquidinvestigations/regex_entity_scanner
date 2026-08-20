@@ -5,21 +5,30 @@
 
 mod support;
 
-use regex_entity_scanner::service;
+use std::sync::Arc;
 
-#[tokio::test]
-async fn health_rules_and_scan() {
-    let scanner = support::scanner();
+use regex_entity_scanner::service::{self, AppState};
+
+/// Serves the router on an ephemeral port and answers with its base URL.
+async fn serve(max_body_bytes: usize) -> String {
+    let state = Arc::new(AppState {
+        scanner: support::scanner(),
+        max_body_bytes,
+    });
     let listener = tokio::net::TcpListener::bind("127.0.0.1:0")
         .await
         .expect("binding an ephemeral port");
     let address = listener.local_addr().expect("the bound address");
     tokio::spawn(async move {
-        axum::serve(listener, service::router(scanner)).await.ok();
+        axum::serve(listener, service::router(state)).await.ok();
     });
+    format!("http://{address}")
+}
 
+#[tokio::test]
+async fn health_rules_and_scan() {
+    let base = serve(1 << 20).await;
     let client = reqwest::Client::new();
-    let base = format!("http://{address}");
 
     let health: serde_json::Value = client
         .get(format!("{base}/health"))
@@ -31,6 +40,7 @@ async fn health_rules_and_scan() {
         .expect("health json");
     assert_eq!(health["status"], "ok");
     assert!(health["rules"].as_u64().expect("a rule count") > 0);
+    assert!(health["rule_set_version"].as_u64().is_some());
 
     let rules: serde_json::Value = client
         .get(format!("{base}/rules"))
@@ -40,6 +50,7 @@ async fn health_rules_and_scan() {
         .json()
         .await
         .expect("rules json");
+    assert!(rules["rule_set_version"].as_u64().is_some());
     let email_rule = rules["rules"]
         .as_array()
         .expect("a rule list")
@@ -83,12 +94,14 @@ async fn health_rules_and_scan() {
         .await
         .expect("scan json");
 
+    assert!(scanned["rule_set_version"].as_u64().is_some());
     let entities = scanned["entities"].as_array().expect("an entity list");
     assert_eq!(entities.len(), 2);
     assert_eq!(entities[0]["type"], "date");
     assert_eq!(entities[0]["start"], 106);
     assert_eq!(entities[0]["rule_id"], "date.iso8601");
     assert_eq!(entities[1]["type"], "email");
+    assert_eq!(entities[1]["value"]["kind"], "email");
     assert_eq!(entities[1]["value"]["address"], "ops@example.org");
 
     // The entity goes back exactly as it arrived — this is the whole ergonomics of the endpoint.
@@ -116,4 +129,50 @@ async fn health_rules_and_scan() {
         .await
         .expect("explain request for an undocumented rule");
     assert_eq!(unknown.status(), reqwest::StatusCode::NOT_FOUND);
+}
+
+/// The limit is refused before the body is buffered, so the fixture is kilobytes rather than the
+/// production ten mebibytes — a test that allocates the real limit to prove the limit works is the
+/// kind of test that eats the battery's budget.
+#[tokio::test]
+async fn an_oversized_body_is_refused() {
+    let base = serve(2_048).await;
+    let client = reqwest::Client::new();
+
+    let response = client
+        .post(format!("{base}/scan"))
+        .header("content-type", "application/json")
+        .body("x".repeat(8_192))
+        .send()
+        .await
+        .expect("oversized scan request");
+    assert_eq!(response.status(), reqwest::StatusCode::PAYLOAD_TOO_LARGE);
+
+    let error: serde_json::Value = response.json().await.expect("a json error body");
+    assert!(!error["error"]
+        .as_str()
+        .expect("an error message")
+        .is_empty());
+}
+
+/// A fragment inside a legal body but past the limit is the case the field check exists for: the
+/// answer names the size and the limit instead of being a generic transport error.
+#[tokio::test]
+async fn an_oversized_fragment_inside_a_legal_body_is_refused() {
+    let base = serve(2_048).await;
+    let client = reqwest::Client::new();
+
+    let response = client
+        .post(format!("{base}/scan"))
+        .json(&serde_json::json!({ "text": "a".repeat(3_000) }))
+        .send()
+        .await
+        .expect("scan request with an oversized fragment");
+    assert_eq!(response.status(), reqwest::StatusCode::PAYLOAD_TOO_LARGE);
+
+    let error: serde_json::Value = response.json().await.expect("a json error body");
+    assert!(error["error"]
+        .as_str()
+        .expect("an error message")
+        .contains("3000"));
 }

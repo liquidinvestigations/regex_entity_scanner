@@ -134,8 +134,8 @@ static RULE_DOCS: &[RuleDoc] = &[
             "the local part is addressable unquoted — no leading, trailing or doubled dot",
             "the local part and the domain are inside the RFC 5321 length limits of 64 and 255 \
              characters",
-            "nothing addressable runs into the match from the left, so an address is not cut out \
-             of a longer token",
+            "nothing addressable runs into the match from either side, so an address is not cut \
+             out of a longer token",
         ],
         not_checked: &[
             "whether the domain exists, resolves, or accepts mail — no lookup of any kind is made",

@@ -31,10 +31,17 @@ impl Rule for EmailRule {
     }
 
     fn validate(&self, candidate: &Candidate<'_>) -> Option<Verdict> {
-        // The pattern has no left guard, so a match starting mid-token is possible; an address is
-        // only an address when nothing addressable runs into it from the left.
+        // The pattern carries no boundary guards, so a match cut out of a longer token is
+        // possible; an address is only an address when nothing addressable runs into it from
+        // either side. The right-hand guard is what keeps a shortened re-scan of `icons@2x.png`
+        // from landing on `icons@2x.pn` and finding a real country-code domain at the end of it.
         if let Some(before) = candidate.byte_before() {
             if before.is_ascii_alphanumeric() || b"._%+-@".contains(&before) {
+                return None;
+            }
+        }
+        if let Some(after) = candidate.byte_after() {
+            if after.is_ascii_alphanumeric() || b"-_%+@".contains(&after) {
                 return None;
             }
         }

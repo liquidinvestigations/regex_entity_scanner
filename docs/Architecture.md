@@ -24,6 +24,10 @@ fragment (UTF-8, with the byte offset of its first byte in the source document)
         ├─ 2. VALIDATE ─── per candidate, allowed to be expensive.
         │                  Re-imposes the guards stripped out of the pattern, checks calendar
         │                  validity, check digits, list membership, plausibility windows.
+        │                  A rejection re-runs the rule's pattern over the candidate's interior
+        │                  and queues what it finds, so a valid match nested in an over-matched
+        │                  candidate is not lost. Bounded: 8 retries per candidate, 256 per
+        │                  fragment.
         │
         ├─ 3. NORMALISE ── span to canonical typed value: RFC 3339 instant, ISO-4217 minor units,
         │                  SI base unit, E.164, compact identifier form.
@@ -68,6 +72,18 @@ rule set once at startup and then scans for hours, so compilation cost amortises
 The engine sits behind `scan::prefilter` for the same reason: swapping in a multi-gigabyte-per-second
 prefilter later is a change to one module, and retrofitting that boundary afterwards would not be.
 Measure before reaching for it.
+
+## The fragment size limit is an explicit parameter
+
+`RES_MAX_BODY_BYTES` bounds both the request body and the `text` field, and defaults to ten
+mebibytes. It is stated rather than inherited from whatever the HTTP stack happens to default to,
+because the amount of attacker-supplied text this process will hold in memory is an operational
+decision that has to be visible to whoever runs it. A value that does not parse fails startup: an
+operational parameter that is silently wrong is worse than one that refuses to boot.
+
+The limit is applied at two layers on purpose. The body limit rejects before the body is buffered,
+which is the one that protects memory; the check on the `text` field is the one that answers with a
+precise error instead of a generic transport failure.
 
 ## Statelessness
 

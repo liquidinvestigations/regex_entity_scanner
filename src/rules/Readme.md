@@ -3,12 +3,26 @@
 One module per entity type. A rule is a candidate pattern plus a validator, and adding a type is a
 pattern, a validator and a fixture — not a new pipeline.
 
+## The rule-set version
+
+`RULE_SET_VERSION` ships on every scan response and on `/health` and `/rules`, and it is what makes
+the scope of a reindex computable: extraction is not idempotent across rule sets.
+
+Bump it for any change to a candidate pattern, to a validator's accept or reject boundary, to the
+value a rule normalises to, or to the rule inventory. Do not bump it for card text, a doc comment or
+a catalogue entry — none of those change what a document yields.
+
 ## The contract
 
 `candidate_pattern` is compiled into the prefilter alongside every other rule's, so it must be
 expressible in a linear-time engine. Where an upstream pattern relies on lookaround, the guard is
 stripped here and re-imposed in `validate`: `(?<!\d)` is exactly "the preceding byte is not a
 digit", which is a one-byte check on a candidate rather than an assertion the engine has to carry.
+
+A pattern also carries no `^`, `$` or `\b`, and the prefilter refuses to compile one that does. The
+scan loop re-runs a rule's pattern over a **slice** of the fragment when it looks inside a rejected
+candidate, and an anchor or a word boundary means something different there. Boundary conditions
+belong in the validator, which holds the whole fragment either way.
 
 `validate` returns `None` to reject, or a `Verdict` carrying the canonical value, a confidence, any
 flags, and possibly a narrowed span — trailing punctuation that the pattern swallowed is trimmed

@@ -11,7 +11,7 @@
 //! Candidates are collected per rule, so two rules may propose spans that overlap or nest. That is
 //! intended — deciding between them is [`super::resolve`]'s job, not this one's.
 
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use regex::{Regex, RegexSet};
 
 use crate::rules::Rule;
@@ -26,6 +26,10 @@ pub struct Prefilter {
 impl Prefilter {
     pub fn compile(rules: &[Box<dyn Rule>]) -> Result<Self> {
         let patterns: Vec<&str> = rules.iter().map(|rule| rule.candidate_pattern()).collect();
+
+        for rule in rules {
+            reject_haystack_dependent(rule.id(), rule.candidate_pattern())?;
+        }
 
         let set =
             RegexSet::new(&patterns).context("compiling the combined candidate pattern set")?;
@@ -51,4 +55,36 @@ impl Prefilter {
         }
         found
     }
+
+    /// One rule's own pattern over an arbitrary haystack, as `(start, end)` offsets **into that
+    /// haystack**. The scan loop uses this to look inside a candidate its validator rejected,
+    /// without owning the compiled patterns.
+    pub fn find_in(&self, rule_index: usize, haystack: &str) -> Vec<(usize, usize)> {
+        self.per_rule[rule_index]
+            .find_iter(haystack)
+            .map(|m| (m.start(), m.end()))
+            .collect()
+    }
+}
+
+/// A candidate pattern is re-run over a slice of a fragment when the scan loop looks inside a
+/// rejected candidate, so it must not depend on where its haystack begins or ends. An anchor or a
+/// word boundary means something different against a slice than against the whole fragment, and the
+/// difference is silent. Boundary conditions are validator work — the neighbouring byte is there in
+/// the candidate — so this is enforced at startup rather than remembered.
+fn reject_haystack_dependent(rule_id: &str, pattern: &str) -> Result<()> {
+    let offending = if pattern.contains('^') {
+        "^"
+    } else if pattern.contains('$') {
+        "$"
+    } else if pattern.contains("\\b") {
+        "\\b"
+    } else {
+        return Ok(());
+    };
+    bail!(
+        "the candidate pattern for {rule_id} contains {offending}: a pattern that depends on where \
+         its haystack ends cannot be re-run over a slice, so boundary conditions belong in the \
+         validator"
+    )
 }

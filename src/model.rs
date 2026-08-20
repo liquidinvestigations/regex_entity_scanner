@@ -5,14 +5,35 @@
 //! so a caller that splits a document into overlapping windows gets spans it can use directly
 //! against the original bytes.
 
+use std::collections::BTreeMap;
+
 use serde::{Deserialize, Serialize};
 
 /// The category a rule produces. The wire form is the string a consumer indexes on.
+///
+/// Types are per domain rather than per shape: they are the facets somebody would actually build,
+/// and each one maps onto a FollowTheMoney property. Several types share one [`Value`] shape, which
+/// is why the value carries its own discriminant.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum EntityType {
     Date,
     Email,
+    Phone,
+    Money,
+    BankAccount,
+    CompanyId,
+    Security,
+    Vessel,
+    CargoContainer,
+    Device,
+    Network,
+    Publication,
+    Vulnerability,
+    CryptoWallet,
+    Coordinates,
+    NationalId,
+    MessageId,
 }
 
 impl EntityType {
@@ -20,11 +41,35 @@ impl EntityType {
     ///
     /// Precedence is by structural strength, not by usefulness: a type whose acceptance depended on
     /// a checksum or a calendar check is far less likely to be the accidental reading of the two,
-    /// so it outranks a type that only had to look right.
+    /// so it outranks a type that only had to look right. The bands are shared — types that had the
+    /// same evidence available to them get the same number, and length then position break the tie.
+    ///
+    /// `date` sitting below every identifier is deliberate: an eight-digit run inside a longer
+    /// reference is the overlap this ordering exists to settle, and the identifier is the less
+    /// accidental reading.
     pub fn precedence(self) -> u8 {
         match self {
-            EntityType::Email => 20,
-            EntityType::Date => 10,
+            // Check digit plus a self-identifying prefix or fixed alphabet.
+            EntityType::BankAccount
+            | EntityType::CompanyId
+            | EntityType::Security
+            | EntityType::CargoContainer
+            | EntityType::NationalId => 95,
+            // Check digit on a bare token, admitted on a cue word.
+            EntityType::Vessel | EntityType::Device => 85,
+            // A self-identifying literal prefix, no check digit.
+            EntityType::Vulnerability
+            | EntityType::Publication
+            | EntityType::MessageId
+            | EntityType::CryptoWallet => 75,
+            // Structure plus membership of an authoritative list.
+            EntityType::Email | EntityType::Phone | EntityType::Network => 65,
+            // Structure plus separator inference.
+            EntityType::Money => 45,
+            // Calendar validity plus a plausibility window.
+            EntityType::Date => 35,
+            // A range check and nothing else.
+            EntityType::Coordinates => 25,
         }
     }
 }
@@ -40,11 +85,24 @@ pub enum Flag {
     AmbiguousOrder,
     /// The value carries no time zone, so the instant is only defined up to the reader's guess.
     NoTimezone,
+    /// The format carries no check digit, so acceptance rests on structure, list membership and
+    /// context alone. The number is well-formed; nothing arithmetic corroborates it.
+    NoChecksum,
+    /// The symbol maps to more than one ISO 4217 code and nothing in reach decides which.
+    AmbiguousCurrency,
+    /// The decimal and grouping separators were inferred rather than unambiguous, so the magnitude
+    /// rests on a convention the document did not state.
+    SeparatorInferred,
 }
 
 /// The canonical value a match normalises to, which is the entire point of the second stage.
+///
+/// Internally tagged on `kind`, so an entity deserialises back into this type by construction and
+/// a consumer can dispatch on the shape without knowing the rule set. The tag is the shape of the
+/// fields, not the facet: many identifier rules across several [`EntityType`]s all produce
+/// [`Value::Identifier`].
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(untagged)]
+#[serde(tag = "kind", rename_all = "snake_case")]
 pub enum Value {
     Date {
         /// The instant or civil time in RFC 3339 form, truncated to `precision`.
@@ -58,6 +116,58 @@ pub enum Value {
         address: String,
         local: String,
         domain: String,
+    },
+    Phone {
+        /// E.164 form, `+` then country calling code then the national number.
+        e164: String,
+        /// ISO 3166-1 alpha-2 region the number belongs to.
+        country: String,
+        /// The national significant number, without the country calling code.
+        national: String,
+        /// `mobile`, `fixed_line`, `toll_free` and the like, or `unknown` when the metadata does
+        /// not narrow it.
+        number_type: String,
+    },
+    Money {
+        /// ISO 4217 alphabetic code.
+        currency: String,
+        /// Minor units as a string-encoded integer. A JSON number is a double in most consumers,
+        /// and a sum of money is not a float.
+        amount_minor: String,
+        /// ISO 4217 minor-unit count, so the major-unit value is `amount_minor / 10^exponent`
+        /// computed in integers by whoever needs it.
+        exponent: u8,
+    },
+    Identifier {
+        /// Which scheme this is: `iban`, `lei`, `isin`. It is what makes two identifiers with the
+        /// same digits distinguishable.
+        scheme: String,
+        /// Separators and case normalised away, which is the form to join on.
+        compact: String,
+        /// ISO 3166-1 alpha-2, where the identifier itself encodes one. Promoted out of `parts`
+        /// because it is cross-scheme and maps to a FollowTheMoney property of its own.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        country: Option<String>,
+        /// Scheme-specific components sliced out of the identifier — bank code, check digits,
+        /// issuer. A named field per scheme across two dozen schemes would force a model change
+        /// for every new one.
+        #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+        parts: BTreeMap<String, String>,
+    },
+    NetworkAddress {
+        /// `ipv4` or `ipv6`.
+        family: String,
+        /// Canonical textual form: lowercase and compressed for IPv6.
+        address: String,
+        /// Present when the surface form carried a CIDR prefix.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        prefix_length: Option<u8>,
+    },
+    GeoPoint {
+        latitude: f64,
+        longitude: f64,
+        /// The reference frame the pair is in, `wgs84` unless the text names another.
+        datum: String,
     },
 }
 

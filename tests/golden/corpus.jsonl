@@ -12,7 +12,7 @@
 {"name": "digits either side", "text": "checksum 12021-03-047 recorded", "expect": []}
 {"name": "semantic version is not a date", "text": "upgraded to 1.2.3 and then 10-04-2021 style stamps", "expect": []}
 {"name": "implausible year", "text": "record 0004-01-01 from the archive index", "expect": []}
-{"name": "hour out of range", "text": "stamp 2021-03-04T24:30:00Z rejected", "expect": []}
+{"name": "hour out of range leaves the date it contains", "text": "stamp 2021-03-04T24:30:00Z rejected", "expect": [{"type": "date", "text": "2021-03-04", "value": "2021-03-04"}]}
 {"name": "plain address", "text": "Please write to ops@example.org for access.", "expect": [{"type": "email", "text": "ops@example.org", "value": "ops@example.org"}]}
 {"name": "mixed case domain", "text": "From: Anna Popescu <Anna.Popescu@Example.CO.UK>", "expect": [{"type": "email", "text": "Anna.Popescu@Example.CO.UK", "value": "Anna.Popescu@example.co.uk"}]}
 {"name": "plus addressing", "text": "billing+invoices@company.ro received the notice", "expect": [{"type": "email", "text": "billing+invoices@company.ro", "value": "billing+invoices@company.ro"}]}
@@ -26,3 +26,5 @@
 {"name": "date and address together", "text": "On 2021-03-04 ops@example.org filed the request.", "expect": [{"type": "date", "text": "2021-03-04", "value": "2021-03-04"}, {"type": "email", "text": "ops@example.org", "value": "ops@example.org"}]}
 {"name": "prose with neither", "text": "The committee met in the spring and adjourned without a vote.", "expect": []}
 {"name": "hash is neither", "text": "sha256:9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08", "expect": []}
+{"name": "impossible clock beside a bare date", "text": "logged 2021-03-04T25:00:00Z then 2021-03-05", "expect": [{"type": "date", "text": "2021-03-04", "value": "2021-03-04"}, {"type": "date", "text": "2021-03-05", "value": "2021-03-05"}]}
+{"name": "unregistered tld beside a real address", "text": "notes@example.zzz billing@example.com", "expect": [{"type": "email", "text": "billing@example.com", "value": "billing@example.com"}]}
