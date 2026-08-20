@@ -118,6 +118,29 @@ The cost is real and is written on the cards that carry it: a number typed in lo
 by the separators an invoice or a form prints, is not matched. Each of those cards says so, and says
 why, rather than leaving the limit to be discovered.
 
+### Separator tolerance is bought with arithmetic
+
+The rule above is a price, not a preference, and a format that can pay it gets tolerance. What pays
+is the strength of the filter waiting behind the widened candidate class.
+
+`bank.iban` accepts single spaces and hyphens between groups. Behind them stand ISO 7064 mod-97-10
+over up to 34 characters — one candidate in 97 survives it by accident — an exact per-country length
+from the registry, and a per-country positional structure over the alphabet. A hyphenated part
+number of IBAN shape reaches all three and stops there, so the tolerance costs nothing and wins the
+spelling every bank statement prints.
+
+`natid.es_nif_nie` does not. Its arithmetic is one check letter over seven digits: 22 candidates in
+23 are turned away, which is a strong filter for a token somebody has already called a NIF and a
+weak one against every hyphenated reference in a corpus. `container.iso6346` is in the same
+position, with one check digit and a four-letter owner prefix. Both stay compact and upper-case, and
+their cards say so.
+
+The repetition bound that admits a grouped form is arithmetic of its own and worth stating
+separately: a candidate pattern's upper bound has to cover the separators as well as the characters,
+because the scan loop's recovery only ever shrinks a candidate. A bound that truncates a grouped
+IBAN produces a candidate that fails the exact length check, and nothing downstream can grow it
+back.
+
 ## Cue words
 
 A check digit on a bare digit run is a one-in-ten filter, and one in ten invoice numbers is far too

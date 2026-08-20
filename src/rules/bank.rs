@@ -13,10 +13,19 @@ use crate::rules::{Candidate, Rule, Verdict};
 
 pub struct IbanRule;
 
-/// Deliberately loose: two letters, two check digits and a run that may carry the spaces IBANs are
-/// written in as often as not. Length, alphabet and arithmetic are all the validator's work,
-/// because they are per country and a pattern that encoded them would be ninety alternations.
-const IBAN_PATTERN: &str = r"[A-Z]{2}\d{2}[A-Z0-9 ]{10,34}";
+/// Deliberately loose: two letters, two check digits and a run that may carry the group separators
+/// IBANs are written with as often as not. Length, alphabet and arithmetic are all the validator's
+/// work, because they are per country and a pattern that encoded them would be ninety alternations.
+///
+/// The upper repetition bound is arithmetic and not policy. The longest registered IBAN is 34
+/// characters, so 30 follow the four-character prefix; written in groups of four they carry up to
+/// eight separators. A bound of 34 truncates a grouped candidate, the exact registry length then
+/// fails, and the retry loop only ever shrinks a candidate — it can never grow one back.
+const IBAN_PATTERN: &str = r"[A-Z]{2}\d{2}[A-Z0-9 -]{10,42}";
+
+/// The separators a printed IBAN is grouped with. They are stripped from the value, because the
+/// canonical form is compact: one account is one index key however the document spaced it.
+const IBAN_SEPARATORS: [char; 2] = [' ', '-'];
 
 impl Rule for IbanRule {
     fn id(&self) -> &'static str {
@@ -43,11 +52,14 @@ impl Rule for IbanRule {
             return None;
         }
 
-        // The pattern's character class contains the space, so a match can end in one.
-        let text = candidate.text().trim_end_matches(' ');
+        // The pattern's character class contains the separators, so a match can end in one.
+        let text = candidate.text().trim_end_matches(IBAN_SEPARATORS);
         let end = candidate.start + text.len();
 
-        let compact: String = text.chars().filter(|c| *c != ' ').collect();
+        let compact: String = text
+            .chars()
+            .filter(|c| !IBAN_SEPARATORS.contains(c))
+            .collect();
         let country_code = compact.get(0..2)?.to_string();
         let registry = candidate.data.iban_country(&country_code)?;
 

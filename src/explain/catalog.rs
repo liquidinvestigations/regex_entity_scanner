@@ -354,9 +354,10 @@ static RULE_DOCS: &[RuleDoc] = &[
         entity_type: EntityType::BankAccount,
         title: "International Bank Account Number",
         matches: "An account number in the international form: a country code, two check digits \
-                  and the national account number, written either compactly or in the groups of \
-                  four people use on invoices. It is the strongest bank identifier in an \
-                  investigative corpus, because it names one account at one institution.",
+                  and the national account number, written compactly or in the groups of four \
+                  people use on invoices, separated by single spaces or hyphens. It is the \
+                  strongest bank identifier in an investigative corpus, because it names one \
+                  account at one institution.",
         standards: &[
             "ISO 13616 — International Bank Account Number",
             "ISO 7064 Mod 97, 10 — the check character system it uses",

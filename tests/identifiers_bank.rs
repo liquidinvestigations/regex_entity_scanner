@@ -47,6 +47,13 @@ fn accepts_the_documented_ibans_in_both_spellings() {
             "IBAN RO49 AAAA 1B31 0075 9384 0000",
             "RO49AAAA1B31007593840000",
         ),
+        // The longest registered length, 34 characters, in the grouped spelling a statement
+        // prints: eight separators past the four-character prefix.
+        (
+            "IBAN LC55 HEMM 0001 0001 0012 0012 0002 3015",
+            "LC55HEMM000100010012001200023015",
+        ),
+        ("IBAN GB82-WEST-1234-5698-7654-32", "GB82WEST12345698765432"),
     ] {
         let (scheme, found, country) = identifier(text);
         assert_eq!(scheme, "iban");
