@@ -494,4 +494,132 @@ static RULE_DOCS: &[RuleDoc] = &[
             },
         ],
     },
+    RuleDoc {
+        rule_id: "security.isin",
+        entity_type: EntityType::Security,
+        title: "International Securities Identification Number",
+        matches: "The twelve-character code that names a tradable instrument worldwide — a \
+                  two-letter prefix, a nine-character national identifier and a check digit. It is \
+                  the join key between a holding in one filing and the same holding in another.",
+        standards: &[
+            "ISO 6166 — Securities and related financial instruments, international securities \
+             identification numbering system",
+        ],
+        checks: &[
+            "the Luhn check digit over the letter-expanded form, so the prefix takes part in the \
+             arithmetic",
+            "the prefix is an ISO 3166-1 country, or one of the allocations ISO 6166 makes to \
+             substitute agencies and to internationally cleared securities",
+            "the length is exactly twelve and the last position is a digit",
+            "nothing alphanumeric runs into the match from either side",
+        ],
+        not_checked: &[
+            "whether the instrument exists, is listed, or is still traded",
+            "the national identifier inside it, which may be a CUSIP or a SEDOL with its own check \
+             digit that this rule does not separately verify",
+            "that the prefix says where the issuer is — it says which agency allocated the number",
+        ],
+        authorities: &[
+            Authority {
+                name: "Association of National Numbering Agencies",
+                role: "is the registration authority for ISO 6166 and coordinates the national \
+                       numbering agencies",
+                url: "https://www.anna-web.org/",
+            },
+            Authority {
+                name: "International Organization for Standardization",
+                role: "publishes ISO 6166",
+                url: "https://www.iso.org/standard/78502.html",
+            },
+        ],
+        ftm: FtmMapping {
+            schema: "Security",
+            property: "isin",
+            note: "FollowTheMoney's Security schema takes the ISIN as a typed property and uses it \
+                   as the entity's caption.",
+        },
+        references: &[Reference {
+            title: "ANNA, the ISIN registration authority",
+            url: "https://www.anna-web.org/standards/isin-iso-6166/",
+            note: "how the numbers are allocated and by whom",
+        }],
+    },
+    RuleDoc {
+        rule_id: "security.cusip",
+        entity_type: EntityType::Security,
+        title: "CUSIP number",
+        matches: "The nine-character code used for securities issued in the United States and \
+                  Canada: six characters of issuer, two of issue and a check digit. It is a bare \
+                  alphanumeric token, which is why it is only accepted beside a word that says \
+                  what it is.",
+        standards: &["CUSIP, as administered by CUSIP Global Services under ANSI X9.6"],
+        checks: &[
+            "the check digit, a Luhn variant with alternating weights of one and two",
+            "one of the words CUSIP, SEDOL, ISIN, ticker, security or CIK appears within 48 bytes \
+             either side",
+            "the length is exactly nine and the last position is a digit",
+            "nothing alphanumeric runs into the match from either side",
+        ],
+        not_checked: &[
+            "whether the security exists or was ever issued",
+            "the extended alphabet: CUSIPs containing *, @ or # are used for some private \
+             placements and are not matched",
+            "whether the issuer prefix belongs to the company the surrounding text names",
+        ],
+        authorities: &[Authority {
+            name: "CUSIP Global Services",
+            role: "allocates CUSIP numbers and operates the register",
+            url: "https://www.cusip.com/",
+        }],
+        ftm: FtmMapping {
+            schema: "Security",
+            property: "res:cusip",
+            note: "FollowTheMoney's Security schema has isin, ticker and figiCode but no CUSIP \
+                   property, so this is a local extension in the res: namespace.",
+        },
+        references: &[Reference {
+            title: "CUSIP Global Services",
+            url: "https://www.cusip.com/",
+            note: "the administrator, and where a number can be looked up",
+        }],
+    },
+    RuleDoc {
+        rule_id: "security.sedol",
+        entity_type: EntityType::Security,
+        title: "SEDOL number",
+        matches: "The seven-character code the London Stock Exchange assigns to securities traded \
+                  in the United Kingdom and Ireland. Its alphabet has no vowels, which is the only \
+                  self-identification it offers, so it is accepted only beside a word that says \
+                  what it is.",
+        standards: &["SEDOL, the Stock Exchange Daily Official List numbering scheme"],
+        checks: &[
+            "the check digit, a weighted sum with weights 1, 3, 1, 7, 3, 9 modulo ten",
+            "the alphabet excludes the vowels, which is written into the pattern itself",
+            "numbers issued since 2004 begin with a letter and older ones are entirely numeric, so \
+             a digit followed by letters is neither",
+            "one of the words CUSIP, SEDOL, ISIN, ticker, security or CIK appears within 48 bytes \
+             either side",
+            "nothing alphanumeric runs into the match from either side",
+        ],
+        not_checked: &[
+            "whether the security exists or is still listed",
+            "which instrument it names — resolution needs the exchange's own data",
+        ],
+        authorities: &[Authority {
+            name: "London Stock Exchange",
+            role: "assigns SEDOL numbers and publishes the masterfile",
+            url: "https://www.lseg.com/en/data-analytics/financial-data/identifiers/sedol",
+        }],
+        ftm: FtmMapping {
+            schema: "Security",
+            property: "res:sedol",
+            note: "FollowTheMoney's Security schema has isin, ticker and figiCode but no SEDOL \
+                   property, so this is a local extension in the res: namespace.",
+        },
+        references: &[Reference {
+            title: "SEDOL masterfile",
+            url: "https://www.lseg.com/en/data-analytics/financial-data/identifiers/sedol",
+            note: "the issuing authority and the scheme's own documentation",
+        }],
+    },
 ];

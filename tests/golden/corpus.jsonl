@@ -51,3 +51,9 @@
 {"name": "lei in a counterparty list", "text": "counterparty LEI 213800KUD8LAJWSQ9D15 on file", "expect": [{"type": "company_id", "text": "213800KUD8LAJWSQ9D15", "value": "213800KUD8LAJWSQ9D15"}]}
 {"name": "lei with one character changed", "text": "counterparty LEI 213800KUD8LXJWSQ9D15 on file", "expect": []}
 {"name": "sha-1 digest", "text": "sha1 DA39A3EE5E6B4B0D3255BFEF95601890AFD80709", "expect": []}
+{"name": "isin in a holdings table", "text": "holding US0378331005 at par value", "expect": [{"type": "security", "text": "US0378331005", "value": "US0378331005"}]}
+{"name": "isin with a mistyped check digit", "text": "holding US0378331003 at par value", "expect": []}
+{"name": "cusip beside its label", "text": "CUSIP DUS0421C5 confirmed by the custodian", "expect": [{"type": "security", "text": "DUS0421C5", "value": "DUS0421C5"}]}
+{"name": "cusip shaped part number with no cue", "text": "part number DUS0421C5 confirmed by the supplier", "expect": []}
+{"name": "sedol beside its label", "text": "SEDOL B15KXQ8 as at close", "expect": [{"type": "security", "text": "B15KXQ8", "value": "B15KXQ8"}]}
+{"name": "sedol with a mistyped check digit", "text": "SEDOL B15KXQ7 as at close", "expect": []}

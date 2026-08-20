@@ -16,6 +16,7 @@ pub mod context;
 pub mod date_iso;
 pub mod date_machine;
 pub mod email;
+pub mod security;
 
 use crate::data::VendoredData;
 use crate::model::{EntityType, Flag, Value};
@@ -97,5 +98,8 @@ pub fn all() -> Vec<Box<dyn Rule>> {
         Box::new(bank::IbanRule),
         Box::new(bank::BicRule),
         Box::new(company::LeiRule),
+        Box::new(security::IsinRule),
+        Box::new(security::CusipRule),
+        Box::new(security::SedolRule),
     ]
 }

@@ -12,6 +12,7 @@ pattern, a validator and a fixture — not a new pipeline.
 | `date_machine.rs` | `date.rfc2822`, `date.clf`, `date.iso_week` |
 | `bank.rs` | `bank.iban`, `bank.bic` |
 | `company.rs` | `company.lei` |
+| `security.rs` | `security.isin`, `security.cusip`, `security.sedol` |
 
 ## A date rule ships only when the match fixes the whole day
 
