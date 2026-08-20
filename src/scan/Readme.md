@@ -68,3 +68,11 @@ inside it. Position last, only to make the result deterministic.
 
 Emitting both readings instead would put one document in two facets on the strength of one number,
 which is exactly how a facet stops being trustworthy.
+
+Because the loser is dropped, **a bad candidate here can delete a correct entity rather than merely
+add a wrong one, which makes one false positive twice as expensive as it looks.** The shape is an
+angle-bracketed address in a mail header: read as a message id it outranks the address reading and
+is longer, so the address never reaches the output and the fragment loses the only entity it
+actually contained. The answer is not a different ladder — on a genuine `Message-ID:` line the
+message-id reading is the right one and the address reading has to lose — but a rule that does not
+propose the reading in the first place.

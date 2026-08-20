@@ -1205,11 +1205,11 @@ static RULE_DOCS: &[RuleDoc] = &[
             "the angle brackets, which are what distinguish a message id from an address and are \
              part of the span but not of the value",
             "an at sign separating a non-empty left side from a right side",
-            "the right side's last label is a registered top-level domain, the same membership \
-             test the email rule uses",
             "one of the header names Message-ID, In-Reply-To, References or Resent-Message-ID \
-             appears within 48 bytes either side — without one, an angle-bracketed address in a \
-             From or To line has exactly the same shape",
+             labels the value: everything between that name's colon and the value is whitespace, \
+             list punctuation or complete angle-bracketed groups. Without such a label, an \
+             angle-bracketed address in a From or To line has exactly the same shape, and a header \
+             name merely mentioned nearby names nothing",
         ],
         not_checked: &[
             "whether the message exists, or that the generating host owns the domain — the right \

@@ -51,6 +51,13 @@ The `00` form asks for more than the `+` form: the metadata has to confirm the n
 has to carry the punctuation somebody dialling abroad writes. Two leading zeros and a digit run is
 also every long reference number there is.
 
+The punctuation half of that is the expensive half and it is bought deliberately. Dropping it — an
+unpunctuated `00` run confirmed by the metadata and nothing else — wins a block of free-text
+international numbers from the reference corpora and, in the same run, reads `invoice 0012345678901`
+as a call to another country. A recall gain on a corpus of telephone numbers against a precision
+loss on documents full of reference numbers is the trade this project refuses, so the punctuation
+stays required and the golden corpus pins both invoice shapes.
+
 ## National identity numbers are detected, never decoded
 
 Standing policy for the `national_id` type, and it has two halves.
@@ -120,6 +127,18 @@ divergence from the reference shows up as a failing test rather than a quietly w
 within a window either side of the candidate, case-insensitively and on ASCII word boundaries. A
 check digit on a bare digit run is a one-in-ten filter, so the formats that are nothing but a token
 and a check digit are admitted on a cue word as well.
+
+That window is **field-scoped**: it stops at the line break either side, unless the next line is
+indented, which is a folded continuation of the same field. Bytes are not meaning once a document
+has structure — in a header block, a mail list or a table, a label belongs to its own line — and a
+cue that reaches across the boundary vouches for the neighbouring field's token. The cost is worse
+than an invented entity, because the spurious reading can outrank the correct one and take its place
+in `resolve`.
+
+A rule whose label is a literal field name asks for more than proximity. `message.rfc5322` requires
+the header name to the *left*, with nothing between it and the value but whitespace, list
+punctuation and complete angle-bracketed groups. A header name to the right, or one merely mentioned
+in the sentence, labels nothing.
 
 ## Confidence
 

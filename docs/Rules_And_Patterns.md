@@ -133,6 +133,40 @@ what makes the rule usable rather than merely correct.
 The cue list lives with the rule and appears verbatim in its catalogue entry: "this was accepted
 because the word IMO was nearby" is exactly what a reader needs in order to weigh the match.
 
+### The window is field-scoped
+
+Proximity in bytes stops being proximity in meaning as soon as a document has structure. In a header
+block, a mail list or a table, the label on one line belongs to that line's value:
+
+```text
+CUSIP 037833100
+Reference 594918104
+```
+
+Forty-eight bytes reach from `CUSIP` to `594918104`, and a cue that reaches is a cue that vouches —
+for a number in a different field, which the label says nothing about. The window therefore stops at
+the line break either side of the candidate. The one break that does not stop it is a **folded**
+one, where the next line begins with a space or a tab: that is RFC 5322 continuation, and it is the
+same shape a wrapped cell or a continued log line takes, so `References:`⏎` <a@b.com>` still
+matches.
+
+The cost of getting this wrong is not one spurious entity. `resolve` decides an overlap by dropping
+the loser, so a spurious reading that outranks a correct one *deletes* it: an address in a `To:` line
+read as a message id leaves the fragment with a wrong entity in place of the right one.
+
+### A label is stronger than a cue, where the format has one
+
+A cue is proximity, and proximity is symmetric — it counts a word to the right of the candidate and
+a word with a clause in between. Where the format's context is a literal field name, the rule can
+ask for more: `message.rfc5322` requires one of its four header names to the **left**, with nothing
+between the colon and the value but whitespace, list punctuation and complete angle-bracketed
+groups, which is the `References:` list form. That refuses `Please quote the Message-ID when you
+reply to <legal@example.com>`, which a proximity test accepts.
+
+The label is strong enough to carry the rule on its own, which is why that rule does not also
+require the right side of the address to be a registered domain: RFC 5322 admits a bare
+`dot-atom-text` there, and `<…@thyme>` from an internal mail system is a well-formed message id.
+
 ## A date rule ships only when the match fixes the whole day
 
 Standing policy for the `date` type: **a date rule emits nothing unless the match itself determines

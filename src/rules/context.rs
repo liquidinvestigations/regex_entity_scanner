@@ -9,6 +9,13 @@
 //! The cue list belongs to the rule and appears verbatim in its catalogue entry, because "this was
 //! accepted because the word IMO was nearby" is exactly what a reader needs in order to weigh the
 //! match.
+//!
+//! The window is **field-scoped**. Proximity in bytes is not proximity in meaning once a document
+//! has structure: in a header block, a mail list or a table, the label on one line belongs to that
+//! line's value and vouches for nothing on the next one. A cue that reaches across a field boundary
+//! admits a token from a neighbouring field, and that costs more than an invented entity — the
+//! spurious reading can outrank the correct one and delete it in `resolve`. The one line break that
+//! does not end a field is a folded one, where the next line is indented.
 
 use crate::rules::Candidate;
 
@@ -32,25 +39,53 @@ impl Candidate<'_> {
         })
     }
 
-    /// Up to `window` bytes of the fragment ending where the candidate starts, trimmed back to a
-    /// character boundary.
+    /// Up to `window` bytes of the fragment ending where the candidate starts, cut back to the
+    /// start of the candidate's own field and trimmed to a character boundary.
     fn slice_before(&self, window: usize) -> &str {
         let mut from = self.start.saturating_sub(window);
         while from < self.start && !self.fragment.is_char_boundary(from) {
             from += 1;
         }
-        &self.fragment[from..self.start]
+        &self.fragment[field_start(self.fragment, from, self.start)..self.start]
     }
 
-    /// Up to `window` bytes of the fragment starting where the candidate ends, trimmed forward to
-    /// a character boundary.
+    /// Up to `window` bytes of the fragment starting where the candidate ends, cut off at the end
+    /// of the candidate's own field and trimmed to a character boundary.
     fn slice_after(&self, window: usize) -> &str {
         let mut to = self.end.saturating_add(window).min(self.fragment.len());
         while to > self.end && !self.fragment.is_char_boundary(to) {
             to -= 1;
         }
-        &self.fragment[self.end..to]
+        &self.fragment[self.end..field_end(self.fragment, self.end, to)]
     }
+}
+
+/// Where the candidate's own field begins, at or after `from`: just past the last field-ending
+/// line break, or `from` when there is none.
+fn field_start(fragment: &str, from: usize, to: usize) -> usize {
+    let bytes = fragment.as_bytes();
+    let mut at = to;
+    while at > from {
+        at -= 1;
+        if ends_a_field(bytes, at) {
+            return at + 1;
+        }
+    }
+    from
+}
+
+/// Where the candidate's own field ends, at or before `to`: the first field-ending line break, or
+/// `to` when there is none.
+fn field_end(fragment: &str, from: usize, to: usize) -> usize {
+    let bytes = fragment.as_bytes();
+    (from..to).find(|at| ends_a_field(bytes, *at)).unwrap_or(to)
+}
+
+/// A line break ends a field unless the next line is indented. Indentation is RFC 5322 folding —
+/// a header value continued on the next line is still that header's value — and it is the same
+/// shape a wrapped cell or a continued log line takes.
+fn ends_a_field(bytes: &[u8], at: usize) -> bool {
+    bytes[at] == b'\n' && !matches!(bytes.get(at + 1), Some(b' ' | b'\t'))
 }
 
 /// `needle` inside `haystack` with an ASCII non-alphanumeric on both sides, or the edge of the
@@ -115,5 +150,24 @@ mod tests {
             "9319466"
         )
         .has_cue(&["imo"], DEFAULT_CUE_WINDOW));
+    }
+
+    /// A label belongs to its own field. The line break that does not end one is the folded
+    /// continuation, and that is the case this guard must not break.
+    #[test]
+    fn a_cue_does_not_reach_across_a_field_boundary() {
+        let data = VendoredData::default();
+        for fragment in ["IMO 9319466\nHull 366053209", "Hull 366053209\nIMO 9319466"] {
+            assert!(
+                !candidate(fragment, &data, "366053209").has_cue(&["imo"], DEFAULT_CUE_WINDOW),
+                "{fragment:?}"
+            );
+        }
+        for folded in ["IMO number\n 9319466", "IMO number\n\t9319466"] {
+            assert!(
+                candidate(folded, &data, "9319466").has_cue(&["imo"], DEFAULT_CUE_WINDOW),
+                "{folded:?}"
+            );
+        }
     }
 }

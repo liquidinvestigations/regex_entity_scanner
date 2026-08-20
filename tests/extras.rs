@@ -118,9 +118,74 @@ fn an_angle_bracketed_address_without_a_header_name_stays_an_address() {
     assert_eq!(entities[0].entity_type, EntityType::Email);
 }
 
+/// RFC 5322 §3.6.4 admits a bare `dot-atom-text` on the right, and an internal mail system emits
+/// exactly that. A registered top-level domain is the wrong guard here — it turns away well-formed
+/// identifiers — and the header label is the one that carries the precision.
 #[test]
-fn rejects_a_message_id_whose_domain_has_no_registered_suffix() {
-    rejects("Message-ID: <20210304091200.ABC123@mail.example.zzz>");
+fn accepts_a_message_id_whose_right_side_is_not_a_domain() {
+    assert_eq!(
+        only_match("Message-ID: <28519439.1075856498412.JavaMail.evans@thyme>"),
+        (
+            "message-id".to_string(),
+            "28519439.1075856498412.JavaMail.evans@thyme".to_string()
+        )
+    );
+    assert_eq!(only_match("Message-ID: <foo@localhost>").1, "foo@localhost");
+}
+
+/// A header name is a label only where it labels: to the left, with nothing but list punctuation
+/// and complete angle-bracketed groups in between. Mentioned in a sentence it names nothing, and
+/// the angle-bracketed shape on its own is a grammar's notation as often as an identifier.
+#[test]
+fn an_unlabelled_angle_bracketed_address_is_not_a_message_id() {
+    let scanner = support::scanner();
+    for text in [
+        "Please quote the Message-ID when you reply to <legal@example.com>",
+        "the address <anna@example.co.uk> appears in the References header",
+    ] {
+        let entities = scanner.scan(text, 0);
+        assert_eq!(entities.len(), 1, "{text:?} produced {entities:?}");
+        assert_eq!(entities[0].entity_type, EntityType::Email, "{text:?}");
+    }
+    rejects("the tuple <a@b> in the grammar");
+    rejects("Map<String@Value> is the signature");
+}
+
+/// A `References:` header is a list, and every entry in it is a message id.
+#[test]
+fn every_entry_of_a_references_list_is_labelled_by_the_header() {
+    let scanner = support::scanner();
+    let entities = scanner.scan("References: <a@b.com> <c@d.com>, <e@f.com>", 0);
+    assert_eq!(entities.len(), 3, "{entities:?}");
+    assert!(entities
+        .iter()
+        .all(|entity| entity.entity_type == EntityType::MessageId));
+}
+
+/// A header value continued on an indented line is still that header's value, which is the one
+/// line break the field-scoped cue window must not treat as a boundary.
+#[test]
+fn a_folded_header_still_labels_its_value() {
+    assert_eq!(
+        only_match("References:\n <20210304091200.ABC123@mail.example.com>").1,
+        "20210304091200.ABC123@mail.example.com"
+    );
+}
+
+/// A message id on one line does not label the address on the line before it. Getting this wrong
+/// costs more than a spurious entity: the message-id reading outranks the address and takes its
+/// place in the output.
+#[test]
+fn a_header_block_keeps_its_addresses_and_its_message_id_apart() {
+    let scanner = support::scanner();
+    let entities = scanner.scan(
+        "To: <vkaminski@aol.com>\nCC:\nMessage-ID: <200012101556.KAA12345@mail.example.com>",
+        0,
+    );
+    assert_eq!(entities.len(), 2, "{entities:?}");
+    assert_eq!(entities[0].entity_type, EntityType::Email);
+    assert_eq!(entities[0].text, "vkaminski@aol.com");
+    assert_eq!(entities[1].entity_type, EntityType::MessageId);
 }
 
 fn geo_point(text: &str) -> (f64, f64) {
