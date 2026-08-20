@@ -95,7 +95,11 @@ Comparable means a fixed ladder, not a per-rule opinion:
 A rule may not claim a number its checks do not earn, and the catalogue entry's `checks` list is the
 audit trail for the one it claims. A date in a machine format sits at the top of the ladder because
 its separators are the literal marker and every field is constrained by the calendar, which is the
-same kind of arithmetic agreement a check digit gives.
+same kind of arithmetic agreement a check digit gives. A telephone number sits one row down for the
+mirror-image reason: nothing in it is redundant, so no arithmetic can ever confirm it, and what
+earns the number instead is that the country calling code and the national number both match the
+numbering plan that country publishes — a far narrower constraint than a check digit, reported with
+the no-checksum flag so a consumer can tell the two apart.
 
 ## Flags, not guesses
 

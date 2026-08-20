@@ -3,7 +3,7 @@
 | File | What it pins |
 |---|---|
 | `support/mod.rs` | Builds a scanner over the vendored tree next to the manifest, so tests do not depend on the environment the way the binary does. |
-| `dates.rs`, `email.rs` | Per-rule behaviour: what the validator keeps, what it rejects, and what the value normalises to. |
+| `dates.rs`, `email.rs`, `identifiers_bank.rs`, `identifiers_company.rs`, `identifiers_security.rs`, `maritime.rs`, `devices_network.rs`, `extras.rs`, `national_ids.rs`, `phone.rs`, `money.rs` | One file per rule family: what each validator keeps, what it rejects, and what the value normalises to. |
 | `contract.rs` | Structural properties of the wire contract: an entity round-trips through JSON for every value kind, and no candidate pattern depends on its haystack boundaries. |
 | `golden.rs` | The labelled corpus, scored as precision and recall. |
 | `explain.rs` | Explainer cards, including that every compiled rule has a catalogue entry and that an entity round-trips from `/scan` into `/explain` unchanged. |

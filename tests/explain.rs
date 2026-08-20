@@ -101,6 +101,28 @@ fn an_email_card_resolves_the_country_code_domain() {
 }
 
 #[test]
+fn a_phone_card_names_the_country_and_the_line_type() {
+    let scanner = support::scanner();
+    let request = round_trip("Call +40 21 555 0100 for details.", 0);
+    let card = explain::explain(&request, scanner.data()).expect("a card for phone.international");
+
+    assert_eq!(card.title, "Telephone number, international form");
+    assert_eq!(card.subtitle, "+40215550100 · Romania");
+
+    let line_type = card
+        .facts
+        .iter()
+        .find(|fact| fact.label == "Line type")
+        .expect("a line type fact");
+    assert_eq!(line_type.value, "fixed line");
+    assert!(card.body.contains("The calling code belongs to Romania"));
+    // What acceptance does not prove matters as much as what it does.
+    assert!(card
+        .body
+        .contains("nothing here says the line is in service"));
+}
+
+#[test]
 fn a_generic_domain_card_does_not_invent_a_country() {
     let scanner = support::scanner();
     let request = round_trip("hello@my-agency.consulting is the contact", 0);

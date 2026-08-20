@@ -73,6 +73,7 @@ document's text, so a mention this scanner adds is named the same way.
 | `vulnerability` | `vulnerability.cve` | `Analyzable.res:vulnerabilityMentioned` | FollowTheMoney models people, companies and documents. A CVE identifier is none of those. |
 | `publication` | `publication.doi` | `Analyzable.res:doiMentioned` | `Document` has no DOI property. |
 | `publication` | `publication.orcid` | `Analyzable.res:orcidMentioned` | `Person` has no ORCID property. |
+| `phone` | `phone.international` | `Analyzable.phoneMentioned` | Defined upstream, for a number found in a document's text. `LegalEntity.phone` is the property to write once the number is known to belong to the entity, which is an assertion a span cannot make. |
 | `money` | `money.iso_code` | `Value.amount` | Defined upstream on the abstract parent, alongside `Value.currency`, and inherited by `Payment`. One match supplies both: the scaled integer and the ISO 4217 code travel in the same value. |
 | `money` | `money.symbol` | `Value.amount` | As above. Where the symbol names more than one currency the code is the most widely used of them, and the ambiguous-currency flag says so — a consumer that cannot tolerate that should threshold on the flag rather than on the amount. |
 | `message_id` | `message.rfc5322` | `Document.messageId` | Defined upstream, and the rule only fires behind a mail header name, which is the same context the property assumes. |

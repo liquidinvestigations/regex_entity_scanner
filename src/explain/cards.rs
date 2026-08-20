@@ -37,6 +37,7 @@ pub fn build(doc: &'static RuleDoc, request: &ExplainRequest, data: &VendoredDat
         "bank.bic" => bank_bic(&mut card, request, data),
         "security.isin" => security_isin(&mut card, request, data),
         "vessel.mmsi" => vessel_mmsi(&mut card, request, data),
+        "phone.international" => phone(&mut card, request, data),
         "money.iso_code" | "money.symbol" => money(&mut card, request, data),
         _ => None,
     };
@@ -325,6 +326,50 @@ fn vessel_mmsi(
          {country}, so that is the administration the station is registered with. An MMSI carries \
          no check digit and is reassigned when a vessel changes flag or owner, so it identifies a \
          radio station at a point in time rather than a hull for life."
+    ))
+}
+
+/// Phone: the interesting part is the country the calling code names and the line type the
+/// numbering plan gives the number, neither of which is legible in the digits themselves.
+fn phone(card: &mut Explanation, request: &ExplainRequest, data: &VendoredData) -> Option<String> {
+    let e164 = request.value_str("e164")?;
+    let national = request.value_str("national").unwrap_or_default();
+    let region = request.value_str("country").unwrap_or_default();
+    let number_type = request.value_str("number_type").unwrap_or_default();
+    let readable_type = number_type.replace('_', " ");
+
+    let country = data.territory_name(region).map(ToString::to_string);
+    card.subtitle = match &country {
+        Some(name) => format!("{e164} · {name}"),
+        None => format!("{e164} · global service"),
+    };
+
+    card.facts.push(Fact::new("E.164", e164));
+    if !national.is_empty() {
+        card.facts.push(Fact::new("National number", national));
+    }
+    match &country {
+        Some(name) => card.facts.push(Fact::new("Country", name.as_str())),
+        None => card
+            .facts
+            .push(Fact::new("Country", "none — a global service")),
+    }
+    if !readable_type.is_empty() {
+        card.facts
+            .push(Fact::new("Line type", readable_type.as_str()));
+    }
+
+    let where_it_is = match &country {
+        Some(name) => format!("The calling code belongs to {name}"),
+        None => "The calling code belongs to no country: +800 freephone, +870 satellite and the \
+                 other global services are allocated by the ITU directly"
+            .to_string(),
+    };
+    Some(format!(
+        "{where_it_is}, and `{e164}` is the number in E.164 form — the one spelling that is the \
+         same wherever it is written down, which is what makes it usable as an index key. The \
+         numbering plan classifies it as a {readable_type} number. What was checked is the number, \
+         not the subscriber: nothing here says the line is in service or whose it is."
     ))
 }
 

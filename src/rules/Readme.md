@@ -19,6 +19,7 @@ pattern, a validator and a fixture — not a new pipeline.
 | `extras.rs` | `vulnerability.cve`, `publication.doi`, `publication.orcid`, `message.rfc5322` |
 | `coordinates.rs` | `coord.decimal`, `coord.dms`, `coord.plus_code` |
 | `crypto.rs` | `crypto.ethereum`, `crypto.bitcoin` |
+| `phone.rs` | `phone.international` |
 | `money.rs` | `money.iso_code`, `money.symbol` |
 | `national_id.rs` | `natid.it_codice_fiscale`, `natid.es_nif_nie`, `natid.mx_curp`, `natid.in_pan` |
 
@@ -33,6 +34,22 @@ range query then cannot use. Bare `YYYYMMDD` is not matched either: it does fix 
 eight adjacent digits with a valid calendar reading is the noisiest date shape there is, and in an
 identifier-heavy corpus most of them are not dates. It is the same policy that keeps `2021-W09` out
 of `date.iso_week`, which names a week rather than a day.
+
+## A telephone number ships only in international form
+
+Standing policy for the `phone` type. A number is matched only when it carries a leading `+` or the
+`00` dialling prefix, because those say which country the number belongs to in the number's own
+characters. National form does not: `020 7123 4567` names a different subscriber in London, in Rome
+and in Bucharest, and the text does not say which is meant.
+
+There is therefore no default region, no configuration setting for one, and no rule that reads a
+national number. Assuming a region is not a small convenience — it silently mislabels every document
+written anywhere else, and the mislabelling is invisible in the output, which is the worst shape a
+false positive can take.
+
+The `00` form asks for more than the `+` form: the metadata has to confirm the number, and the span
+has to carry the punctuation somebody dialling abroad writes. Two leading zeros and a digit run is
+also every long reference number there is.
 
 ## National identity numbers are detected, never decoded
 
