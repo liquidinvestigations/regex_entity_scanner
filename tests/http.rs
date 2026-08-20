@@ -176,3 +176,36 @@ async fn an_oversized_fragment_inside_a_legal_body_is_refused() {
         .expect("an error message")
         .contains("3000"));
 }
+
+/// A vendored table that loaded empty does not stop a rule from compiling — it stops it from ever
+/// matching. The health check is the only place that difference is visible from outside, so a
+/// scanner holding one is not `ok` and does not answer 200.
+#[tokio::test]
+async fn health_refuses_to_be_ok_without_the_vendored_data() {
+    use regex_entity_scanner::data::VendoredData;
+    use regex_entity_scanner::scan::Scanner;
+
+    let scanner = Arc::new(Scanner::new(VendoredData::default()).expect("compiling the rule set"));
+    let state = Arc::new(AppState {
+        scanner,
+        max_body_bytes: 1 << 20,
+    });
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0")
+        .await
+        .expect("binding an ephemeral port");
+    let address = listener.local_addr().expect("the bound address");
+    tokio::spawn(async move {
+        axum::serve(listener, service::router(state)).await.ok();
+    });
+
+    let response = reqwest::get(format!("http://{address}/health"))
+        .await
+        .expect("health request");
+    assert_eq!(response.status(), 503);
+    let health: serde_json::Value = response.json().await.expect("health json");
+    assert_eq!(health["status"], "degraded");
+    let incomplete = health["incomplete_data"]
+        .as_array()
+        .expect("the incomplete table list");
+    assert!(incomplete.iter().any(|name| name == "TLD list"), "{health}");
+}

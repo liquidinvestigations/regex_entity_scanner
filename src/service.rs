@@ -58,6 +58,10 @@ pub struct HealthResponse {
     pub rules: usize,
     pub tlds: usize,
     pub rule_set_version: u32,
+    /// The vendored tables that hold too little for the rules reading them to answer. A rule with
+    /// an empty table matches nothing rather than failing, so a green health check over one would
+    /// report a service that is quietly missing a whole entity type.
+    pub incomplete_data: Vec<&'static str>,
 }
 
 #[derive(Debug, Serialize)]
@@ -96,13 +100,23 @@ pub fn router(state: Arc<AppState>) -> Router {
         .with_state(state)
 }
 
-async fn health(State(state): State<Arc<AppState>>) -> Json<HealthResponse> {
-    Json(HealthResponse {
-        status: "ok",
-        rules: state.scanner.rule_ids().len(),
-        tlds: state.scanner.data().tld_count(),
-        rule_set_version: RULE_SET_VERSION,
-    })
+async fn health(State(state): State<Arc<AppState>>) -> (StatusCode, Json<HealthResponse>) {
+    let incomplete_data = state.scanner.data().incomplete_tables();
+    let healthy = incomplete_data.is_empty();
+    (
+        if healthy {
+            StatusCode::OK
+        } else {
+            StatusCode::SERVICE_UNAVAILABLE
+        },
+        Json(HealthResponse {
+            status: if healthy { "ok" } else { "degraded" },
+            rules: state.scanner.rule_ids().len(),
+            tlds: state.scanner.data().tld_count(),
+            rule_set_version: RULE_SET_VERSION,
+            incomplete_data,
+        }),
+    )
 }
 
 async fn rules(State(state): State<Arc<AppState>>) -> Json<RulesResponse> {

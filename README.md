@@ -81,7 +81,7 @@ Details in [docs/Architecture.md](docs/Architecture.md).
 
 | Route | Purpose |
 |---|---|
-| `GET /health` | Liveness, the number of compiled rules, and the size of the loaded TLD list. |
+| `GET /health` | Liveness, the number of compiled rules, and the size of the loaded TLD list. It answers 503 with `"status": "degraded"` and names the tables when the vendored data loaded short, because a rule with an empty table matches nothing instead of failing. |
 | `GET /rules` | Every documented rule: identifier, type, human-readable title, and whether this build has it compiled. |
 | `GET /rules/{rule_id}` | The full static documentation for one rule. |
 | `POST /scan` | `{"text": "…", "offset": 0}` → `{"entities": [...], "rule_set_version": N}`. |

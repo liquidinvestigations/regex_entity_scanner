@@ -36,3 +36,12 @@ Matching is on bytes and offsets are byte offsets, absolute in the source docume
 scanning a large document splits it into overlapping windows — the overlap at least as long as the
 longest matchable entity — passes each window's own offset as `base_offset`, and deduplicates on
 `(type, start, end)`. Never split a window mid-codepoint.
+
+## A missing table is a startup failure, not a quiet one
+
+Every vendored table is read once at startup, and each one has a minimum number of entries it has
+to hold to be the file it was transformed from. This matters more than it looks: a validator whose
+table is empty compiles, runs and answers no — so the process starts, the requests succeed, and one
+entity type is silently absent for as long as it runs. `VendoredData::load` refuses to build in that
+state, and `/health` answers 503 with the offending tables named for the case where one was built
+anyway.

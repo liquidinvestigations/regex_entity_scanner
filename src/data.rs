@@ -62,6 +62,18 @@ pub struct VendoredData {
     currency_symbols: HashMap<String, Vec<String>>,
 }
 
+/// The smallest number of entries each table has to hold to be the file it was transformed from.
+/// The numbers are an order of magnitude below what the current sources carry, because their job is
+/// to catch a file that is empty, half-written or a placeholder — not to pin an upstream's size.
+const MINIMUM_ENTRIES: &[(&str, usize)] = &[
+    ("TLD list", 1_000),
+    ("territory names", 200),
+    ("IBAN registry", 70),
+    ("maritime identification digits", 250),
+    ("currency table", 120),
+    ("currency symbol table", 40),
+];
+
 impl VendoredData {
     /// Reads the vendored tree at `RES_VENDORED_DIR`, defaulting to `./vendored`.
     pub fn load_from_env() -> Result<Self> {
@@ -80,12 +92,6 @@ impl VendoredData {
             .filter(|line| !line.is_empty() && !line.starts_with('#'))
             .map(str::to_uppercase)
             .collect();
-
-        anyhow::ensure!(
-            tlds.len() > 1000,
-            "the vendored TLD list holds only {} entries, which means it is truncated",
-            tlds.len()
-        );
 
         let territory_file: PathBuf = root.join("data/cldr/territories-en.json");
         let raw = std::fs::read_to_string(&territory_file).with_context(|| {
@@ -107,12 +113,6 @@ impl VendoredData {
         let iban_registry: HashMap<String, IbanCountry> =
             serde_json::from_str(&raw).context("parsing the vendored IBAN registry")?;
 
-        anyhow::ensure!(
-            iban_registry.len() > 70,
-            "the vendored IBAN registry holds only {} countries, which means it is truncated",
-            iban_registry.len()
-        );
-
         let mid_file: PathBuf = root.join("data/itu/mids.json");
         let raw = std::fs::read_to_string(&mid_file).with_context(|| {
             format!(
@@ -132,13 +132,6 @@ impl VendoredData {
             })
             .collect();
 
-        anyhow::ensure!(
-            maritime_ids.len() > 250,
-            "the vendored maritime identification digits hold only {} entries, which means the \
-             list is truncated",
-            maritime_ids.len()
-        );
-
         let currency_file: PathBuf = root.join("data/cldr/iso4217.json");
         let raw = std::fs::read_to_string(&currency_file).with_context(|| {
             format!(
@@ -148,12 +141,6 @@ impl VendoredData {
         })?;
         let currencies: HashMap<String, Currency> =
             serde_json::from_str(&raw).context("parsing the vendored currency table")?;
-
-        anyhow::ensure!(
-            currencies.len() > 120,
-            "the vendored currency table holds only {} codes, which means it is truncated",
-            currencies.len()
-        );
 
         let symbol_file: PathBuf = root.join("data/cldr/currency-symbols.json");
         let raw = std::fs::read_to_string(&symbol_file).with_context(|| {
@@ -165,20 +152,54 @@ impl VendoredData {
         let currency_symbols: HashMap<String, Vec<String>> =
             serde_json::from_str(&raw).context("parsing the vendored currency symbols")?;
 
-        anyhow::ensure!(
-            currency_symbols.len() > 40,
-            "the vendored currency symbol table holds only {} symbols, which means it is truncated",
-            currency_symbols.len()
-        );
-
-        Ok(Self {
+        let data = Self {
             tlds,
             territories,
             iban_registry,
             maritime_ids,
             currencies,
             currency_symbols,
-        })
+        };
+
+        let incomplete = data.incomplete_tables();
+        anyhow::ensure!(
+            incomplete.is_empty(),
+            "the vendored {} under {} {} far fewer entries than the rules that read {} need, \
+             which means the file is empty or truncated",
+            incomplete.join(", the vendored "),
+            root.display(),
+            if incomplete.len() == 1 {
+                "holds"
+            } else {
+                "hold"
+            },
+            if incomplete.len() == 1 { "it" } else { "them" },
+        );
+        Ok(data)
+    }
+
+    /// The tables that hold too little to be the file they were transformed from. A rule whose
+    /// table is empty does not fail: it matches nothing, for every request, for as long as the
+    /// process runs — a whole facet switched off behind a green health check. That is why the
+    /// counts are checked at startup and reported at `/health` rather than trusted.
+    pub fn incomplete_tables(&self) -> Vec<&'static str> {
+        MINIMUM_ENTRIES
+            .iter()
+            .filter(|(name, minimum)| self.table_len(name) < *minimum)
+            .map(|(name, _)| *name)
+            .collect()
+    }
+
+    fn table_len(&self, name: &str) -> usize {
+        match name {
+            "TLD list" => self.tlds.len(),
+            "territory names" => self.territories.len(),
+            "IBAN registry" => self.iban_registry.len(),
+            "maritime identification digits" => self.maritime_ids.len(),
+            "currency table" => self.currencies.len(),
+            "currency symbol table" => self.currency_symbols.len(),
+            _ => 0,
+        }
     }
 
     /// Whether `label` is a registered top-level domain. This one membership test removes the bulk
@@ -235,5 +256,25 @@ impl VendoredData {
 
     pub fn iban_country(&self, alpha2: &str) -> Option<&IbanCountry> {
         self.iban_registry.get(&alpha2.to_uppercase())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// The empty value is what a rule set backed by a missing or truncated file looks like from
+    /// the inside: every validator still compiles, and every membership test answers no.
+    #[test]
+    fn every_table_is_reported_when_nothing_loaded() {
+        let names: Vec<&str> = MINIMUM_ENTRIES.iter().map(|(name, _)| *name).collect();
+        assert_eq!(VendoredData::default().incomplete_tables(), names);
+    }
+
+    #[test]
+    fn the_vendored_tree_loads_complete() {
+        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("vendored");
+        let data = VendoredData::load(&root).expect("loading the vendored data");
+        assert!(data.incomplete_tables().is_empty());
     }
 }
