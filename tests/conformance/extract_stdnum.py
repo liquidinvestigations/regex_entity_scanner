@@ -63,6 +63,19 @@ DIRECT = {
     "es.nie": ("es_nif_nie", "natid.es_nif_nie", "national_id", None),
     "mx.curp": ("mx_curp", "natid.mx_curp", "national_id", None),
     "in_.pan": ("in_pan", "natid.in_pan", "national_id", "PAN"),
+    "pl.pesel": ("pl_pesel", "natid.pl_pesel", "national_id", "PESEL"),
+    "se.personnummer": (
+        "se_personnummer",
+        "natid.se_personnummer",
+        "national_id",
+        "personnummer",
+    ),
+    "se.orgnr": (
+        "se_orgnr",
+        "company.se_organisationsnummer",
+        "company_id",
+        "orgnr",
+    ),
     "eu.vat": ("vat.eu", "company.vat_eu", "company_id", None),
     "vatin": ("vat.vatin", "company.vat_eu", "company_id", None),
 }

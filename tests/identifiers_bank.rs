@@ -253,7 +253,10 @@ fn a_routing_number_carries_its_routing_symbol_and_institution() {
     assert_eq!(entities[0].rule_id, "bank.aba_routing");
     match &entities[0].value {
         Value::Identifier { parts, .. } => {
-            assert_eq!(parts.get("routing_symbol").map(String::as_str), Some("1210"));
+            assert_eq!(
+                parts.get("routing_symbol").map(String::as_str),
+                Some("1210")
+            );
             assert_eq!(parts.get("institution").map(String::as_str), Some("0035"));
         }
         other => panic!("expected an identifier value, got {other:?}"),

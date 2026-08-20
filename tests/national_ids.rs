@@ -106,3 +106,106 @@ fn rejects_pans_with_an_impossible_holder_type_or_serial() {
     // The serial runs from 0001.
     rejects("PAN ACUPA0000R on the return");
 }
+
+/// The valid numbers from `stdnum/pl/pesel.py` and from Presidio's own recogniser fixtures. The
+/// subset covers both checks the rule makes: the weighted check digit, and the birth date whose
+/// century is folded into the month field.
+#[test]
+fn accepts_documented_pesels_beside_their_label() {
+    for text in [
+        "PESEL 44051401359 on the form",
+        "PESEL 44051401458 on the form",
+        "My pesel is 02070803628.",
+        "PESEL 11111111116 on the form",
+    ] {
+        assert_eq!(
+            scheme_and_country(text),
+            ("pl_pesel".to_string(), "PL".to_string()),
+            "{text:?}"
+        );
+    }
+}
+
+/// Each of the three filters on its own. `02381307589` is the invalid-birth-date example from
+/// `stdnum/pl/pesel.py`: month 38 decodes to month 18 of the 2000s, which is no month at all.
+#[test]
+fn rejects_eleven_digit_runs_that_are_not_pesels() {
+    rejects("PESEL 44051401358 on the form");
+    rejects("PESEL 02381307589 on the form");
+    rejects("PESEL 11110021111 on the form");
+    // No word beside it says what it is.
+    rejects("claim number 44051401458 was filed");
+    // Eleven digits cut out of a longer run.
+    rejects("PESEL 440514014581 on the form");
+}
+
+/// The valid numbers from `stdnum/se/personnummer.py` and from Presidio's fixtures, in both
+/// spellings and with both separators. The subset covers the twelve-digit form that carries its
+/// own century, the ten-digit form that does not, and the coordination number.
+#[test]
+fn accepts_documented_personnummer_in_both_spellings() {
+    for text in [
+        "personnummer 880320-0016 in the register",
+        "personnummer 8803200016 in the register",
+        "personnummer 189004119807 in the register",
+        "personnummer 19910924-2397 in the register",
+        "pnr 199109242397 is mine",
+        "My personal identity code is: 189110089811.",
+        // The plus sign marks a holder past a hundred; it is a century marker rather than a
+        // separator to refuse.
+        "personnummer 880320+0016 in the register",
+    ] {
+        assert_eq!(
+            scheme_and_country(text),
+            ("se_personnummer".to_string(), "SE".to_string()),
+            "{text:?}"
+        );
+    }
+}
+
+/// The value keeps the separator, which is the century: `880320+0016` and `880320-0016` are two
+/// people born a hundred years apart, and a value that stripped the sign would merge them. The
+/// canonical form is `stdnum/se/personnummer.py`'s own, which inserts the hyphen where the
+/// document wrote none.
+#[test]
+fn a_personnummer_keeps_the_separator_that_says_which_century() {
+    let scanner = support::scanner();
+    for (text, compact) in [
+        ("personnummer 871220-2384 filed", "871220-2384"),
+        ("personnummer 8712202384 filed", "871220-2384"),
+        ("personnummer 880320+0016 filed", "880320+0016"),
+        ("personnummer 198712202384 filed", "19871220-2384"),
+    ] {
+        let entities = scanner.scan(text, 0);
+        assert_eq!(entities.len(), 1, "{text:?} produced {entities:?}");
+        match &entities[0].value {
+            Value::Identifier { compact: found, .. } => assert_eq!(found, compact, "{text:?}"),
+            other => panic!("expected an identifier value, got {other:?}"),
+        }
+    }
+}
+
+#[test]
+fn rejects_personnummer_shaped_runs_that_do_not_check_out() {
+    // The checksum disagrees — `stdnum/se/personnummer.py` and Presidio's invalid fixtures.
+    rejects("personnummer 880320-0018 in the register");
+    rejects("personnummer 19000309-3393 in the register");
+    // Month 13 and day 44 are days nobody was born on.
+    rejects("personnummer 19001309-2393 in the register");
+    rejects("personnummer 200504422381 in the register");
+    // No word beside it says what it is.
+    rejects("batch reference 189004119807 was shipped");
+    // A number glued to the word in front of it is not a standalone token.
+    rejects("My swedish personnummer is189004119807.");
+}
+
+/// The disjoint cue lists and the two date checks between them: an eleven-digit PESEL and a
+/// twelve-digit personnummer on adjacent lines each stay in their own rule.
+#[test]
+fn a_pesel_and_a_personnummer_do_not_claim_each_other() {
+    let scanner = support::scanner();
+    let entities = scanner.scan("PESEL 44051401458\npersonnummer 189004119807", 0);
+    assert_eq!(entities.len(), 2, "{entities:?}");
+    assert_eq!(entities[0].rule_id, "natid.pl_pesel");
+    assert_eq!(entities[1].rule_id, "natid.se_personnummer");
+}

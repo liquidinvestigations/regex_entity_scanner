@@ -11,7 +11,7 @@ pattern, a validator and a fixture — not a new pipeline.
 | `date_iso.rs` | `date.iso8601` |
 | `date_machine.rs` | `date.rfc2822`, `date.clf`, `date.iso_week` |
 | `bank.rs` | `bank.iban`, `bank.bic`, `bank.payment_card`, `bank.aba_routing` |
-| `company.rs` | `company.lei`, `company.vat_eu`, `company.vat_non_eu` |
+| `company.rs` | `company.lei`, `company.vat_eu`, `company.vat_non_eu`, `company.se_organisationsnummer` |
 | `security.rs` | `security.isin`, `security.cusip`, `security.sedol` |
 | `maritime.rs` | `vessel.imo`, `vessel.mmsi`, `container.iso6346` |
 | `device.rs` | `device.imei`, `device.mac` |
@@ -21,7 +21,7 @@ pattern, a validator and a fixture — not a new pipeline.
 | `crypto.rs` | `crypto.ethereum`, `crypto.bitcoin` |
 | `phone.rs` | `phone.international` |
 | `money.rs` | `money.iso_code`, `money.symbol` |
-| `national_id.rs` | `natid.it_codice_fiscale`, `natid.es_nif_nie`, `natid.mx_curp`, `natid.in_pan` |
+| `national_id.rs` | `natid.it_codice_fiscale`, `natid.es_nif_nie`, `natid.mx_curp`, `natid.in_pan`, `natid.pl_pesel`, `natid.se_personnummer` |
 
 ## A date rule ships only when the match fixes the whole day
 
@@ -62,16 +62,25 @@ stays required and the golden corpus pins both invoice shapes.
 
 Standing policy for the `national_id` type, and it has two halves.
 
-**Scope.** A scheme ships only when its surface form identifies itself — a fixed letter-and-digit
-pattern, a restricted check alphabet, or a holder-type position. A bare eleven-digit run with a
-check digit is still a bare eleven-digit run, and a facet built out of those is a facet of invoice
-numbers.
+**Scope.** A bare digit run with one check digit is still a bare digit run, and a facet built out of
+those is a facet of invoice numbers. A scheme ships on one of two grounds. Either its surface form
+identifies itself — a fixed letter-and-digit pattern, a restricted check alphabet, a holder-type
+position — which is the codice fiscale, the NIF/NIE, the CURP and the PAN. Or it carries two
+independent checks and a mandatory cue: the PESEL and the personnummer are nothing but digits, and
+what admits them is a check digit *and* an embedded date that has to be a real day *and* the word
+beside them. If the cue requirement is ever dropped from those two, the rules go with it.
 
-**Depth.** Several of these identifiers encode their holder's date of birth and sex in fixed
-positions; the codice fiscale and the CURP both do. No validator reads those positions, no value
-carries them, and each catalogue entry says so. Detecting that a document mentions an identity
-number is a different act from deriving personal attributes out of it, and this service does only
-the first.
+**Depth.** Four of these identifiers encode their holder's date of birth and two encode sex. No
+value carries either. The date-bearing validators read those positions for exactly one purpose, to
+reject a number whose date could never have existed, and each catalogue entry says so. Detecting
+that a document mentions an identity number is a different act from deriving personal attributes
+out of it, and this service does only the first.
+
+**The type is full.** `national_id` holds six rules, which is the budget below. The next national
+scheme is not a seventh entry: it is a conversation about splitting the type per region, and the
+budget is the thing being measured when one is proposed. Finland's personal identity code is the
+strongest candidate outside — a mod-31 check character over nine digits, an embedded date and a
+century separator — and it is outside on the budget rather than on quality.
 
 ## The rule-set version
 

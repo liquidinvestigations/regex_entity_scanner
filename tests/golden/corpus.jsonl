@@ -201,3 +201,17 @@
 {"name": "a routing number whose checksum disagrees", "text": "routing number 121000359 for the wire", "expect": []}
 {"name": "a routing checksum outside every federal reserve district", "text": "routing number 130000006 for the wire", "expect": []}
 {"name": "the hyphenated routing spelling is not matched", "text": "routing number 3222-7162-7 on the form", "expect": []}
+{"name": "pesel beside its label", "text": "PESEL 44051401458 on the application", "expect": [{"type": "national_id", "text": "44051401458", "value": "44051401458"}]}
+{"name": "a pesel whose check digit disagrees", "text": "PESEL 44051401459 on the application", "expect": []}
+{"name": "a pesel whose embedded date could not exist", "text": "PESEL 11110021111 on the application", "expect": []}
+{"name": "eleven digits with no pesel word beside them", "text": "claim number 44051401458 was filed", "expect": []}
+{"name": "personnummer in the twelve-digit spelling", "text": "personnummer 189004119807 in the register", "expect": [{"type": "national_id", "text": "189004119807", "value": "18900411-9807"}]}
+{"name": "personnummer in the ten-digit spelling", "text": "pnr 871220-2384 in the register", "expect": [{"type": "national_id", "text": "871220-2384", "value": "871220-2384"}]}
+{"name": "a personnummer whose checksum disagrees", "text": "personnummer 19000309-3393 in the register", "expect": []}
+{"name": "twelve digits with no personnummer word beside them", "text": "batch reference 189004119807 was shipped", "expect": []}
+{"name": "a pesel and a personnummer do not claim each other", "text": "PESEL 44051401458\npersonnummer 189004119807", "expect": [{"type": "national_id", "text": "44051401458", "value": "44051401458"}, {"type": "national_id", "text": "189004119807", "value": "18900411-9807"}]}
+{"name": "organisationsnummer beside its label", "text": "orgnr 556703-7485 for the supplier", "expect": [{"type": "company_id", "text": "556703-7485", "value": "5567037485"}]}
+{"name": "an organisationsnummer whose checksum disagrees", "text": "orgnr 556703-7486 for the supplier", "expect": []}
+{"name": "a personnummer is not read as an organisationsnummer", "text": "orgnr 871220-2384 for the supplier", "expect": []}
+{"name": "ten digits with no company word beside them", "text": "delivery note 5567037485 was signed", "expect": []}
+{"name": "a swedish vat number outranks the company number inside it", "text": "orgnr SE556016068001 on the invoice", "expect": [{"type": "company_id", "text": "SE556016068001", "value": "SE556016068001"}]}

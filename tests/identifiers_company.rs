@@ -316,3 +316,85 @@ fn rejects_non_eu_vat_shaped_runs_that_are_not_vat_numbers() {
         );
     }
 }
+
+/// The valid numbers from `stdnum/se/orgnr.py` and from Presidio's own recogniser fixtures, in
+/// both spellings and with the century marker. The subset covers three of the eight legal forms
+/// and both the compact and the hyphenated writing.
+#[test]
+fn accepts_documented_organisationsnummer_in_both_spellings() {
+    let scanner = support::scanner();
+    for (text, compact) in [
+        ("orgnr 1234567897 on the filing", "1234567897"),
+        ("orgnr 556703-7485 on the filing", "5567037485"),
+        ("orgnr 5567037485 on the filing", "5567037485"),
+        (
+            "organisationsnummer 212000-0142 on the filing",
+            "2120000142",
+        ),
+        (
+            "company registration 2120000142 on the filing",
+            "2120000142",
+        ),
+        // The twelve-digit form prefixes the century marker, which takes no part in the
+        // arithmetic and does not reach the value.
+        ("orgnr 165567037485 on the filing", "5567037485"),
+    ] {
+        let entities = scanner.scan(text, 0);
+        assert_eq!(entities.len(), 1, "{text:?} produced {entities:?}");
+        assert_eq!(entities[0].entity_type, EntityType::CompanyId);
+        assert_eq!(entities[0].rule_id, "company.se_organisationsnummer");
+        match &entities[0].value {
+            Value::Identifier {
+                scheme,
+                compact: found,
+                country,
+                parts,
+            } => {
+                assert_eq!(scheme, "se_organisationsnummer");
+                assert_eq!(found, compact, "{text:?}");
+                assert_eq!(country.as_deref(), Some("SE"));
+                assert_eq!(
+                    parts.get("legal_form").map(String::as_str),
+                    Some(&compact[0..1])
+                );
+            }
+            other => panic!("expected an identifier value, got {other:?}"),
+        }
+    }
+}
+
+/// Every filter, one fragment each. The third-digit rule is the interesting one: it is what keeps
+/// a personnummer written in the same ten digits out of the company facet, because that digit is
+/// the tens of a month field there.
+#[test]
+fn rejects_ten_digit_runs_that_are_not_organisationsnummer() {
+    let scanner = support::scanner();
+    let rejects = |text: &str| {
+        let entities = scanner.scan(text, 0);
+        assert!(entities.is_empty(), "{text:?} produced {entities:?}");
+    };
+    // The invalid-check-digit example from `stdnum/se/orgnr.py`.
+    rejects("orgnr 1234567891 on the filing");
+    rejects("orgnr 556703-7486 on the filing");
+    // A personnummer: the third digit is 1, so the number is somebody's birthday.
+    rejects("orgnr 871220-2384 on the filing");
+    rejects("orgnr 8803200016 on the filing");
+    // Legal forms 0 and 4 were never allocated.
+    rejects("orgnr 0567037481 on the filing");
+    // No word beside it says what it is.
+    rejects("delivery note 5567037485 was signed");
+    // Ten digits cut out of a longer run.
+    rejects("orgnr 55670374851 on the filing");
+}
+
+/// `SE556016068001` is a VAT number with an organisationsnummer inside it. Both readings are
+/// `company_id` at the same precedence, so the length tiebreak decides, and the longer one is the
+/// one that names the country whose arithmetic was run.
+#[test]
+fn a_swedish_vat_number_outranks_the_company_number_inside_it() {
+    let scanner = support::scanner();
+    let entities = scanner.scan("orgnr SE556016068001 on the invoice", 0);
+    assert_eq!(entities.len(), 1, "{entities:?}");
+    assert_eq!(entities[0].rule_id, "company.vat_eu");
+    assert_eq!(entities[0].text, "SE556016068001");
+}

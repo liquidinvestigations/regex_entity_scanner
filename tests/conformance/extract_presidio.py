@@ -70,6 +70,9 @@ SCORED = {
     "mac": ("device.mac", "device"),
     "ph_mobile_number": ("phone.international", "phone"),
     "phone": ("phone.international", "phone"),
+    "pl_pesel": ("natid.pl_pesel", "national_id"),
+    "se_organisationsnummer": ("company.se_organisationsnummer", "company_id"),
+    "se_personnummer": ("natid.se_personnummer", "national_id"),
     "tr_phone_number": ("phone.international", "phone"),
     "za_mobile_number": ("phone.international", "phone"),
     "za_telephone_number": ("phone.international", "phone"),
@@ -82,6 +85,9 @@ CUES = {
     "aba_routing": "routing number",
     "credit_card": "card",
     "in_pan": "PAN",
+    "pl_pesel": "PESEL",
+    "se_organisationsnummer": "orgnr",
+    "se_personnummer": "personnummer",
 }
 
 # The machine-readable date formats the four date rules claim. Anything else in Presidio's date

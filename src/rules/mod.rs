@@ -38,7 +38,22 @@ use crate::model::{EntityType, Flag, Value};
 /// What bumps it: any change to a candidate pattern, any change to a validator's accept or reject
 /// boundary or to the value it normalises to, and any rule added or removed. What does not: card
 /// text, a doc comment, a catalogue entry, because none of those change what a document yields.
-pub const RULE_SET_VERSION: u32 = 15;
+pub const RULE_SET_VERSION: u32 = 16;
+
+/// Whether the three fields name a day that exists. Several schemes here admit a number whose
+/// opening digits are a date of birth; an impossible date is what rules those out, and it is the
+/// second independent filter on formats whose only other check is one digit of arithmetic.
+///
+/// Reading the date is all the validators do with it: no value carries a birth date and no rule
+/// derives one, which is the difference between detecting an identifier and decoding a person.
+pub fn is_real_date(year: i32, month: i32, day: i32) -> bool {
+    let (Ok(year), Ok(month), Ok(day)) =
+        (i16::try_from(year), i8::try_from(month), i8::try_from(day))
+    else {
+        return false;
+    };
+    jiff::civil::Date::new(year, month, day).is_ok()
+}
 
 /// A span the prefilter proposed, with the surrounding fragment available for the guard checks.
 pub struct Candidate<'a> {
@@ -128,6 +143,7 @@ pub fn all() -> Vec<Box<dyn Rule>> {
         Box::new(company::LeiRule),
         Box::new(company::VatEuRule),
         Box::new(company::VatNonEuRule),
+        Box::new(company::OrganisationsnummerRule),
         Box::new(security::IsinRule),
         Box::new(security::CusipRule),
         Box::new(security::SedolRule),
@@ -151,6 +167,8 @@ pub fn all() -> Vec<Box<dyn Rule>> {
         Box::new(national_id::NifNieRule),
         Box::new(national_id::CurpRule),
         Box::new(national_id::PanRule),
+        Box::new(national_id::PeselRule),
+        Box::new(national_id::PersonnummerRule),
         Box::new(phone::InternationalRule),
         Box::new(money::IsoCodeRule),
         Box::new(money::SymbolRule),

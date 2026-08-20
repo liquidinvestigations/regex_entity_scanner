@@ -787,6 +787,74 @@ static RULE_DOCS: &[RuleDoc] = &[
         ],
     },
     RuleDoc {
+        rule_id: "company.se_organisationsnummer",
+        entity_type: EntityType::CompanyId,
+        title: "Organisationsnummer (Sweden)",
+        matches: "The ten-digit number Bolagsverket assigns to a Swedish company, association, \
+                  foundation or public body, written compactly or with the hyphen in front of the \
+                  last four digits. It is the first ten digits of the country's VAT number, and it \
+                  is what a Swedish filing, invoice or register extract identifies a company by.",
+        standards: &[
+            "Organisationsnummer, lag (1974:174) om identitetsbeteckning för juridiska personer",
+            "Luhn algorithm, ISO/IEC 7812-1 annex B",
+        ],
+        checks: &[
+            "Luhn over the ten digits",
+            "the leading digit is a legal form that was allocated — 1 an estate, 2 a public \
+             authority, 3 a foreign company, 5 a limited company, 6 a simple partnership, 7 a \
+             cooperative, 8 an association or foundation, 9 a partnership. 0 and 4 were never used",
+            "the third digit is at least 2, which is what separates this from a personnummer \
+             written the same way: that digit is the tens of a month field there and never reaches \
+             two",
+            "one of the words organisationsnummer, orgnummer, orgnr, org nr, org.nr, \
+             företagsnummer, company identity or company registration appears within 48 bytes \
+             either side, in the candidate's own field. This is the one bare-numeric company \
+             register number that ships, and it ships because it carries Luhn and a legal-form \
+             digit and a mandatory cue; if the cue requirement is ever dropped, the rule goes \
+             with it",
+            "nothing alphanumeric touches the match on either side",
+        ],
+        not_checked: &[
+            "whether the number is registered, or whether the body it names still trades",
+            "which of the eight legal forms is the right one for the body named beside it in the \
+             text — the leading digit is read as written",
+            "the Swedish VAT number this sits inside. SE556016068001 is a VAT number containing an \
+             organisationsnummer, and the longer VAT reading wins the overlap on length",
+        ],
+        authorities: &[
+            Authority {
+                name: "Bolagsverket",
+                role: "assigns organisationsnummer to companies and associations",
+                url: "https://bolagsverket.se/",
+            },
+            Authority {
+                name: "Skatteverket",
+                role: "assigns them to the remaining legal forms and builds the VAT number on top",
+                url: "https://www.skatteverket.se/",
+            },
+        ],
+        ftm: FtmMapping {
+            schema: "LegalEntity",
+            property: "registrationNumber",
+            note: "FollowTheMoney defines registrationNumber on the abstract parent, for exactly \
+                   this: the number a company register knows an entity by. It is inherited by \
+                   Company, Organization and PublicBody, which is the same set of legal forms the \
+                   leading digit distinguishes.",
+        },
+        references: &[
+            Reference {
+                title: "Organisationsnummer",
+                url: "https://sv.wikipedia.org/wiki/Organisationsnummer",
+                note: "the legal-form groups the leading digit names",
+            },
+            Reference {
+                title: "stdnum/se/orgnr.py",
+                url: "https://arthurdejong.org/python-stdnum/doc/stdnum.se.orgnr.html",
+                note: "the reference implementation, which checks the length and Luhn",
+            },
+        ],
+    },
+    RuleDoc {
         rule_id: "security.isin",
         entity_type: EntityType::Security,
         title: "International Securities Identification Number",
@@ -1702,6 +1770,106 @@ static RULE_DOCS: &[RuleDoc] = &[
             title: "Permanent Account Number",
             url: "https://incometaxindia.gov.in/tutorials/1.permanent%20account%20number%20(pan).pdf",
             note: "the department's own description of the format",
+        }],
+    },
+    RuleDoc {
+        rule_id: "natid.pl_pesel",
+        entity_type: EntityType::NationalId,
+        title: "PESEL (Poland)",
+        matches: "The eleven-digit number on the Polish population register, held by every Polish \
+                  national and by resident foreigners. It is digits and nothing else, so it is \
+                  reported only where the text says what it is.",
+        standards: &[
+            "PESEL — Powszechny Elektroniczny System Ewidencji Ludności, the Polish population \
+             register",
+        ],
+        checks: &[
+            "the weighted check digit agrees, over the first ten digits with the weights 1, 3, 7 \
+             and 9 repeating",
+            "the six leading digits are a day that exists in the calendar. The century is folded \
+             into the month field, twenty being added to it once per century, so a month of 38 is \
+             February of a year in the 2000s rather than a malformed month",
+            "the word PESEL appears within 48 bytes either side, in the candidate's own field. \
+             Eleven digits with one check digit is a one-in-ten filter and every long reference \
+             number in a document passes it at that rate; the date and the word beside it are the \
+             other two filters, and if the word is ever dropped the rule goes with it",
+            "nothing alphanumeric touches the match on either side",
+        ],
+        not_checked: &[
+            "whether the number was issued, or to whom",
+            "the date of birth and the sex the number encodes. The date is read for one purpose, \
+             to reject a number whose date could never have existed, and neither it nor the sex \
+             reaches the value: detecting that a document mentions an identity number is a \
+             different act from deriving personal attributes out of it",
+            "the hyphenated spellings some forms print, which are not matched — the number is \
+             registered as eleven digits",
+        ],
+        authorities: &[Authority {
+            name: "Ministerstwo Cyfryzacji",
+            role: "runs the PESEL register and assigns the numbers",
+            url: "https://www.gov.pl/web/gov/uzyskaj-numer-pesel",
+        }],
+        ftm: FtmMapping {
+            schema: "LegalEntity",
+            property: "idNumber",
+            note: "FollowTheMoney's LegalEntity schema defines idNumber for a government-issued identifier; which scheme it is comes from the value's parts rather than from a new property.",
+        },
+        references: &[Reference {
+            title: "PESEL check digit",
+            url: "https://en.wikipedia.org/wiki/PESEL#Check_digit",
+            note: "the weights and the century encoding in the month field",
+        }],
+    },
+    RuleDoc {
+        rule_id: "natid.se_personnummer",
+        entity_type: EntityType::NationalId,
+        title: "Personnummer (Sweden)",
+        matches: "The Swedish personal identity number, in the ten-digit form or the twelve-digit \
+                  one that spells out the century, with or without the separator in front of the \
+                  last four digits. The coordination number issued to somebody who has no \
+                  personnummer shares the format and is matched with it.",
+        standards: &[
+            "Personnummer, Folkbokföringslagen (1991:481) §18",
+            "Luhn algorithm, ISO/IEC 7812-1 annex B",
+        ],
+        checks: &[
+            "Luhn over the last ten digits, which is the number without its century — so the two \
+             spellings of one number agree",
+            "the leading digits are a day that could exist. The twelve-digit form carries its \
+             century and gets a full calendar check; the ten-digit form is checked for a real \
+             month and a day in range, and a day sixty past the month is a coordination number",
+            "one of the words personnummer, samordningsnummer, personal identity, person number \
+             or pnr appears within 48 bytes either side, in the candidate's own field. Ten digits \
+             behind Luhn is a one-in-ten filter, and the word beside it is what makes the match \
+             defensible; if it is ever dropped the rule goes with it",
+            "nothing alphanumeric touches the match on either side",
+        ],
+        not_checked: &[
+            "whether the number was issued, or to whom",
+            "the date of birth and the sex the number encodes. The date is read only to reject a \
+             number whose date could never have existed, and neither it nor the sex reaches the \
+             value",
+            "which century a ten-digit number belongs to. The separator says it — a plus sign \
+             once the holder turns 100 — and resolving it into a year needs the date the document \
+             was written, which this service does not hold. The value therefore keeps the \
+             separator instead of stripping it, which is the one place this scheme departs from \
+             compact-form normalisation: two people born a hundred years apart write the same ten \
+             digits and differ only in that sign",
+        ],
+        authorities: &[Authority {
+            name: "Skatteverket",
+            role: "runs the population register and assigns personal identity numbers",
+            url: "https://www.skatteverket.se/privat/folkbokforing/personnummerochsamordningsnummer.4.3810a01c150939e893f18c29.html",
+        }],
+        ftm: FtmMapping {
+            schema: "LegalEntity",
+            property: "idNumber",
+            note: "FollowTheMoney's LegalEntity schema defines idNumber for a government-issued identifier; which scheme it is comes from the value's parts rather than from a new property.",
+        },
+        references: &[Reference {
+            title: "Personal identity number (Sweden)",
+            url: "https://en.wikipedia.org/wiki/Personal_identity_number_(Sweden)",
+            note: "the two spellings, the century separator and the coordination number",
         }],
     },
     RuleDoc {

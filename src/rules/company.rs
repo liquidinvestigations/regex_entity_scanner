@@ -4,7 +4,8 @@ use std::collections::BTreeMap;
 
 use crate::model::{EntityType, Flag, Value};
 use crate::rules::checksum::{iso7064, luhn, weighted_mod};
-use crate::rules::{Candidate, Rule, Verdict};
+use crate::rules::context::DEFAULT_CUE_WINDOW;
+use crate::rules::{is_real_date, Candidate, Rule, Verdict};
 
 pub struct LeiRule;
 
@@ -270,17 +271,6 @@ fn luhn_check_digit(values: &[u32]) -> u32 {
     let mut extended = values.to_vec();
     extended.push(0);
     (10 - luhn_sum(&extended)) % 10
-}
-
-/// Whether the three fields name a day that exists. Six of these schemes admit a personal number
-/// whose opening digits are a date of birth; an impossible date is what rules those out.
-fn is_real_date(year: i32, month: i32, day: i32) -> bool {
-    let (Ok(year), Ok(month), Ok(day)) =
-        (i16::try_from(year), i8::try_from(month), i8::try_from(day))
-    else {
-        return false;
-    };
-    jiff::civil::Date::new(year, month, day).is_ok()
 }
 
 /// Austria — UID. `U` and eight digits, the last a Luhn-derived check digit.
@@ -908,6 +898,107 @@ impl Rule for VatNonEuRule {
             },
             confidence: 0.99,
             flags,
+        })
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Sweden — organisationsnummer
+// ---------------------------------------------------------------------------------------------
+
+pub struct OrganisationsnummerRule;
+
+/// Ten digits with an optional hyphen in front of the last four, or the twelve-digit form that
+/// prefixes the century marker `16`. The twelve-digit alternative comes first so that a full
+/// number is preferred over its own last ten digits.
+const ORGANISATIONSNUMMER_PATTERN: &str = r"16\d{6}-?\d{4}|\d{6}-?\d{4}";
+
+/// The words that admit a bare ten-digit run, from Bolagsverket's own name for the number and
+/// from Presidio's recogniser context list.
+const ORGANISATIONSNUMMER_CUES: &[&str] = &[
+    "organisationsnummer",
+    "orgnummer",
+    "orgnr",
+    "org nr",
+    "org.nr",
+    "företagsnummer",
+    "company identity",
+    "company registration",
+];
+
+/// The leading digit, which says what kind of body holds the number: 1 an estate, 2 a public
+/// authority, 3 a foreign company, 5 a limited company, 6 a simple partnership, 7 a cooperative,
+/// 8 a non-profit association or foundation, 9 a trading or limited partnership. 0 and 4 were
+/// never allocated.
+const LEGAL_FORM_DIGITS: [u32; 8] = [1, 2, 3, 5, 6, 7, 8, 9];
+
+impl Rule for OrganisationsnummerRule {
+    fn id(&self) -> &'static str {
+        "company.se_organisationsnummer"
+    }
+
+    fn entity_type(&self) -> EntityType {
+        EntityType::CompanyId
+    }
+
+    fn candidate_pattern(&self) -> &'static str {
+        ORGANISATIONSNUMMER_PATTERN
+    }
+
+    fn validate(&self, candidate: &Candidate<'_>) -> Option<Verdict> {
+        // The length is fixed, so both neighbours guard: ten digits cut out of a longer run are
+        // not a company number.
+        if candidate
+            .byte_before()
+            .is_some_and(|b| b.is_ascii_alphanumeric())
+            || candidate
+                .byte_after()
+                .is_some_and(|b| b.is_ascii_alphanumeric())
+        {
+            return None;
+        }
+        if !candidate.has_cue(ORGANISATIONSNUMMER_CUES, DEFAULT_CUE_WINDOW) {
+            return None;
+        }
+
+        let text = candidate.text();
+        let all_digits: String = text.chars().filter(char::is_ascii_digit).collect();
+        // The century marker is not part of the number and takes no part in the arithmetic.
+        let compact = match all_digits.len() {
+            10 => all_digits.clone(),
+            12 => all_digits.strip_prefix("16")?.to_string(),
+            _ => return None,
+        };
+
+        let digits: Vec<u32> = compact.chars().filter_map(|c| c.to_digit(10)).collect();
+        if !LEGAL_FORM_DIGITS.contains(&digits[0]) {
+            return None;
+        }
+        // The third digit is what separates this from a personnummer written the same way: it is
+        // the tens of the month field there, so it never reaches two.
+        if digits[2] < 2 {
+            return None;
+        }
+        // `stdnum/se/orgnr.py` checks the length and Luhn and nothing else; the two structural
+        // digits above are what a ten-digit Luhn-valid run needs before it can be a company.
+        if !luhn(&compact) {
+            return None;
+        }
+
+        let mut parts = BTreeMap::new();
+        parts.insert("legal_form".to_string(), digits[0].to_string());
+
+        Some(Verdict {
+            start: candidate.start,
+            end: candidate.end,
+            value: Value::Identifier {
+                scheme: "se_organisationsnummer".to_string(),
+                compact,
+                country: Some("SE".to_string()),
+                parts,
+            },
+            confidence: 0.97,
+            flags: Vec::new(),
         })
     }
 }

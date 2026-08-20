@@ -62,6 +62,7 @@ document's text, so a mention this scanner adds is named the same way.
 | `company_id` | `company.lei` | `LegalEntity.leiCode` | Defined upstream on the abstract parent, inherited by `Company` and `Organization`. |
 | `company_id` | `company.vat_eu` | `LegalEntity.vatCode` | Defined upstream on the same abstract parent, so a company, an organisation or a public body all carry it on one property. |
 | `company_id` | `company.vat_non_eu` | `LegalEntity.vatCode` | The same property: FollowTheMoney does not scope `vatCode` to the Union, so every jurisdiction lands on one property. |
+| `company_id` | `company.se_organisationsnummer` | `LegalEntity.registrationNumber` | Defined upstream on the abstract parent, for the number a company register knows an entity by, and inherited by `Company`, `Organization` and `PublicBody` — the same set of legal forms the number's leading digit distinguishes. |
 | `security` | `security.isin` | `Security.isin` | Defined upstream. |
 | `security` | `security.cusip` | `Security.res:cusip` | `Security` has `isin`, `ticker` and `figiCode` but no CUSIP property, and a North American security is routinely identified by nothing else. |
 | `security` | `security.sedol` | `Security.res:sedol` | The same gap for the London Stock Exchange's own code. |
@@ -88,6 +89,8 @@ document's text, so a mention this scanner adds is named the same way.
 | `national_id` | `natid.es_nif_nie` | `LegalEntity.idNumber` | As above. |
 | `national_id` | `natid.mx_curp` | `LegalEntity.idNumber` | As above. |
 | `national_id` | `natid.in_pan` | `LegalEntity.idNumber` | As above. |
+| `national_id` | `natid.pl_pesel` | `LegalEntity.idNumber` | As above. The number encodes a birth date, which the validator reads only to reject an impossible one; no property receives it. |
+| `national_id` | `natid.se_personnummer` | `LegalEntity.idNumber` | As above. |
 
 ## Money is two properties from one match
 

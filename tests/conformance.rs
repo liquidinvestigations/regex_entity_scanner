@@ -86,10 +86,13 @@ const ORIGIN_FLOORS: &[(&str, f64, f64)] = &[
     ("isemail", 78.0, 99.5),
     ("libphonenumber", 98.5, 99.5),
     ("open-location-code", 99.5, 99.5),
-    // Presidio's payment-card fixtures are scored, and five of its twenty are out of reach on
-    // purpose: three sit in one fragment that writes three card numbers and no cue word, and two
-    // are a fifteen-digit airline-range number the issuer table does not admit.
-    ("presidio", 97.4, 99.5),
+    // The five cue-gated schemes are scored here, and eight of their sixty-four cases are out of
+    // reach on purpose. Five are cards: three sit in one fragment that writes three card numbers
+    // and no cue word, and two are a fifteen-digit airline-range number the issuer table does not
+    // admit. Two more are a Swedish number beside a word its rule's cue list does not carry, and
+    // one is a number written with no space between it and the word in front of it, which the
+    // standalone guard refuses.
+    ("presidio", 97.0, 99.5),
     ("price-parser", 98.0, 99.5),
     ("pyais", 99.5, 99.5),
     ("python-stdnum", 86.0, 99.5),
