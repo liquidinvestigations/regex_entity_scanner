@@ -1,13 +1,14 @@
 //! Company identifiers.
 //!
 //! The fixtures are the documented examples from the `python-stdnum` modules the arithmetic is
-//! ported from — `stdnum/lei.py` for the valid code and its single-transposition counterpart. The
-//! subset covers what the rule claims: the checksum, the fixed length, and the boundary guards that
-//! keep twenty characters of a hash out of the facet.
+//! ported from — `stdnum/lei.py` for the code and its single-transposition counterpart, and one
+//! `vat.py` or its alias per country for the tax numbers. The subset covers what the rules claim:
+//! the checksum, the lengths and alphabets each jurisdiction issues, the alternative spellings its
+//! register accepts, and the boundary guards that keep a prefix of a longer run out of the facet.
 
 mod support;
 
-use regex_entity_scanner::model::{EntityType, Value};
+use regex_entity_scanner::model::{EntityType, Flag, Value};
 
 #[test]
 fn accepts_a_documented_lei() {
@@ -195,6 +196,122 @@ fn rejects_vat_shaped_runs_that_are_not_vat_numbers() {
             !entities
                 .iter()
                 .any(|entity| entity.rule_id == "company.vat_eu"),
+            "{text:?} produced {entities:?}"
+        );
+    }
+}
+
+/// One valid number per country outside the Union, from the docstring of the `python-stdnum`
+/// module the arithmetic is ported from, plus the spellings Great Britain, Switzerland and Norway
+/// allow beside their standard one.
+#[test]
+fn accepts_a_documented_vat_number_for_every_non_eu_country() {
+    let scanner = support::scanner();
+    let table = [
+        // The documented example for each country's own module.
+        ("CHE107787577IVA", "CH"),
+        ("GB980780684", "GB"),
+        ("ME02655284", "ME"),
+        ("MK4030000375897", "MK"),
+        ("NO995525828MVA", "NO"),
+        ("RS101134702", "RS"),
+        ("RU1234567894", "RU"),
+        ("TR4540536920", "TR"),
+        // Switzerland writes the tax abbreviation in four languages, all on one UID.
+        ("CHE107787577MWST", "CH"),
+        ("CHE107787577TVA", "CH"),
+        ("CHE107787577TPV", "CH"),
+        // A British branch trader appends three digits the arithmetic ignores.
+        ("GB980780684001", "GB"),
+        // Government departments and health authorities, in both the short form and the
+        // branch-registered one.
+        ("GBGD001", "GB"),
+        ("GBHA500", "GB"),
+        ("GBGD888800101", "GB"),
+        ("GBHA888850015", "GB"),
+        // Russia's twelve-digit personal number, whose second check digit depends on the first.
+        ("RU123456789047", "RU"),
+    ];
+
+    for (number, expected_country) in table {
+        let text = format!("VAT {number} on the invoice");
+        let entities = scanner.scan(&text, 0);
+        let entity = entities
+            .iter()
+            .find(|entity| entity.rule_id == "company.vat_non_eu")
+            .unwrap_or_else(|| panic!("{number} produced {entities:?}"));
+        assert_eq!(entity.entity_type, EntityType::CompanyId);
+        assert_eq!(entity.text, number);
+        match &entity.value {
+            Value::Identifier {
+                scheme,
+                compact,
+                country,
+                ..
+            } => {
+                assert_eq!(scheme, "vat");
+                assert_eq!(compact, number);
+                assert_eq!(country.as_deref(), Some(expected_country), "for {number}");
+            }
+            other => panic!("expected an identifier value for {number}, got {other:?}"),
+        }
+    }
+}
+
+/// The British government-department form carries no check digit at all, so it says so.
+#[test]
+fn a_british_government_department_number_reports_no_checksum() {
+    let scanner = support::scanner();
+    let entities = scanner.scan("department VAT GBGD001 quoted", 0);
+    assert_eq!(entities.len(), 1, "{entities:?}");
+    assert_eq!(entities[0].rule_id, "company.vat_non_eu");
+    assert_eq!(entities[0].flags, vec![Flag::NoChecksum]);
+
+    // The standard nine-digit number does have one, so it carries no flag.
+    let entities = scanner.scan("supplier VAT GB980780684 quoted", 0);
+    assert_eq!(entities.len(), 1, "{entities:?}");
+    assert!(entities[0].flags.is_empty(), "{entities:?}");
+}
+
+/// The failure modes this rule claims to catch: the check digit disagrees, the required tax
+/// suffix is missing, the serial falls outside the range its marker allows, and a country whose
+/// number carries no arithmetic is not offered at all.
+#[test]
+fn rejects_non_eu_vat_shaped_runs_that_are_not_vat_numbers() {
+    let scanner = support::scanner();
+    for text in [
+        // Documented invalid-checksum counterparts.
+        "VAT GB802311781",
+        "VAT CHE107787578IVA",
+        "VAT NO995525829MVA",
+        "VAT RS101134703",
+        "VAT ME02655283",
+        "VAT MK4030000375890",
+        "VAT RU1234567895",
+        "VAT RU123456789037",
+        "VAT TR4540536921",
+        // A country prefix in front of an ordinary number.
+        "reference GB000123456 in the ledger",
+        "order GB100200300 shipped",
+        // The Swiss and Norwegian numbers without the tax suffix their administrations require.
+        "uid CHE107787577 registered",
+        "orgnr NO995525828 registered",
+        // A government department's serial runs below 500 and a health authority's from 500 up.
+        "VAT GBGD500",
+        "VAT GBHA001",
+        // Right arithmetic, wrong length: a British number is nine digits, not ten.
+        "VAT GB9807806840",
+        // Albania, Iceland and San Marino issue VAT numbers with no check digit, so a prefixed
+        // run under those codes is not a match.
+        "VAT AL J91402501L",
+        "VAT IS00621",
+        "VAT SM24165",
+    ] {
+        let entities = scanner.scan(text, 0);
+        assert!(
+            !entities
+                .iter()
+                .any(|entity| entity.rule_id == "company.vat_non_eu"),
             "{text:?} produced {entities:?}"
         );
     }

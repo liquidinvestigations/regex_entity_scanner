@@ -577,6 +577,81 @@ static RULE_DOCS: &[RuleDoc] = &[
         ],
     },
     RuleDoc {
+        rule_id: "company.vat_non_eu",
+        entity_type: EntityType::CompanyId,
+        title: "VAT identification number outside the European Union",
+        matches: "The same VATIN shape outside the Union: an ISO 3166-1 alpha-2 country code \
+                  followed by that country's own tax number. Eight countries are covered — the \
+                  United Kingdom and the Isle of Man (GB), Switzerland (CH), Norway (NO), Serbia \
+                  (RS), Montenegro (ME), North Macedonia (MK), Russia (RU) and Türkiye (TR) — and \
+                  the Swiss and Norwegian numbers carry the tax abbreviation their own \
+                  administrations append, MWST, TVA, IVA or TPV for Switzerland and MVA for \
+                  Norway.",
+        standards: &[
+            "ISO 3166-1 alpha-2 — the country prefix",
+            "ISO 7064 Mod 11, 10 — used by Serbia",
+        ],
+        checks: &[
+            "the prefix is one of the eight countries whose check digit is implemented, and the \
+             body's length and alphabet are the ones that country issues",
+            "the country's own check digit, ported from python-stdnum: the weighted sum modulo 97 \
+             for Great Britain, modulo 11 for Switzerland, Norway, Montenegro, North Macedonia and \
+             Russia, ISO 7064 for Serbia, and a positional doubling ladder for Türkiye",
+            "the tax suffix Switzerland and Norway require, which is part of the number rather \
+             than of the surrounding text",
+            "component fields the country constrains: a British government department's serial \
+             runs below 500 and a health authority's from 500 up, and a British branch identifier \
+             takes no part in the arithmetic",
+            "nothing alphanumeric runs into the match from either side, which is what keeps a \
+             prefix of a longer digit run out of the facet",
+        ],
+        not_checked: &[
+            "whether the number is registered — that is a query against the national register, \
+             and this service makes no network calls",
+            "whether the business still exists: a deregistered number keeps its arithmetic",
+            "numbers written with the separators an invoice often uses — only the compact form, \
+             prefix immediately followed by the body, is matched",
+            "countries whose VAT number carries no check digit, such as Albania, Iceland and San \
+             Marino: a prefix with no arithmetic behind it is a two-letter string in front of a \
+             digit run, which is the shape this rule exists to avoid",
+            "bare national company registration numbers without their country prefix — a \
+             nine-digit run with a check digit is still a nine-digit run",
+            "the five-character British GD and HA form, which the scheme gives no check digit at \
+             all; it is accepted on the literal marker and the serial range, and reported with the \
+             no-checksum flag",
+        ],
+        authorities: &[
+            Authority {
+                name: "HM Revenue & Customs",
+                role: "allocates the British VAT registration number",
+                url: "https://www.gov.uk/government/organisations/hm-revenue-customs",
+            },
+            Authority {
+                name: "The national tax administration of the issuing country",
+                role: "allocates the number and defines its check digit",
+                url: "https://www.oecd.org/tax/automatic-exchange/crs-implementation-and-assistance/tax-identification-numbers/",
+            },
+        ],
+        ftm: FtmMapping {
+            schema: "LegalEntity",
+            property: "vatCode",
+            note: "The same property the EU numbers use: FollowTheMoney's vatCode is not scoped to \
+                   the Union, so one property carries every jurisdiction.",
+        },
+        references: &[
+            Reference {
+                title: "Check a UK VAT number",
+                url: "https://www.gov.uk/check-uk-vat-number",
+                note: "HMRC's service, which confirms registration rather than form",
+            },
+            Reference {
+                title: "python-stdnum",
+                url: "https://arthurdejong.org/python-stdnum/",
+                note: "the reference implementation the country arithmetic is ported from",
+            },
+        ],
+    },
+    RuleDoc {
         rule_id: "security.isin",
         entity_type: EntityType::Security,
         title: "International Securities Identification Number",

@@ -137,3 +137,13 @@
 {"name": "greek vat number written with the iso country code", "text": "GR094259216 is not how a Greek VAT number is written", "expect": []}
 {"name": "capitalised words opening with member state prefixes", "text": "ATTENTION DEADLINE ROUTINE PLATFORM ITEMISED", "expect": []}
 {"name": "short romanian tax number shape in prose", "text": "detour via route RO51 until Friday", "expect": []}
+{"name": "british vat number", "text": "supplier GB980780684 on file", "expect": [{"type": "company_id", "text": "GB980780684", "value": "GB980780684"}]}
+{"name": "swiss vat number with its tax suffix", "text": "Rechnung CHE107787577MWST bezahlt", "expect": [{"type": "company_id", "text": "CHE107787577MWST", "value": "CHE107787577MWST"}]}
+{"name": "norwegian vat number with its tax suffix", "text": "leverandor NO995525828MVA registrert", "expect": [{"type": "company_id", "text": "NO995525828MVA", "value": "NO995525828MVA"}]}
+{"name": "serbian vat number", "text": "counterparty RS101134702 in Belgrade", "expect": [{"type": "company_id", "text": "RS101134702", "value": "RS101134702"}]}
+{"name": "british vat number with a bad check digit", "text": "invoice GB802311781 was rejected at entry", "expect": []}
+{"name": "swiss vat number with a bad check digit", "text": "CHE107787578IVA could not be verified", "expect": []}
+{"name": "norwegian vat number with a bad check digit", "text": "order NO995525829MVA cancelled", "expect": []}
+{"name": "turkish tax number with a bad check digit", "text": "reference TR4540536921 failed validation", "expect": []}
+{"name": "british prefix in front of an ordinary number", "text": "reference GB000123456 in the ledger", "expect": []}
+{"name": "norwegian organisation number without the tax suffix", "text": "orgnr NO995525828 is not a VAT number on its own", "expect": []}

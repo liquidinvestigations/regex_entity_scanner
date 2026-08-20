@@ -162,6 +162,7 @@ Compiled today:
 | `bank_account` | `bank.bic` | Eight or eleven characters, positions five and six an ISO 3166-1 country, and a label — BIC, SWIFT, IBAN, bank, beneficiary, correspondent — nearby. ISO 9362 defines no check digit. |
 | `company_id` | `company.lei` | ISO 7064 mod-97-10 over all twenty characters, letters counting as their base-36 value. |
 | `company_id` | `company.vat_eu` | An EU VAT number: the member-state prefix, that state's own body length and alphabet, and the check digit its tax administration publishes. All twenty-seven states, with Greece under `EL`. |
+| `company_id` | `company.vat_non_eu` | The same VATIN shape outside the Union, for the countries whose check digit is implemented: GB, CH, NO, RS, ME, MK, RU and TR. The Swiss and Norwegian numbers carry the tax abbreviation their administrations append. |
 | `security` | `security.isin` | Luhn over the letter-expanded form, and a prefix that is an ISO 3166-1 country or one of the allocations ISO 6166 makes to substitute agencies. |
 | `security` | `security.cusip` | The alternating-weight check digit, plus a cue word — CUSIP, SEDOL, ISIN, ticker, security, CIK — because nine alphanumerics are also every part number there is. |
 | `security` | `security.sedol` | The weighted check digit, the vowel-free alphabet, and the same cue words. |

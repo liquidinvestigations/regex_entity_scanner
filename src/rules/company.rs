@@ -2,7 +2,7 @@
 
 use std::collections::BTreeMap;
 
-use crate::model::{EntityType, Value};
+use crate::model::{EntityType, Flag, Value};
 use crate::rules::checksum::{iso7064, luhn, weighted_mod};
 use crate::rules::{Candidate, Rule, Verdict};
 
@@ -830,4 +830,246 @@ fn sk_dph(national: &str) -> bool {
         return true;
     }
     d[0] != 0 && matches!(d[2], 2 | 3 | 4 | 7 | 8 | 9) && as_integer(&d) % 11 == 0
+}
+
+// ---------------------------------------------------------------------------------------------
+// VAT identification numbers outside the European Union
+// ---------------------------------------------------------------------------------------------
+
+pub struct VatNonEuRule;
+
+/// The VATIN form outside the Union: an ISO 3166-1 alpha-2 country code followed by that
+/// country's own tax number. Only the countries whose check digit is implemented here are
+/// offered, because a prefix without arithmetic behind it is a two-letter string in front of a
+/// digit run — exactly the bare-digit-run problem the prefix is supposed to solve.
+///
+/// Longer alternatives for a prefix come first: the engine takes the first alternative that
+/// matches at a position, so the twelve-digit British and Russian bodies have to be offered
+/// before the nine- and ten-digit ones, and the eleven-character government form before the
+/// five-character one.
+const VAT_NON_EU_PATTERN: &str = concat!(
+    r"CHE\d{9}MWST|CHE\d{9}TVA|CHE\d{9}IVA|CHE\d{9}TPV",
+    r"|GBGD8888\d{5}|GBHA8888\d{5}|GBGD\d{3}|GBHA\d{3}|GB\d{12}|GB\d{9}",
+    r"|ME\d{8}",
+    r"|MK\d{13}",
+    r"|NO\d{9}MVA",
+    r"|RS\d{9}",
+    r"|RU\d{12}|RU\d{10}",
+    r"|TR\d{10}",
+);
+
+impl Rule for VatNonEuRule {
+    fn id(&self) -> &'static str {
+        "company.vat_non_eu"
+    }
+
+    fn entity_type(&self) -> EntityType {
+        EntityType::CompanyId
+    }
+
+    fn candidate_pattern(&self) -> &'static str {
+        VAT_NON_EU_PATTERN
+    }
+
+    fn validate(&self, candidate: &Candidate<'_>) -> Option<Verdict> {
+        // Both neighbours are guards. Three of these bodies are variable length, so without the
+        // right-hand one a longer digit run donates a prefix of itself to the facet.
+        if candidate
+            .byte_before()
+            .is_some_and(|b| b.is_ascii_alphanumeric())
+        {
+            return None;
+        }
+        if candidate
+            .byte_after()
+            .is_some_and(|b| b.is_ascii_alphanumeric())
+        {
+            return None;
+        }
+
+        let text = candidate.text();
+        let prefix = text.get(0..2)?;
+        let body = text.get(2..)?;
+
+        let flags = non_eu_country_check(prefix, body)?;
+
+        let mut parts = BTreeMap::new();
+        parts.insert("prefix".to_string(), prefix.to_string());
+        parts.insert("number".to_string(), body.to_string());
+
+        Some(Verdict {
+            start: candidate.start,
+            end: candidate.end,
+            value: Value::Identifier {
+                scheme: "vat".to_string(),
+                compact: text.to_string(),
+                country: Some(prefix.to_string()),
+                parts,
+            },
+            confidence: 0.99,
+            flags,
+        })
+    }
+}
+
+/// The country table, on the same principle as the member-state one: a prefix selects the
+/// arithmetic its own tax administration publishes, ported from the corresponding `python-stdnum`
+/// module and following the delegation where a country's VAT module is an alias for its
+/// company-register module. `Some(flags)` accepts the number.
+fn non_eu_country_check(prefix: &str, body: &str) -> Option<Vec<Flag>> {
+    match prefix {
+        "CH" => ch_mwst(body),
+        "GB" => gb_vat(body),
+        "ME" => me_pib(body),
+        "MK" => mk_edb(body),
+        "NO" => no_mva(body),
+        "RS" => rs_pib(body),
+        "RU" => ru_inn(body),
+        "TR" => tr_vkn(body),
+        _ => None,
+    }
+}
+
+/// Switzerland — Mehrwertsteuernummer. The UID, whose own `CHE` prefix doubles as the country
+/// code, followed by the tax abbreviation in one of the four national languages. Nine digits
+/// under a weighted sum, the last of them the check digit.
+fn ch_mwst(body: &str) -> Option<Vec<Flag>> {
+    let uid = body.strip_prefix('E')?;
+    let number = ["MWST", "TVA", "IVA", "TPV"]
+        .iter()
+        .find_map(|suffix| uid.strip_suffix(suffix))?;
+    let d = digits(number)?;
+    if d.len() != 9 {
+        return None;
+    }
+    let check = (11 - weighted_sum(&d[..8], &[5, 4, 3, 2, 7, 6, 5, 4]) % 11) % 11;
+    // Ten would need two characters, so it names no valid number.
+    (check < 10 && check == d[8]).then(Vec::new)
+}
+
+/// United Kingdom (and the Isle of Man) — VAT registration number. Three shapes: the nine-digit
+/// standard number, optionally carrying a three-digit branch identifier; the five-character
+/// government-department and health-authority form; and the eleven-character form those bodies
+/// use when they are themselves branch-registered.
+fn gb_vat(body: &str) -> Option<Vec<Flag>> {
+    // A government department's serial runs below 500 and a health authority's from 500 up,
+    // which is the only thing that distinguishes the two prefixes.
+    let departmental = |kind: &str, serial: u64| match kind {
+        "GD" => serial < 500,
+        "HA" => serial >= 500,
+        _ => false,
+    };
+
+    if body.len() == 5 {
+        let serial = as_integer(&digits(body.get(2..)?)?);
+        if !departmental(body.get(0..2)?, serial) {
+            return None;
+        }
+        // This form carries no check digit at all: the literal GD or HA marker and the serial
+        // range are the whole of what identifies it, and the flag says so.
+        return Some(vec![Flag::NoChecksum]);
+    }
+
+    if body.len() == 11 {
+        let head = body.get(0..6)?;
+        if head != "GD8888" && head != "HA8888" {
+            return None;
+        }
+        let d = digits(body.get(6..)?)?;
+        let serial = as_integer(&d[..3]);
+        if !departmental(head.get(0..2)?, serial) {
+            return None;
+        }
+        return (serial % 97 == as_integer(&d[3..])).then(Vec::new);
+    }
+
+    if body.len() != 9 && body.len() != 12 {
+        return None;
+    }
+    let d = digits(body)?;
+    let remainder = weighted_sum(&d[..9], &[8, 7, 6, 5, 4, 3, 2, 10, 1]) % 97;
+    // The series was restarted at 100, and the numbers issued since then satisfy the weighted sum
+    // at any of three remainders rather than only at zero. A branch identifier takes no part.
+    let accepted: &[u32] = if as_integer(&d[..3]) >= 100 {
+        &[0, 42, 55]
+    } else {
+        &[0]
+    };
+    accepted.contains(&remainder).then(Vec::new)
+}
+
+/// Montenegro — PIB. Eight digits under a descending weighting modulo eleven.
+fn me_pib(body: &str) -> Option<Vec<Flag>> {
+    let d = digits(body)?;
+    if d.len() != 8 {
+        return None;
+    }
+    let check = (11 - weighted_sum(&d[..7], &[8, 7, 6, 5, 4, 3, 2]) % 11) % 11 % 10;
+    (check == d[7]).then(Vec::new)
+}
+
+/// North Macedonia — ЕДБ. Thirteen digits under two runs of descending weights.
+fn mk_edb(body: &str) -> Option<Vec<Flag>> {
+    let d = digits(body)?;
+    if d.len() != 13 {
+        return None;
+    }
+    let sum = weighted_sum(&d[..12], &[7, 6, 5, 4, 3, 2, 7, 6, 5, 4, 3, 2]);
+    ((11 - sum % 11) % 11 % 10 == d[12]).then(Vec::new)
+}
+
+/// Norway — MVA. The nine-digit organisasjonsnummer with the tax suffix after it.
+fn no_mva(body: &str) -> Option<Vec<Flag>> {
+    let d = digits(body.strip_suffix("MVA")?)?;
+    if d.len() != 9 {
+        return None;
+    }
+    (weighted_sum(&d, &[3, 2, 7, 6, 5, 4, 3, 2, 1]) % 11 == 0).then(Vec::new)
+}
+
+/// Serbia — PIB. Nine digits under ISO 7064 mod 11, 10.
+fn rs_pib(body: &str) -> Option<Vec<Flag>> {
+    (body.len() == 9 && digits(body).is_some() && iso7064::mod_11_10(body)).then(Vec::new)
+}
+
+/// Russia — ИНН. Ten digits for an organisation, twelve for a person, each with its own weights.
+fn ru_inn(body: &str) -> Option<Vec<Flag>> {
+    let d = digits(body)?;
+    match d.len() {
+        10 => {
+            (weighted_sum(&d[..9], &[2, 4, 10, 3, 5, 9, 4, 6, 8]) % 11 % 10 == d[9]).then(Vec::new)
+        }
+        12 => {
+            let first = weighted_sum(&d[..10], &[7, 2, 4, 10, 3, 5, 9, 4, 6, 8]) % 11 % 10;
+            if first != d[10] {
+                return None;
+            }
+            // The second check digit is computed over the first ten digits and the first check
+            // digit, so it depends on the one before it.
+            let mut head = d[..10].to_vec();
+            head.push(first);
+            let second = weighted_sum(&head, &[3, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8]) % 11 % 10;
+            (second == d[11]).then(Vec::new)
+        }
+        _ => None,
+    }
+}
+
+/// Türkiye — VKN. Ten digits, where each of the first nine contributes a value that depends on
+/// its position through a doubling ladder rather than a fixed weight.
+fn tr_vkn(body: &str) -> Option<Vec<Flag>> {
+    let d = digits(body)?;
+    if d.len() != 10 {
+        return None;
+    }
+    let mut sum = 0u32;
+    for (index, digit) in d[..9].iter().rev().enumerate() {
+        let position = index as u32 + 1;
+        let shifted = (digit + position) % 10;
+        if shifted != 0 {
+            let contribution = (shifted << position) % 9;
+            sum += if contribution == 0 { 9 } else { contribution };
+        }
+    }
+    ((10 - sum % 10) % 10 == d[9]).then(Vec::new)
 }
