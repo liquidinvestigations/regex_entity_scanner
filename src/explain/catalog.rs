@@ -999,7 +999,8 @@ static RULE_DOCS: &[RuleDoc] = &[
         rule_id: "network.ip",
         entity_type: EntityType::Network,
         title: "IP address",
-        matches: "An IPv4 or IPv6 address, on its own or with a CIDR prefix length. Addresses are \
+        matches: "An IPv4 or IPv6 address, on its own or with a CIDR prefix length, including the \
+                  IPv4-mapped form that writes the last four bytes as a dotted quad. Addresses are \
                   what tie a log line, a mail header and a hosting record to each other.",
         standards: &[
             "RFC 791 — Internet Protocol",

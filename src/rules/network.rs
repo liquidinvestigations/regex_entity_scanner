@@ -28,7 +28,12 @@ pub struct IpRule;
 /// A dotted quad or a run of colon-separated hex groups, either optionally followed by a prefix
 /// length. Both halves over-match wildly — `09:12:00` matches the second — because `std::net` is
 /// the validator and rejecting there is cheaper than encoding the grammar twice.
-const IP_PATTERN: &str = r"\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3}(?:/\d{1,2})?|[0-9A-Fa-f]{0,4}(?::[0-9A-Fa-f]{0,4}){2,7}(?:/\d{1,3})?";
+///
+/// The IPv6 form that ends in a dotted quad — `::ffff:192.0.2.1`, RFC 4291's IPv4-mapped and
+/// IPv4-compatible addresses — is its own alternative and stands first, because alternation is
+/// leftmost-first: without it the hex run stops at `::ffff:192` and the quad behind it is then a
+/// slice of a longer dotted run, so the whole address yields nothing.
+const IP_PATTERN: &str = r"(?:[0-9A-Fa-f]{0,4}:){2,7}\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3}(?:/\d{1,3})?|\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3}(?:/\d{1,2})?|[0-9A-Fa-f]{0,4}(?::[0-9A-Fa-f]{0,4}){2,7}(?:/\d{1,3})?";
 
 impl Rule for IpRule {
     fn id(&self) -> &'static str {

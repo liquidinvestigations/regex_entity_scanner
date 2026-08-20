@@ -112,6 +112,24 @@ fn accepts_addresses_of_both_families_and_cidr_prefixes() {
     }
 }
 
+/// RFC 4291 lets an IPv6 address end in a dotted quad, and the two halves of the pattern read that
+/// spelling as a hex run cut short by a dotted run neither half can finish. It is the form a dual
+/// stack writes a v4 address in, so it has to be one candidate rather than two.
+#[test]
+fn accepts_the_ipv6_form_that_ends_in_a_dotted_quad() {
+    assert_eq!(
+        only_match("peer ::ffff:192.0.2.1 connected"),
+        ("ipv6".to_string(), "::ffff:192.0.2.1".to_string())
+    );
+    assert_eq!(
+        only_match("relay 64:ff9b::198.51.100.1 selected"),
+        // std::net renders the canonical RFC 5952 form, which keeps the dotted quad only for the
+        // IPv4-mapped prefix and writes every other embedded quad back as hex groups.
+        ("ipv6".to_string(), "64:ff9b::c633:6401".to_string())
+    );
+    rejects("host ::ffff:192.0.2.256 unreachable");
+}
+
 /// A four-component dotted number is also how a release is written, and the arithmetic cannot
 /// separate the two — only the words around it can.
 #[test]
