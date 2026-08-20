@@ -40,6 +40,8 @@ pub struct VendoredData {
     territories: HashMap<String, String>,
     /// ISO 3166-1 alpha-2 code to the IBAN registry's entry for that country.
     iban_registry: HashMap<String, IbanCountry>,
+    /// ITU Maritime Identification Digits to the ISO 3166-1 alpha-2 code of the flag state.
+    maritime_ids: HashMap<String, String>,
 }
 
 impl VendoredData {
@@ -93,10 +95,37 @@ impl VendoredData {
             iban_registry.len()
         );
 
+        let mid_file: PathBuf = root.join("data/itu/mids.json");
+        let raw = std::fs::read_to_string(&mid_file).with_context(|| {
+            format!(
+                "reading the vendored maritime identification digits at {}",
+                mid_file.display()
+            )
+        })?;
+        // The source is keyed by MID and carries alpha-2, alpha-3, a subdivision and a name; only
+        // the alpha-2 is used, and the rest is left in the file so the provenance stays legible.
+        let raw_mids: HashMap<String, Vec<String>> = serde_json::from_str(&raw)
+            .context("parsing the vendored maritime identification digits")?;
+        let maritime_ids: HashMap<String, String> = raw_mids
+            .into_iter()
+            .filter_map(|(mid, fields)| {
+                let alpha2 = fields.into_iter().next()?;
+                (!alpha2.is_empty()).then_some((mid, alpha2))
+            })
+            .collect();
+
+        anyhow::ensure!(
+            maritime_ids.len() > 250,
+            "the vendored maritime identification digits hold only {} entries, which means the \
+             list is truncated",
+            maritime_ids.len()
+        );
+
         Ok(Self {
             tlds,
             territories,
             iban_registry,
+            maritime_ids,
         })
     }
 
@@ -129,6 +158,13 @@ impl VendoredData {
 
         let alpha2 = alpha2.to_uppercase();
         !NOT_COUNTRIES.contains(&alpha2.as_str()) && self.territories.contains_key(&alpha2)
+    }
+
+    /// The flag state an ITU Maritime Identification Digit triple belongs to, as an ISO 3166-1
+    /// alpha-2 code. An MMSI carries no check digit, so this membership test is most of what
+    /// separates a real one from any nine-digit run.
+    pub fn maritime_id_country(&self, mid: &str) -> Option<&str> {
+        self.maritime_ids.get(mid).map(String::as_str)
     }
 
     /// The IBAN registry entry for a country code, or `None` for a country that issues no IBANs —

@@ -57,3 +57,12 @@
 {"name": "cusip shaped part number with no cue", "text": "part number DUS0421C5 confirmed by the supplier", "expect": []}
 {"name": "sedol beside its label", "text": "SEDOL B15KXQ8 as at close", "expect": [{"type": "security", "text": "B15KXQ8", "value": "B15KXQ8"}]}
 {"name": "sedol with a mistyped check digit", "text": "SEDOL B15KXQ7 as at close", "expect": []}
+{"name": "imo number behind its marker", "text": "The tanker IMO 9319466 was detained at Piraeus.", "expect": [{"type": "vessel", "text": "IMO 9319466", "value": "9319466"}]}
+{"name": "hull number admitted by a cue word", "text": "The vessel, 8814275, changed flag twice.", "expect": [{"type": "vessel", "text": "8814275", "value": "8814275"}]}
+{"name": "seven digit order number is not a hull", "text": "Order 9319466 shipped on Tuesday.", "expect": []}
+{"name": "imo number with a broken check digit", "text": "IMO 8814274 is not a hull number.", "expect": []}
+{"name": "mmsi beside its label", "text": "AIS target MMSI 244660000 heading north.", "expect": [{"type": "vessel", "text": "244660000", "value": "244660000"}]}
+{"name": "nine digit reference is not an mmsi", "text": "Reference 244660000 in the ledger.", "expect": []}
+{"name": "mmsi with an unallocated mid", "text": "MMSI 999123456 broadcasting", "expect": []}
+{"name": "container number on a manifest", "text": "Container CSQU3054383 sealed at Rotterdam.", "expect": [{"type": "cargo_container", "text": "CSQU3054383", "value": "CSQU3054383"}]}
+{"name": "container number with a broken check digit", "text": "Container CSQU3054384 was never loaded.", "expect": []}

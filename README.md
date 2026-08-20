@@ -158,6 +158,9 @@ Compiled today:
 | `security` | `security.isin` | Luhn over the letter-expanded form, and a prefix that is an ISO 3166-1 country or one of the allocations ISO 6166 makes to substitute agencies. |
 | `security` | `security.cusip` | The alternating-weight check digit, plus a cue word — CUSIP, SEDOL, ISIN, ticker, security, CIK — because nine alphanumerics are also every part number there is. |
 | `security` | `security.sedol` | The weighted check digit, the vowel-free alphabet, and the same cue words. |
+| `vessel` | `vessel.imo` | The weighted check digit over the hull number, admitted by the literal `IMO` marker or a word — vessel, ship, tanker, hull, flag — nearby. |
+| `vessel` | `vessel.mmsi` | The first three digits are a Maritime Identification Digit triple the ITU has allocated, and a word — MMSI, AIS, call sign, vessel, ship — is nearby. An MMSI has no check digit. |
+| `cargo_container` | `container.iso6346` | The ISO 6346 check digit and the equipment-category letter, which is one of U, J, Z or R and is what makes the format self-identifying. |
 
 Full RFC 5322 is deliberately not the target for email: it accepts a great deal nobody writes, and
 on real corpora the TLD membership test is where the precision actually comes from.

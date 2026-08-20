@@ -16,6 +16,7 @@ pub mod context;
 pub mod date_iso;
 pub mod date_machine;
 pub mod email;
+pub mod maritime;
 pub mod security;
 
 use crate::data::VendoredData;
@@ -101,5 +102,8 @@ pub fn all() -> Vec<Box<dyn Rule>> {
         Box::new(security::IsinRule),
         Box::new(security::CusipRule),
         Box::new(security::SedolRule),
+        Box::new(maritime::ImoRule),
+        Box::new(maritime::MmsiRule),
+        Box::new(maritime::ContainerRule),
     ]
 }

@@ -622,4 +622,126 @@ static RULE_DOCS: &[RuleDoc] = &[
             note: "the issuing authority and the scheme's own documentation",
         }],
     },
+    RuleDoc {
+        rule_id: "vessel.imo",
+        entity_type: EntityType::Vessel,
+        title: "IMO ship identification number",
+        matches: "The seven-digit number that identifies a ship's hull for its whole life, \
+                  regardless of how often it is renamed, reflagged or resold. That permanence is \
+                  what makes it the anchor for sanctions and ownership work, where the name on the \
+                  stern is the least stable thing about a vessel.",
+        standards: &[
+            "IMO Resolution A.1078(28) — IMO ship identification number scheme",
+            "ISO 8712 — Ships and marine technology, IMO ship identification number",
+        ],
+        checks: &[
+            "the check digit, a weighted sum of the first six digits with weights seven down to \
+             two, modulo ten",
+            "either the literal marker IMO stands immediately before the digits, or one of the \
+             words IMO, vessel, ship, tanker, hull or flag appears within 48 bytes either side",
+            "the run is exactly seven digits and nothing alphanumeric touches it on either side",
+        ],
+        not_checked: &[
+            "whether the ship exists, is still in class, or was ever registered — many hulls carry \
+             a number whose check digit does not agree, and those are rejected here",
+            "the ship's current name, flag or owner, none of which the number encodes",
+        ],
+        authorities: &[Authority {
+            name: "International Maritime Organization",
+            role: "owns the scheme; IHS Markit allocates the numbers on its behalf",
+            url: "https://www.imo.org/",
+        }],
+        ftm: FtmMapping {
+            schema: "Vessel",
+            property: "imoNumber",
+            note: "FollowTheMoney's Vessel schema defines imoNumber and features it in the caption, \
+                   which is exactly this number.",
+        },
+        references: &[Reference {
+            title: "IMO ship identification number scheme",
+            url: "https://www.imo.org/en/OurWork/MSAS/Pages/IMO-identification-number-scheme.aspx",
+            note: "the scheme, the allocation process and the check-digit rule",
+        }],
+    },
+    RuleDoc {
+        rule_id: "vessel.mmsi",
+        entity_type: EntityType::Vessel,
+        title: "MMSI (Maritime Mobile Service Identity)",
+        matches: "The nine-digit identity a ship's radio and AIS transponder broadcast. Unlike an \
+                  IMO number it belongs to the station rather than the hull, so it changes when a \
+                  ship is reflagged — which is itself the signal an investigator is often looking \
+                  for.",
+        standards: &[
+            "ITU-R M.585 — Assignment and use of identities in the maritime mobile service",
+        ],
+        checks: &[
+            "the first three digits are a Maritime Identification Digit triple the ITU has \
+             actually allocated, which is also where the flag state comes from",
+            "one of the words MMSI, AIS, call sign, callsign, vessel or ship appears within 48 \
+             bytes either side",
+            "the run is exactly nine digits and nothing alphanumeric touches it on either side",
+        ],
+        not_checked: &[
+            "a check digit — an MMSI has none, which is why the match carries the no-checksum flag",
+            "coast-station, group-call and craft-associated identities, where the MID sits at \
+             another position; reading the wrong three digits as a flag state is worse than not \
+             reading them, so those forms are not matched",
+            "whether the station is licensed or the transponder is transmitting the truth",
+        ],
+        authorities: &[Authority {
+            name: "International Telecommunication Union",
+            role: "allocates Maritime Identification Digits to administrations",
+            url: "https://www.itu.int/en/ITU-R/terrestrial/fmd/Pages/mid.aspx",
+        }],
+        ftm: FtmMapping {
+            schema: "Vessel",
+            property: "mmsi",
+            note: "FollowTheMoney's Vessel schema defines mmsi for exactly this identity.",
+        },
+        references: &[Reference {
+            title: "ITU Maritime Identification Digits",
+            url: "https://www.itu.int/en/ITU-R/terrestrial/fmd/Pages/mid.aspx",
+            note: "the allocated triples and the administration each belongs to",
+        }],
+    },
+    RuleDoc {
+        rule_id: "container.iso6346",
+        entity_type: EntityType::CargoContainer,
+        title: "ISO 6346 container number",
+        matches: "The eleven-character number stencilled on an intermodal shipping container: \
+                  three letters of owner code, a category letter, six digits of serial and a check \
+                  digit. It is what ties a bill of lading to a physical box, which is why it \
+                  matters for trade and sanctions-evasion work.",
+        standards: &["ISO 6346 — Freight containers, coding, identification and marking"],
+        checks: &[
+            "the check digit, each character's value times a power of two, summed, modulo eleven \
+             then modulo ten",
+            "the fourth character is one of U, J, Z or R, the only equipment categories the \
+             standard defines, which is what makes the format self-identifying",
+            "single spaces inside the grouped written form are stripped before checking",
+            "nothing alphanumeric runs into the match from either side",
+        ],
+        not_checked: &[
+            "whether the owner code is registered with the Bureau International des Containers",
+            "the size and type code, which is stencilled beside the number and is not part of it",
+            "whether the container exists or what it holds",
+        ],
+        authorities: &[Authority {
+            name: "Bureau International des Containers et du Transport Intermodal",
+            role: "maintains the owner-code register the standard depends on",
+            url: "https://www.bic-code.org/",
+        }],
+        ftm: FtmMapping {
+            schema: "Analyzable",
+            property: "res:containerMentioned",
+            note: "FollowTheMoney has no schema for an intermodal container and no property for \
+                   its number, so this is a local extension in the res: namespace, following the \
+                   shape of its own ipMentioned and ibanMentioned properties.",
+        },
+        references: &[Reference {
+            title: "BIC container code register",
+            url: "https://www.bic-code.org/bic-codes/",
+            note: "where an owner code can be resolved to a company",
+        }],
+    },
 ];
