@@ -161,6 +161,10 @@ Compiled today:
 | `vessel` | `vessel.imo` | The weighted check digit over the hull number, admitted by the literal `IMO` marker or a word — vessel, ship, tanker, hull, flag — nearby. |
 | `vessel` | `vessel.mmsi` | The first three digits are a Maritime Identification Digit triple the ITU has allocated, and a word — MMSI, AIS, call sign, vessel, ship — is nearby. An MMSI has no check digit. |
 | `cargo_container` | `container.iso6346` | The ISO 6346 check digit and the equipment-category letter, which is one of U, J, Z or R and is what makes the format self-identifying. |
+| `device` | `device.imei` | The Luhn check digit over fifteen digits, plus a word — IMEI, handset, device — nearby, because a bare digit run is also every reference number there is. |
+| `device` | `device.mac` | Consistent separators and twelve hex digits. The bare twelve-hex spelling is not matched: it is indistinguishable from half a hash. |
+| `network` | `network.ip` | The address parses through `std::net`, which is the definition of both formats; a CIDR prefix is range-checked, and words like version or firmware nearby reject a dotted quad that is a release number. |
+| `network` | `network.asn` | The literal `AS`/`ASN` prefix is part of the match, and the number fits the allocated 32-bit space. |
 
 Full RFC 5322 is deliberately not the target for email: it accepts a great deal nobody writes, and
 on real corpora the TLD membership test is where the precision actually comes from.

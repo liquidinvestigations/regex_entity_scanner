@@ -30,7 +30,7 @@
 {"name": "unregistered tld beside a real address", "text": "notes@example.zzz billing@example.com", "expect": [{"type": "email", "text": "billing@example.com", "value": "billing@example.com"}]}
 {"name": "mail header date", "text": "Date: Thu, 04 Mar 2021 09:12:00 +0200", "expect": [{"type": "date", "text": "Thu, 04 Mar 2021 09:12:00 +0200", "value": "2021-03-04T09:12:00+02:00"}]}
 {"name": "mail header date with a wrong weekday", "text": "Date: Mon, 04 Mar 2021 09:12:00 +0200", "expect": []}
-{"name": "common log format line", "text": "10.0.0.4 - - [04/Mar/2021:09:12:00 +0200] \"GET /index HTTP/1.1\" 200 512", "expect": [{"type": "date", "text": "04/Mar/2021:09:12:00 +0200", "value": "2021-03-04T09:12:00+02:00"}]}
+{"name": "common log format line", "text": "10.0.0.4 - - [04/Mar/2021:09:12:00 +0200] \"GET /index HTTP/1.1\" 200 512", "expect": [{"type": "date", "text": "04/Mar/2021:09:12:00 +0200", "value": "2021-03-04T09:12:00+02:00"}, {"type": "network", "text": "10.0.0.4", "value": "10.0.0.4"}]}
 {"name": "slashed date without the log brackets", "text": "invoice dated 04/Mar/2021 and paid", "expect": []}
 {"name": "iso week date", "text": "shipped in 2021-W09-4 per the plan", "expect": [{"type": "date", "text": "2021-W09-4", "value": "2021-03-04"}]}
 {"name": "iso week date in the basic spelling", "text": "lot code 2021W094 on the label", "expect": [{"type": "date", "text": "2021W094", "value": "2021-03-04"}]}
@@ -66,3 +66,20 @@
 {"name": "mmsi with an unallocated mid", "text": "MMSI 999123456 broadcasting", "expect": []}
 {"name": "container number on a manifest", "text": "Container CSQU3054383 sealed at Rotterdam.", "expect": [{"type": "cargo_container", "text": "CSQU3054383", "value": "CSQU3054383"}]}
 {"name": "container number with a broken check digit", "text": "Container CSQU3054384 was never loaded.", "expect": []}
+{"name": "imei beside its label", "text": "Handset IMEI 354178036859789 seized at the border.", "expect": [{"type": "device", "text": "354178036859789", "value": "354178036859789"}]}
+{"name": "imei in its grouped spelling", "text": "device 35-417803-685978-9 registered", "expect": [{"type": "device", "text": "35-417803-685978-9", "value": "354178036859789"}]}
+{"name": "fifteen digit run with no device word", "text": "Reference 354178036859789 in the ledger.", "expect": []}
+{"name": "imei with a broken check digit", "text": "Handset IMEI 354178036859781 seized.", "expect": []}
+{"name": "mac address in a lease", "text": "lease for 00:1B:44:11:3A:B7 expires tonight", "expect": [{"type": "device", "text": "00:1B:44:11:3A:B7", "value": "00:1b:44:11:3a:b7"}]}
+{"name": "certificate fingerprint is not a mac address", "text": "SHA1 fingerprint 5E:FF:56:A2:AF:15:22:B6:C4:5F:6E:B4:38:96:1F:AE:07:5B:8C:F1", "expect": []}
+{"name": "sha256 hash is not an identifier", "text": "sha256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 verified", "expect": []}
+{"name": "git commit hash is not a mac address", "text": "commit 3f95b1a9c04de218f1b2c33ad7e9a5c8b6d40f11 on master", "expect": []}
+{"name": "ipv4 address in a firewall note", "text": "block 203.0.113.42 at the edge", "expect": [{"type": "network", "text": "203.0.113.42", "value": "203.0.113.42"}]}
+{"name": "ipv4 network in cidr form", "text": "route 198.51.100.0/24 via the gateway", "expect": [{"type": "network", "text": "198.51.100.0/24", "value": "198.51.100.0"}]}
+{"name": "ipv6 address in a header", "text": "X-Forwarded-For: 2001:db8::8a2e:370:7334 accepted", "expect": [{"type": "network", "text": "2001:db8::8a2e:370:7334", "value": "2001:db8::8a2e:370:7334"}]}
+{"name": "four part version string is not an address", "text": "upgraded to firmware version 10.0.0.4 last night", "expect": []}
+{"name": "semantic version string", "text": "released 1.24.3 to production", "expect": []}
+{"name": "uuid is not an identifier", "text": "job 550e8400-e29b-41d4-a716-446655440000 queued", "expect": []}
+{"name": "autonomous system number", "text": "announced by AS64512 since March", "expect": [{"type": "network", "text": "AS64512", "value": "AS64512"}]}
+{"name": "asn in its three letter spelling", "text": "peer ASN 15169 upstream", "expect": [{"type": "network", "text": "ASN 15169", "value": "AS15169"}]}
+{"name": "bare number is not an autonomous system", "text": "carried 64512 tonnes of cargo", "expect": []}

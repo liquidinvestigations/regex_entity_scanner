@@ -14,6 +14,8 @@ pattern, a validator and a fixture — not a new pipeline.
 | `company.rs` | `company.lei` |
 | `security.rs` | `security.isin`, `security.cusip`, `security.sedol` |
 | `maritime.rs` | `vessel.imo`, `vessel.mmsi`, `container.iso6346` |
+| `device.rs` | `device.imei`, `device.mac` |
+| `network.rs` | `network.ip`, `network.asn` |
 
 ## A date rule ships only when the match fixes the whole day
 

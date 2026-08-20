@@ -744,4 +744,172 @@ static RULE_DOCS: &[RuleDoc] = &[
             note: "where an owner code can be resolved to a company",
         }],
     },
+    RuleDoc {
+        rule_id: "device.imei",
+        entity_type: EntityType::Device,
+        title: "IMEI (International Mobile Equipment Identity)",
+        matches: "The fifteen-digit number that identifies a mobile handset rather than its \
+                  subscriber. It survives a change of SIM, which is what makes it the durable half \
+                  of a mobile identity.",
+        standards: &["3GPP TS 23.003 — Numbering, addressing and identification"],
+        checks: &[
+            "the Luhn check digit over all fifteen digits",
+            "one of the words IMEI, handset or device appears within 48 bytes either side",
+            "the digits total exactly fifteen once the hyphens or spaces of the grouped written \
+             form are stripped",
+            "nothing alphanumeric and no hyphen touches the match on either side, so a slice of a \
+             longer code is not read as a handset",
+        ],
+        not_checked: &[
+            "the sixteen-digit IMEISV form, which carries a software version instead of a check \
+             digit and so cannot be verified",
+            "whether the type allocation code was issued, or to which manufacturer — the GSMA \
+             database that answers that is not public",
+            "whether the handset exists or is in service",
+        ],
+        authorities: &[Authority {
+            name: "GSM Association",
+            role: "allocates type allocation codes and runs the IMEI database",
+            url: "https://www.gsma.com/services/imei-database/",
+        }],
+        ftm: FtmMapping {
+            schema: "Analyzable",
+            property: "res:imeiMentioned",
+            note: "FollowTheMoney has no device schema and no IMEI property, so this is a local \
+                   extension in the res: namespace, shaped like its own ipMentioned property.",
+        },
+        references: &[Reference {
+            title: "GSMA IMEI allocation and approval process",
+            url: "https://www.gsma.com/services/imei-database/",
+            note: "how type allocation codes are assigned",
+        }],
+    },
+    RuleDoc {
+        rule_id: "device.mac",
+        entity_type: EntityType::Device,
+        title: "MAC address",
+        matches: "The six-octet hardware address of a network interface, written with colons, \
+                  hyphens or as the three dotted quads Cisco equipment prints. It ties a log line \
+                  to a physical piece of equipment rather than to an account.",
+        standards: &["IEEE 802 — MAC address format and the OUI registry"],
+        checks: &[
+            "the separators are consistent, so two adjacent hex fields that happen to sit beside \
+             different punctuation are not read as one address",
+            "exactly twelve hexadecimal digits once the separators are removed",
+            "no separator and nothing alphanumeric touches the match on either side, which is what \
+             keeps a twenty-octet certificate fingerprint out of the device facet",
+        ],
+        not_checked: &[
+            "a check digit, because the format has none — hence the no-checksum flag",
+            "the bare twelve-hex spelling, which is indistinguishable from half a hash and is \
+             deliberately not matched",
+            "which manufacturer the leading three octets belong to: the IEEE OUI registry is not \
+             vendored, so the bytes are reported and not resolved",
+            "whether the address is locally administered, spoofed, or in use",
+        ],
+        authorities: &[Authority {
+            name: "Institute of Electrical and Electronics Engineers",
+            role: "allocates organisationally unique identifiers and publishes the registry",
+            url: "https://standards.ieee.org/products-programs/regauth/",
+        }],
+        ftm: FtmMapping {
+            schema: "Analyzable",
+            property: "res:macAddressMentioned",
+            note: "FollowTheMoney has ipMentioned but no property for a hardware address, so this \
+                   is a local extension in the res: namespace following the same shape.",
+        },
+        references: &[Reference {
+            title: "IEEE Registration Authority",
+            url: "https://standards.ieee.org/products-programs/regauth/",
+            note: "where an organisationally unique identifier can be looked up",
+        }],
+    },
+    RuleDoc {
+        rule_id: "network.ip",
+        entity_type: EntityType::Network,
+        title: "IP address",
+        matches: "An IPv4 or IPv6 address, on its own or with a CIDR prefix length. Addresses are \
+                  what tie a log line, a mail header and a hosting record to each other.",
+        standards: &[
+            "RFC 791 — Internet Protocol",
+            "RFC 4291 — IP Version 6 Addressing Architecture",
+            "RFC 4632 — Classless Inter-domain Routing",
+        ],
+        checks: &[
+            "the address parses through the standard library's own parsers, which enforce octet \
+             ranges, group counts and the single :: elision — no arithmetic is duplicated in the \
+             pattern",
+            "a CIDR prefix length is within the address family's range",
+            "none of the words version, versions, release, build, firmware, revision or semver \
+             appears within 48 bytes either side, because a four-component dotted number is also \
+             how a release is written and nothing in the number itself separates the two",
+            "nothing alphanumeric and no dot, colon or slash continues the address on either side",
+        ],
+        not_checked: &[
+            "whether the address is routable, allocated or reachable — private, loopback and \
+             documentation ranges are all matched",
+            "who holds the allocation: resolving that needs registry data this service does not \
+             carry",
+            "that a dotted quad in a document is an address at all, beyond the negative context \
+             test — hence the no-checksum flag",
+        ],
+        authorities: &[Authority {
+            name: "Internet Assigned Numbers Authority",
+            role: "allocates address space to the regional internet registries",
+            url: "https://www.iana.org/numbers",
+        }],
+        ftm: FtmMapping {
+            schema: "Analyzable",
+            property: "ipMentioned",
+            note: "FollowTheMoney's Analyzable schema defines ipMentioned for an address found in \
+                   a document's text; UserAccount.ipAddress is the property for an address an \
+                   account was used from, which is a claim this service cannot make.",
+        },
+        references: &[Reference {
+            title: "IANA IPv4 address space registry",
+            url: "https://www.iana.org/assignments/ipv4-address-space/ipv4-address-space.xhtml",
+            note: "which registry holds each block",
+        }],
+    },
+    RuleDoc {
+        rule_id: "network.asn",
+        entity_type: EntityType::Network,
+        title: "Autonomous system number",
+        matches: "The number identifying a network that announces its own routes — AS64512, or ASN \
+                  64512. It is the unit at which hosting and transit are actually bought, so it is \
+                  the level at which infrastructure ownership is visible.",
+        standards: &[
+            "RFC 4271 — A Border Gateway Protocol 4",
+            "RFC 6793 — BGP support for four-octet autonomous system number space",
+        ],
+        checks: &[
+            "the literal prefix AS or ASN is part of the match; a bare number is never accepted",
+            "a space is allowed only after the three-letter spelling, because AS followed by a \
+             space is the English word far more often than it is a network",
+            "the number fits the allocated 32-bit space and is not zero, which is reserved",
+            "nothing alphanumeric touches the match on either side",
+        ],
+        not_checked: &[
+            "whether the number is allocated, or to whom — that needs regional registry data this \
+             service does not carry",
+            "the private and reserved ranges, which are matched like any other",
+            "a check digit, because the format has none — hence the no-checksum flag",
+        ],
+        authorities: &[Authority {
+            name: "Internet Assigned Numbers Authority",
+            role: "allocates autonomous system number blocks to the regional registries",
+            url: "https://www.iana.org/numbers",
+        }],
+        ftm: FtmMapping {
+            schema: "Analyzable",
+            property: "res:asnMentioned",
+            note: "FollowTheMoney has ipMentioned but no property for an autonomous system, so \
+                   this is a local extension in the res: namespace following the same shape.",
+        },
+        references: &[Reference {
+            title: "IANA autonomous system number registry",
+            url: "https://www.iana.org/assignments/as-numbers/as-numbers.xhtml",
+            note: "the allocated blocks and the registry each belongs to",
+        }],
+    },
 ];

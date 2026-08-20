@@ -154,9 +154,15 @@ fn a_log_timestamp_reports_the_span_inside_its_brackets() {
         r#"10.0.0.4 - - [04/Mar/2021:09:12:00 +0200] "GET / HTTP/1.1" 200"#,
         0,
     );
-    assert_eq!(entities.len(), 1, "{entities:?}");
-    assert_eq!(entities[0].text, "04/Mar/2021:09:12:00 +0200");
-    match &entities[0].value {
+    // The line also carries the client address, which is a second entity rather than a rival
+    // reading of the same span.
+    assert_eq!(entities.len(), 2, "{entities:?}");
+    let date = entities
+        .iter()
+        .find(|entity| entity.rule_id == "date.clf")
+        .expect("the log timestamp");
+    assert_eq!(date.text, "04/Mar/2021:09:12:00 +0200");
+    match &date.value {
         Value::Date { rfc3339, .. } => assert_eq!(rfc3339, "2021-03-04T09:12:00+02:00"),
         other => panic!("expected a date value, got {other:?}"),
     }
