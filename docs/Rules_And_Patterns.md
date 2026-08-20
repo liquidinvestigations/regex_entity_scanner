@@ -190,6 +190,24 @@ The label is strong enough to carry the rule on its own, which is why that rule 
 require the right side of the address to be a registered domain: RFC 5322 admits a bare
 `dot-atom-text` there, and `<…@thyme>` from an internal mail system is a well-formed message id.
 
+## A marker binds to the number that follows it
+
+The two money rules are the only patterns in the set whose marker — an ISO 4217 code or a currency
+sign — may stand either in front of the amount or behind it. Both spellings are written and neither
+is more correct, so both are matched; the ambiguity that creates is settled by one rule.
+
+**A span that ends in a marker is refused when a digit follows it within one optional space.** In
+`qty 2 EUR 30 per unit` the trailing-code reading `2 EUR` is available and it is a *wrong* reading,
+not merely a worse one: it reports two euro for a thirty-euro line. The same principle already
+decides that a code standing immediately in front of a sign names the currency — `SGD$4.90` is
+Singapore dollars — and both are the same statement about which number a marker is attached to.
+
+The candidate search has to cooperate. A leftmost-first engine proposes `2 EUR` before `EUR 30`, and
+looking inside a rejected candidate cannot find a match that ends past it, so the rules whose markers
+can trail ask the scan loop to resume the search past a rejection. Refusing the span without the
+resume converts a wrong value into a miss, which is the better of the two; refusing it with the
+resume converts it into the right value.
+
 ## A date rule ships only when the match fixes the whole day
 
 Standing policy for the `date` type: **a date rule emits nothing unless the match itself determines

@@ -47,9 +47,11 @@ the adjacent-byte guards read the real neighbours rather than the edges of a sli
 The recovery searches the rejected candidate's **interior**, which is what bounds its cost, and that
 bound has a visible edge: a match that begins inside a rejected candidate and ends past its right
 edge is not there to be found. That edge matters for one shape — a pattern whose marker may *trail*
-its number. In `1 $10 dollars bill` a money pattern's trailing-sign alternative matches `1 $` first,
-because the engine is leftmost-first and a match at offset 0 wins over the better one at offset 2;
-the validator rejects it, the interior of `1 $` holds nothing, and `$10` is never proposed at all.
+its number. In `qty 2 EUR 30 per unit` a money pattern's trailing-code alternative matches `2 EUR`
+at offset 4, because the engine is leftmost-first and that beats the better reading `EUR 30` at
+offset 6; the validator refuses it, the interior of `2 EUR` holds nothing, and `EUR 30` is never
+proposed at all. The cost of the missing recovery here is not a miss — it is `EUR 2.00` in an index
+where the document says thirty euro.
 
 A rule that has that shape says so — `Rule::resumes_past_rejection` — and rejection then also queues
 the rule's next match at or after one character past the rejection, searched over the **whole

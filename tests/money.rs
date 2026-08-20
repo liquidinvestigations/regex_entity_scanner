@@ -124,6 +124,28 @@ fn a_price_is_found_past_a_bare_number_on_its_left() {
     }
 }
 
+/// A marker binds to the number that follows it. The same bare number to the left also makes the
+/// trailing-marker reading available, and that reading is not merely the worse one: `qty 2 EUR 30`
+/// is a thirty-euro line, and two euro is a wrong number in an index rather than a missing one.
+#[test]
+fn a_marker_binds_to_the_number_that_follows_it() {
+    for (text, code, minor, surface) in [
+        ("qty 2 EUR 30 per unit", "EUR", "3000", "EUR 30"),
+        ("see note 4 USD 500 due", "USD", "50000", "USD 500"),
+    ] {
+        let scanner = support::scanner();
+        let entities = scanner.scan(text, 0);
+        assert_eq!(entities.len(), 1, "{text:?} produced {entities:?}");
+        assert_eq!(entities[0].text, surface, "{text:?}");
+        let (found_code, found_minor, _, _) = money(text);
+        assert_eq!((found_code.as_str(), found_minor.as_str()), (code, minor));
+    }
+    // The guard is a digit following the marker, not a bare number in front of it: a price at the
+    // end of a clause is still a price.
+    let (code, minor, _, _) = money("the total was 45 EUR, paid in full");
+    assert_eq!((code.as_str(), minor.as_str()), ("EUR", "4500"));
+}
+
 /// The negatives are the point. Every one of these reaches a money pattern and none of them is a
 /// sum of money.
 #[test]

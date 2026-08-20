@@ -187,3 +187,5 @@
 {"name": "a price after an item number", "text": "Item 3 $45.00 each", "expect": [{"type": "money", "text": "$45.00", "value": "USD 4500"}]}
 {"name": "a price after a lot number", "text": "Lot 12 £250 reserve", "expect": [{"type": "money", "text": "£250", "value": "GBP 25000"}]}
 {"name": "a price after a row number", "text": "row 7 $1,200 total", "expect": [{"type": "money", "text": "$1,200", "value": "USD 120000"}]}
+{"name": "a quantity column does not lend its number to the code beside it", "text": "qty 2 EUR 30 per unit", "expect": [{"type": "money", "text": "EUR 30", "value": "EUR 3000"}]}
+{"name": "a note number does not lend its number to the code beside it", "text": "see note 4 USD 500 due", "expect": [{"type": "money", "text": "USD 500", "value": "USD 50000"}]}

@@ -332,13 +332,20 @@ fn continues_left(candidate: &Candidate<'_>) -> bool {
     is_separator(separator) && head.last().is_some_and(u8::is_ascii_digit)
 }
 
-/// Whether what follows the span makes it the head of a longer number. The separator that ends a
-/// sentence and the separator that groups the next three digits are the same character, so the
-/// test is what comes after it: a digit, or a digit one space away, means the amount continues past
-/// the span and this reading of it is wrong. Anything else is punctuation, and refusing it would
-/// put the commonest way a price appears in prose — at the end of a sentence, or in a list — out
-/// of reach. A span that ends in a code or a sign is not continued by digits at all: the `,100` in
-/// `500 USD,100 times more` cannot be part of the amount in front of the code.
+/// Whether what follows the span refutes this reading of it.
+///
+/// A span that ends in a digit is the head of a longer number when digits carry on past it. The
+/// separator that ends a sentence and the separator that groups the next three digits are the same
+/// character, so the test is what comes after it: a digit, or a digit one space away. Anything else
+/// is punctuation, and refusing it would put the commonest way a price appears in prose — at the
+/// end of a sentence, or in a list — out of reach.
+///
+/// A span that ends in a **marker** — a trailing ISO 4217 code or currency sign — is refuted by a
+/// digit instead, because **a marker binds to the number that follows it**. In `qty 2 EUR 30 per
+/// unit` the trailing-code reading `2 EUR` is a candidate, and it is not merely a worse reading than
+/// `EUR 30`: it is a wrong one, and it reports two euro for a thirty-euro line. The same principle
+/// already decides that a code standing immediately in front of a sign names the currency. Refusing
+/// the span turns the wrong value into silence, which is the trade this project takes.
 fn continues_right(candidate: &Candidate<'_>) -> bool {
     let rest = &candidate.fragment.as_bytes()[candidate.end..];
     let Some((&next, tail)) = rest.split_first() else {
@@ -347,13 +354,19 @@ fn continues_right(candidate: &Candidate<'_>) -> bool {
     if next.is_ascii_alphanumeric() {
         return true;
     }
-    if !is_separator(next)
-        || !candidate
-            .text()
-            .as_bytes()
-            .last()
-            .is_some_and(u8::is_ascii_digit)
+    let after_a_space = match tail.split_first() {
+        Some((&byte, _)) if next == b' ' => Some(byte),
+        _ => None,
+    };
+    if !candidate
+        .text()
+        .as_bytes()
+        .last()
+        .is_some_and(u8::is_ascii_digit)
     {
+        return after_a_space.is_some_and(|byte| byte.is_ascii_digit());
+    }
+    if !is_separator(next) {
         return false;
     }
     let tail = match tail.split_first() {
