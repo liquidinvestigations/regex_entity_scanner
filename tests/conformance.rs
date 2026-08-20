@@ -54,8 +54,26 @@ const DEFAULT_MAX_PER_SCHEME: usize = 500;
 /// Regression floors, in percent. They are a ratchet, not a target: they sit just under the
 /// numbers the current rule set produces, so a rule change that loses upstream agreement fails the
 /// run instead of quietly eroding it. Raise them when a fix moves the real number up.
-const MIN_RECALL_PERCENT: f64 = 95.5;
+const MIN_RECALL_PERCENT: f64 = 96.0;
 const MIN_PRECISION_PERCENT: f64 = 99.5;
+
+/// The same ratchet per origin: minimum recall, then minimum precision. The aggregate floor alone
+/// lets one origin regress a long way behind the others — the largest origin is twenty times the
+/// smallest, so a rule that loses every case in a small one moves the aggregate by less than the
+/// floor's own margin. Every origin in the corpus must appear here, which is what makes adding an
+/// origin a decision about the number it is expected to hold rather than a free pass.
+///
+/// An origin with no upstream-invalid cases has no precision to measure; its precision floor is
+/// still written down, and is simply not asserted until such a case exists.
+const ORIGIN_FLOORS: &[(&str, f64, f64)] = &[
+    ("dateparser", 99.0, 99.0),
+    ("grok", 99.0, 99.0),
+    ("libphonenumber", 98.5, 99.5),
+    ("presidio", 98.0, 99.5),
+    ("price-parser", 98.0, 99.5),
+    ("python-stdnum", 86.0, 99.5),
+    ("recognizers-text", 78.5, 99.5),
+];
 
 #[derive(Debug, Deserialize)]
 struct Case {
@@ -504,6 +522,39 @@ fn upstream_conformance() {
         precision >= MIN_PRECISION_PERCENT,
         "aggregate precision {precision:.1}% is below the {MIN_PRECISION_PERCENT:.1}% floor"
     );
+
+    // Skipped when the run was narrowed to one origin: the others are absent by request, not by
+    // regression, and asserting a missing floor there would fail every single-origin run.
+    if std::env::var("RES_CONFORMANCE_ORIGIN").is_err() {
+        for (name, min_recall, min_precision) in ORIGIN_FLOORS {
+            let origin = report
+                .origins
+                .iter()
+                .find(|origin| &origin.origin == name)
+                .unwrap_or_else(|| panic!("origin {name} has a floor but no cases in the corpus"));
+            if let Some(value) = origin.recall_percent {
+                assert!(
+                    value >= *min_recall,
+                    "{name} recall {value:.1}% is below its {min_recall:.1}% floor"
+                );
+            }
+            if let Some(value) = origin.precision_percent {
+                assert!(
+                    value >= *min_precision,
+                    "{name} precision {value:.1}% is below its {min_precision:.1}% floor"
+                );
+            }
+        }
+        for origin in &report.origins {
+            assert!(
+                ORIGIN_FLOORS
+                    .iter()
+                    .any(|(name, _, _)| name == &origin.origin),
+                "origin {} has cases but no floor; add one to ORIGIN_FLOORS",
+                origin.origin
+            );
+        }
+    }
 }
 
 /// The human-readable half of the run: one row per scheme, the exclusions beside the scores, and

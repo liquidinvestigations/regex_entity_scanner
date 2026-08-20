@@ -64,6 +64,14 @@ spend. The runner samples each scheme deterministically rather than exceeding it
 first cases of a scheme in the case file's sorted order, so the sample is the same on every machine
 with no seed to carry.
 
+The run asserts a recall and a precision floor on the aggregate **and on every origin
+separately**, in `tests/conformance.rs`. The per-origin floors are what stop one origin regressing
+behind the others: the largest origin carries twenty times the cases of the smallest, so a rule that
+loses every case in a small one moves the aggregate by less than the aggregate floor's own margin.
+Every origin in the corpus must have a floor, so adding an origin is a decision about the number it
+is expected to hold. The floors are a ratchet — raised after a real fix, never lowered to make a run
+pass.
+
 Three numbers are reported per scheme, per origin and in aggregate, and never blended: **recall**
 over upstream-valid cases in a scheme we implement, **precision** over upstream-invalid ones — did
 we stay silent — and **coverage**, how much of the extracted material was scored at all. Excluded
