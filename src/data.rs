@@ -8,6 +8,27 @@ use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result};
+use serde::Deserialize;
+
+/// What the IBAN registry says about one country's account numbers.
+///
+/// ISO 7064 mod-97-10 accepts roughly one malformed candidate in ninety-seven on its own. The
+/// length and the positional structure are what close that gap, and they are per country — which
+/// is why this is vendored data rather than a constant.
+#[derive(Debug, Deserialize)]
+pub struct IbanCountry {
+    /// The country as the registry names it, which is not always the CLDR spelling.
+    pub country: String,
+    /// Total length of the compact IBAN, country code and check digits included.
+    pub length: usize,
+    /// The BBAN structure as a run of `<length>!<class>` groups, `n` digits, `a` letters,
+    /// `c` alphanumerics.
+    pub structure: String,
+    /// Byte range of the bank identifier within the compact IBAN, where the registry's structure
+    /// determines one. Branch identifier positions are not in this source and are not guessed.
+    #[serde(default)]
+    pub bank: Option<[usize; 2]>,
+}
 
 /// The IANA list and whatever else the validators and the explainer need to distinguish a real
 /// match from a plausible-looking one, and to say what it belongs to.
@@ -17,6 +38,8 @@ pub struct VendoredData {
     tlds: HashSet<String>,
     /// ISO 3166-1 alpha-2 code to English territory name, from CLDR.
     territories: HashMap<String, String>,
+    /// ISO 3166-1 alpha-2 code to the IBAN registry's entry for that country.
+    iban_registry: HashMap<String, IbanCountry>,
 }
 
 impl VendoredData {
@@ -54,7 +77,27 @@ impl VendoredData {
         let territories: HashMap<String, String> =
             serde_json::from_str(&raw).context("parsing the vendored territory names")?;
 
-        Ok(Self { tlds, territories })
+        let iban_file: PathBuf = root.join("data/iban/registry.json");
+        let raw = std::fs::read_to_string(&iban_file).with_context(|| {
+            format!(
+                "reading the vendored IBAN registry at {}",
+                iban_file.display()
+            )
+        })?;
+        let iban_registry: HashMap<String, IbanCountry> =
+            serde_json::from_str(&raw).context("parsing the vendored IBAN registry")?;
+
+        anyhow::ensure!(
+            iban_registry.len() > 70,
+            "the vendored IBAN registry holds only {} countries, which means it is truncated",
+            iban_registry.len()
+        );
+
+        Ok(Self {
+            tlds,
+            territories,
+            iban_registry,
+        })
     }
 
     /// Whether `label` is a registered top-level domain. This one membership test removes the bulk
@@ -73,5 +116,11 @@ impl VendoredData {
         self.territories
             .get(&alpha2.to_uppercase())
             .map(String::as_str)
+    }
+
+    /// The IBAN registry entry for a country code, or `None` for a country that issues no IBANs —
+    /// which is itself a rejection, and a decisive one.
+    pub fn iban_country(&self, alpha2: &str) -> Option<&IbanCountry> {
+        self.iban_registry.get(&alpha2.to_uppercase())
     }
 }
