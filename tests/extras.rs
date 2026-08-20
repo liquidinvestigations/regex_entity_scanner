@@ -122,3 +122,66 @@ fn an_angle_bracketed_address_without_a_header_name_stays_an_address() {
 fn rejects_a_message_id_whose_domain_has_no_registered_suffix() {
     rejects("Message-ID: <20210304091200.ABC123@mail.example.zzz>");
 }
+
+fn geo_point(text: &str) -> (f64, f64) {
+    let scanner = support::scanner();
+    let entities = scanner.scan(text, 0);
+    assert_eq!(entities.len(), 1, "{text:?} produced {entities:?}");
+    assert_eq!(entities[0].entity_type, EntityType::Coordinates);
+    match &entities[0].value {
+        Value::GeoPoint {
+            latitude,
+            longitude,
+            datum,
+        } => {
+            assert_eq!(datum, "WGS84");
+            (*latitude, *longitude)
+        }
+        other => panic!("expected a geo point value, got {other:?}"),
+    }
+}
+
+#[test]
+fn accepts_decimal_degrees_with_enough_precision() {
+    assert_eq!(
+        geo_point("meet at 48.8583, 2.2945 tomorrow"),
+        (48.8583, 2.2945)
+    );
+    assert_eq!(geo_point("sighted -33.8568,151.2153"), (-33.8568, 151.2153));
+}
+
+/// Two numbers with three decimal places are a pair of measurements as often as a place, and a
+/// latitude past the pole is neither.
+#[test]
+fn rejects_number_pairs_that_are_not_coordinates() {
+    rejects("readings of 12.345, 67.890 were logged");
+    rejects("point 91.1234, 2.2945 is off the earth");
+}
+
+#[test]
+fn accepts_the_sexagesimal_form_and_converts_it() {
+    let (latitude, longitude) = geo_point("marker at 40°26'46\"N 79°58'56\"W");
+    assert!((latitude - 40.446_111).abs() < 1e-5, "{latitude}");
+    assert!((longitude + 79.982_222).abs() < 1e-5, "{longitude}");
+}
+
+#[test]
+fn rejects_sexagesimal_readings_that_have_run_over() {
+    rejects("marker at 40°26'46\"N 79°78'56\"W");
+}
+
+/// The ten-character cell is about fourteen metres across, so the centre is what is reported.
+#[test]
+fn accepts_a_plus_code_and_reports_its_cell_centre() {
+    let (latitude, longitude) = geo_point("the office is at 8FVC9G8F+6W");
+    assert!((latitude - 47.365_5).abs() < 1e-3, "{latitude}");
+    assert!((longitude - 8.524_8).abs() < 1e-3, "{longitude}");
+}
+
+#[test]
+fn rejects_plus_codes_outside_the_alphabet_or_the_range() {
+    // A latitude character past the ninth puts the cell north of the pole.
+    rejects("code XFVC9G8F+6W is not a place");
+    // The alphabet has no vowels, so this is a word with a plus after it.
+    rejects("code 8FVCAG8F+6W is not a place");
+}

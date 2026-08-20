@@ -1061,4 +1061,121 @@ static RULE_DOCS: &[RuleDoc] = &[
             note: "the identification fields and what a message id is required to be",
         }],
     },
+    RuleDoc {
+        rule_id: "coord.decimal",
+        entity_type: EntityType::Coordinates,
+        title: "Decimal degree coordinates",
+        matches: "A latitude and longitude written as two signed decimal numbers separated by a \
+                  comma — the form a mapping tool copies to the clipboard.",
+        standards: &["WGS84 — World Geodetic System 1984, the datum these values are read in"],
+        checks: &[
+            "the latitude is within ninety degrees of the equator and the longitude within a \
+             hundred and eighty of the meridian",
+            "both numbers carry at least four decimal places, because at three the form is a pair \
+             of measurements as often as it is a place and no arithmetic separates the two",
+            "nothing alphanumeric and no dot or comma continues the pair on either side",
+        ],
+        not_checked: &[
+            "the datum, which is stated as WGS84 rather than read from the text — every one of \
+             these surface forms is conventionally written in it",
+            "coarser coordinates: a pair with three or fewer decimal places is not matched, and \
+             the degrees-minutes-seconds and Plus Code forms are where coarse positions are found",
+            "whether the point is on land, in the country the surrounding text names, or anywhere \
+             meaningful",
+        ],
+        authorities: &[Authority {
+            name: "National Geospatial-Intelligence Agency",
+            role: "maintains the World Geodetic System",
+            url: "https://earth-info.nga.mil/",
+        }],
+        ftm: FtmMapping {
+            schema: "Address",
+            property: "latitude",
+            note: "FollowTheMoney's Address schema defines latitude and longitude as separate \
+                   properties; one match supplies both, and this names the first of the pair.",
+        },
+        references: &[Reference {
+            title: "World Geodetic System 1984",
+            url: "https://earth-info.nga.mil/index.php?dir=wgs84&action=wgs84",
+            note: "the datum, and why a coordinate without one is ambiguous",
+        }],
+    },
+    RuleDoc {
+        rule_id: "coord.dms",
+        entity_type: EntityType::Coordinates,
+        title: "Degrees, minutes and seconds",
+        matches: "A latitude and longitude in the sexagesimal form — 40°26'46\"N 79°58'56\"W. The \
+                  degree sign and the hemisphere letters make it unmistakable, which is why it \
+                  needs no cue word.",
+        standards: &["WGS84 — World Geodetic System 1984, the datum these values are read in"],
+        checks: &[
+            "both halves are present with their hemisphere letter; a latitude on its own is not a \
+             point",
+            "minutes and seconds are below sixty, because a sexagesimal reading that has run over \
+             is a transcription error rather than a place",
+            "the latitude is within ninety degrees and the longitude within a hundred and eighty, \
+             after the hemisphere letter has been applied as the sign",
+        ],
+        not_checked: &[
+            "the datum, which is stated as WGS84 rather than read from the text",
+            "forms without a degree sign, and forms that write the hemisphere letter first",
+            "whether the point is anywhere meaningful",
+        ],
+        authorities: &[Authority {
+            name: "National Geospatial-Intelligence Agency",
+            role: "maintains the World Geodetic System",
+            url: "https://earth-info.nga.mil/",
+        }],
+        ftm: FtmMapping {
+            schema: "Address",
+            property: "latitude",
+            note: "FollowTheMoney's Address schema defines latitude and longitude as separate \
+                   properties; one match supplies both, and this names the first of the pair.",
+        },
+        references: &[Reference {
+            title: "World Geodetic System 1984",
+            url: "https://earth-info.nga.mil/index.php?dir=wgs84&action=wgs84",
+            note: "the datum, and why a coordinate without one is ambiguous",
+        }],
+    },
+    RuleDoc {
+        rule_id: "coord.plus_code",
+        entity_type: EntityType::Coordinates,
+        title: "Plus Code (Open Location Code)",
+        matches: "A short code that names a rectangle of the earth's surface rather than a point — \
+                  8FVC9G8F+6W and its kind. It is used where street addresses do not exist, which \
+                  is exactly the material a place name cannot be resolved from.",
+        standards: &["Open Location Code specification, and WGS84 as the datum"],
+        checks: &[
+            "every character is in the twenty-character alphabet, which excludes all the vowels; \
+             eight of them followed by a plus sign is not a word",
+            "the first character puts the latitude south of the pole and the second puts the \
+             longitude inside the meridian's range — the only range check the format offers",
+            "the plus sign sits after the eighth character, where the format puts it",
+            "nothing alphanumeric and no further plus sign touches the code on either side",
+        ],
+        not_checked: &[
+            "the grid refinement character an eleven-character code carries: the point reported is \
+             the centre of the ten-character cell, which is about fourteen metres across",
+            "short codes, which omit the leading characters and are meaningless without a \
+             reference location this service does not hold",
+            "a check digit, because the format has none — hence the no-checksum flag",
+        ],
+        authorities: &[Authority {
+            name: "Google, as the specification's author",
+            role: "publishes the Open Location Code specification and reference implementations",
+            url: "https://github.com/google/open-location-code",
+        }],
+        ftm: FtmMapping {
+            schema: "Address",
+            property: "latitude",
+            note: "FollowTheMoney's Address schema defines latitude and longitude as separate \
+                   properties; one match supplies both, and this names the first of the pair.",
+        },
+        references: &[Reference {
+            title: "Open Location Code specification",
+            url: "https://github.com/google/open-location-code/blob/main/docs/olc_definition.adoc",
+            note: "the alphabet, the encoding and the cell sizes",
+        }],
+    },
 ];

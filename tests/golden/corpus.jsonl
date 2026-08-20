@@ -93,3 +93,6 @@
 {"name": "page range is not an identifier", "text": "see pages 1825-0097 of the bound volume", "expect": []}
 {"name": "invoice number is not an identifier", "text": "Invoice INV-2021-44228 remains unpaid.", "expect": []}
 {"name": "base64 blob is not an identifier", "text": "payload aGVsbG8gd29ybGQgdGhpcyBpcyBub3QgYW4gaWRlbnRpZmllcg== decoded", "expect": []}
+{"name": "decimal coordinates in a note", "text": "meet at 48.8583, 2.2945 tomorrow", "expect": [{"type": "coordinates", "text": "48.8583, 2.2945", "value": "48.8583,2.2945"}]}
+{"name": "coarse number pair is not a coordinate", "text": "readings of 12.345, 67.890 were logged", "expect": []}
+{"name": "plus code in an address line", "text": "the office is at 8FVC9G8F+6W", "expect": [{"type": "coordinates", "text": "8FVC9G8F+6W", "value": "47.3655625,8.524812500000001"}]}

@@ -168,6 +168,9 @@ Compiled today:
 | `vulnerability` | `vulnerability.cve` | The literal `CVE-` prefix and a year inside the scheme's own window. |
 | `publication` | `publication.doi` | The `10.` directory code, a registrant code and a non-empty suffix; sentence punctuation is trimmed off the span. |
 | `publication` | `publication.orcid` | The ISO 7064 mod 11-2 check character, with a final `X` standing for ten. |
+| `coordinates` | `coord.decimal` | Latitude and longitude ranges, and at least four decimal places on both sides, because a coarser pair is a pair of measurements as often as a place. |
+| `coordinates` | `coord.dms` | Both hemispheres present, minutes and seconds below sixty, and the ranges after the sign is applied. Normalises to decimal degrees. |
+| `coordinates` | `coord.plus_code` | The vowel-free Open Location Code alphabet, the separator's position, and the first pair's range. Decodes to the centre of the cell. |
 | `message_id` | `message.rfc5322` | Angle brackets, a registered top-level domain on the right-hand side, and a header name — Message-ID, In-Reply-To, References — nearby, because a `From` line has the same shape. |
 
 Full RFC 5322 is deliberately not the target for email: it accepts a great deal nobody writes, and

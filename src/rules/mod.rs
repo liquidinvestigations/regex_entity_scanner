@@ -13,6 +13,7 @@ pub mod bank;
 pub mod checksum;
 pub mod company;
 pub mod context;
+pub mod coordinates;
 pub mod date_iso;
 pub mod date_machine;
 pub mod device;
@@ -116,5 +117,8 @@ pub fn all() -> Vec<Box<dyn Rule>> {
         Box::new(extras::DoiRule),
         Box::new(extras::OrcidRule),
         Box::new(extras::MessageIdRule),
+        Box::new(coordinates::DecimalRule),
+        Box::new(coordinates::DmsRule),
+        Box::new(coordinates::PlusCodeRule),
     ]
 }

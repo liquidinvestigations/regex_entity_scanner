@@ -86,7 +86,9 @@ impl Rule for CveRule {
                 parts,
             },
             confidence: 0.99,
-            flags: Vec::new(),
+            // The prefix is decisive, and there is no arithmetic behind it — both facts are worth
+            // reporting, so the confidence is high and the flag says why it is not a checksum.
+            flags: vec![Flag::NoChecksum],
         })
     }
 }
