@@ -45,18 +45,24 @@ rejected. A rule change with no new fixture is a change nobody can defend later.
 ## The upstream conformance run
 
 The golden corpus measures us against cases we wrote. `./test-long.sh` measures us against cases the
-upstream implementers wrote. Seven origins carry it: `python-stdnum`, whose every module docstring is
-a labelled valid/invalid corpus for its own scheme; `libphonenumber`, whose metadata holds an
-example number for every region and line type and whose matcher test holds a free-text corpus;
-`recognizers-text`, whose specs are sentences with the extractions expected from them;
+upstream implementers wrote. Thirteen origins carry it: `python-stdnum`, whose every module
+docstring is a labelled valid/invalid corpus for its own scheme; `libphonenumber`, whose metadata
+holds an example number for every region and line type and whose matcher test holds a free-text
+corpus; `recognizers-text`, whose specs are sentences with the extractions expected from them;
 `price-parser`, whose test data is several hundred price strings from real pages; `grok`, whose
 specs pair each log pattern with the log lines it must match, which is where machine date formats
-live; and `dateparser`, whose parser tests are a parametrised list of date strings with the
-datetime each parses to, and two tests that declare a string unparseable; and `presidio`, whose
+live; `dateparser`, whose parser tests are a parametrised list of date strings with the
+datetime each parses to, and two tests that declare a string unparseable; `presidio`, whose
 recogniser tests are free-text fragments with the spans upstream asserts are in them, including the
-fragments it asserts hold nothing. Agreement with
-upstream is the only evidence that a ported check digit, or a ported separator rule, means what its
-author meant.
+fragments it asserts hold nothing; `open-location-code`, whose test data carries codes with the cell
+they decode to and coordinate pairs in the surface form a document writes; `isemail`, 164 addresses
+graded from wrong-under-any-reading to right-under-every-reading; `eth-utils`, whose tables separate
+a correct EIP-55 checksum from a wrong one and from an address that carries none; `crossref` and
+`advisory-database`, which publish registered DOIs, ORCIDs and CVE identifiers and so measure recall
+alone; `pyais`, whose decoded AIS expectations are the only redistributable MMSI corpus; and
+`hoover-mail`, which is not a test suite at all but real mail, scanned one header field at a time.
+Agreement with upstream is the only evidence that a ported check digit, or a ported separator rule,
+means what its author meant.
 
 It is a separate entry point with its own budget of fifteen to twenty minutes, and the fast battery
 never triggers it — the two-to-three-minute budget above is not something a conformance sweep may
@@ -66,11 +72,14 @@ with no seed to carry.
 
 The run asserts a recall and a precision floor on the aggregate **and on every origin
 separately**, in `tests/conformance.rs`. The per-origin floors are what stop one origin regressing
-behind the others: the largest origin carries twenty times the cases of the smallest, so a rule that
+behind the others: the largest origin carries many times the cases of the smallest, so a rule that
 loses every case in a small one moves the aggregate by less than the aggregate floor's own margin.
 Every origin in the corpus must have a floor, so adding an origin is a decision about the number it
 is expected to hold. The floors are a ratchet — raised after a real fix, never lowered to make a run
-pass.
+pass. An origin joining the corpus is the one thing that moves the aggregate without a rule
+changing, because it changes the denominator; the aggregate floor is re-derived from the run at the
+commit that adds one, and that is not the same thing as lowering it for a corpus that has not
+changed.
 
 Three numbers are reported per scheme, per origin and in aggregate, and never blended: **recall**
 over upstream-valid cases in a scheme we implement, **precision** over upstream-invalid ones — did
