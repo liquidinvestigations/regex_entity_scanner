@@ -134,3 +134,52 @@ fn a_word_like_code_needs_a_word_about_money() {
     assert_eq!(code, "TOP");
     assert_eq!(minor, "120000");
 }
+
+/// A price is written at the end of a sentence and in a list far more often than it is written in
+/// the middle of a longer number, so the separator that follows one is punctuation unless digits
+/// follow it.
+#[test]
+fn a_sum_of_money_may_end_a_sentence_or_a_list_item() {
+    assert_eq!(
+        money("I would like to buy this item for USD 200.").1,
+        "20000"
+    );
+    assert_eq!(
+        money("The first price is $ 100,000,000, is it enough?").1,
+        "10000000000"
+    );
+
+    let scanner = support::scanner();
+    let entities = scanner.scan("Banknotes: 5 €, 10 €, 20 €.", 0);
+    let amounts: Vec<&str> = entities.iter().map(|entity| entity.text.as_str()).collect();
+    assert_eq!(amounts, ["5 €", "10 €", "20 €"], "{entities:?}");
+
+    // The digits after the code belong to the sentence, not to the amount in front of it.
+    assert_eq!(
+        money("The cost is 500 USD,100 times more than expected.").1,
+        "50000"
+    );
+}
+
+/// Switzerland groups thousands with an apostrophe, and a shelf label writes a fraction with no
+/// integer part at all.
+#[test]
+fn the_swiss_group_separator_and_a_bare_fraction_are_amounts() {
+    assert_eq!(money("the price is CHF 1'049,95 today").1, "104995");
+    assert_eq!(money("the price is €1'049,95 today").1, "104995");
+    assert_eq!(money("marked down to $.75 each").1, "75");
+    assert_eq!(money("marked down to .75 € each").1, "75");
+}
+
+/// A separator with a space after it and digits after that is one number written oddly. Neither
+/// reading is provable from the text, and a wrong amount in an index is worse than a missing one,
+/// so the span is refused rather than truncated at the separator.
+#[test]
+fn digits_across_a_separator_and_a_space_are_not_two_amounts() {
+    for text in [
+        "the bill came to $ 8. 94 in total",
+        "the bill came to 1.837, 32 € in total",
+    ] {
+        rejects(text);
+    }
+}

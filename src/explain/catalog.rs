@@ -1643,13 +1643,17 @@ static RULE_DOCS: &[RuleDoc] = &[
         checks: &[
             "the code is in current use: a CLDR region entry with no end date and tender status, \
              which leaves out withdrawn codes and the non-tender metals and funds",
-            "every thousands group is exactly three digits, which is what rejects version \
-             strings, chapter numbers and dotted reference numbers",
+            "every thousands group is exactly three digits, whether it is grouped by a space or by \
+             the apostrophe Switzerland writes, which is what rejects version strings, chapter \
+             numbers and dotted reference numbers",
             "the fraction is no longer than the currency's own minor units, so a four-decimal \
              rate is not read as a price",
             "a code that is also an ordinary English capitalised word — ALL, TOP, CUP, TRY, PEN, \
              GEL, MOP, COP, MAD, BOB, SOS — additionally needs a word about money within 48 bytes",
-            "nothing alphanumeric and no separator touches the match on either side",
+            "nothing alphanumeric touches the match, and a dot, comma or hyphen beside it is read \
+             as punctuation only when no digits follow it — so an amount may end a sentence or a \
+             list item, while a separator with digits on the far side means the number continues \
+             past the span",
         ],
         not_checked: &[
             "that the amount is correct, or that the transaction happened",
@@ -1659,6 +1663,9 @@ static RULE_DOCS: &[RuleDoc] = &[
              followed by three digits is read as a thousands group and reported with the \
              separator-inferred flag",
             "currency names and national symbols spelled out in words — lei, złoty, kroner",
+            "an amount whose separator is followed by a space and then more digits — 1.837, 32 — \
+             which is one number in some documents and two in others: the span is refused rather \
+             than truncated at the separator, because a wrong amount is worse than no amount",
         ],
         authorities: &[
             Authority {
@@ -1699,9 +1706,14 @@ static RULE_DOCS: &[RuleDoc] = &[
              or its narrow form",
             "capitals in front of the sign are kept only where the pair is a symbol somebody \
              writes — A$, CN¥, R$; otherwise the span narrows to the sign alone",
-            "every thousands group is exactly three digits",
-            "the fraction is no longer than the currency's own minor units",
-            "nothing alphanumeric and no separator touches the match on either side",
+            "every thousands group is exactly three digits, whether it is grouped by a space or by \
+             the apostrophe Switzerland writes",
+            "the fraction is no longer than the currency's own minor units; beside a sign it may \
+             also stand alone, so the $.75 of a shelf label is seventy-five cents",
+            "nothing alphanumeric touches the match, and a dot, comma or hyphen beside it is read \
+             as punctuation only when no digits follow it — so an amount may end a sentence or a \
+             list item, while a separator with digits on the far side means the number continues \
+             past the span",
         ],
         not_checked: &[
             "which currency a shared sign means: $ is written for twenty-nine currencies and £ \
@@ -1710,6 +1722,9 @@ static RULE_DOCS: &[RuleDoc] = &[
             "the decimal convention where the number allows both readings, reported with the \
              separator-inferred flag",
             "currency names spelled out in words, and the letter-only symbols such as kr and zł",
+            "an amount whose separator is followed by a space and then more digits — $ 8. 94 — \
+             which is one number in some documents and two in others: the span is refused rather \
+             than truncated at the separator, because a wrong amount is worse than no amount",
         ],
         authorities: &[Authority {
             name: "Unicode CLDR",

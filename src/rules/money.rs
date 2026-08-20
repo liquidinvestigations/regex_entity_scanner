@@ -32,6 +32,16 @@ const MONEY_CUES: &[&str] = &[
     "budget", "balance", "sum", "worth", "value", "revenue", "turnover", "currency",
 ];
 
+/// The amount half of both candidate patterns: digits, optionally split into three-digit groups by
+/// a space or by the apostrophe Switzerland writes, optionally carrying a decimal part. Which
+/// separator means what is the validator's problem, so this is deliberately looser than any real
+/// number format and the shapes that mean nothing at all are rejected there.
+macro_rules! amount {
+    () => {
+        r"[0-9]+(?:[\x20\x{a0}\x{202f}'\x{2019}][0-9]{3})*(?:[.,][0-9]+)*"
+    };
+}
+
 // ---------------------------------------------------------------------------------------------
 // ISO 4217 code
 // ---------------------------------------------------------------------------------------------
@@ -39,14 +49,12 @@ const MONEY_CUES: &[&str] = &[
 pub struct IsoCodeRule;
 
 /// `EUR 1.234,56` or `1,234.56 USD`. The code may lead or trail, because both are written and
-/// neither is more correct. The amount half — digits optionally grouped by spaces, dots or commas
-/// — is deliberately looser than any real number format: which separator means what is the
-/// validator's problem, and the shapes that mean nothing at all are rejected there.
+/// neither is more correct.
 const ISO_CODE_PATTERN: &str = concat!(
     r"[A-Z]{3}[\x20\x{a0}]?",
-    r"[0-9]+(?:[\x20\x{a0}\x{202f}][0-9]{3})*(?:[.,][0-9]+)*",
+    amount!(),
     r"|",
-    r"[0-9]+(?:[\x20\x{a0}\x{202f}][0-9]{3})*(?:[.,][0-9]+)*",
+    amount!(),
     r"[\x20\x{a0}]?[A-Z]{3}"
 );
 
@@ -64,9 +72,7 @@ impl Rule for IsoCodeRule {
     }
 
     fn validate(&self, candidate: &Candidate<'_>) -> Option<Verdict> {
-        if candidate.byte_before().is_some_and(is_word_byte)
-            || candidate.byte_after().is_some_and(is_word_byte)
-        {
+        if continues_left(candidate) || continues_right(candidate) {
             return None;
         }
 
@@ -114,12 +120,17 @@ pub struct SymbolRule;
 
 /// A Unicode currency sign, optionally carrying the one or two capitals that distinguish the
 /// dollars and yuan from each other — `A$`, `CN¥`, `R$`. `\p{Sc}` is the property the signs are
-/// defined by, which is why the pattern does not enumerate them.
+/// defined by, which is why the pattern does not enumerate them. Beside a sign, an amount may
+/// also be a fraction with no integer part: `$.75` is a price a shelf label carries.
 const SYMBOL_PATTERN: &str = concat!(
     r"[A-Z]{0,2}\p{Sc}[\x20\x{a0}]?",
-    r"[0-9]+(?:[\x20\x{a0}\x{202f}][0-9]{3})*(?:[.,][0-9]+)*",
+    r"(?:",
+    amount!(),
+    r"|[.,][0-9]+)",
     r"|",
-    r"[0-9]+(?:[\x20\x{a0}\x{202f}][0-9]{3})*(?:[.,][0-9]+)*",
+    r"(?:",
+    amount!(),
+    r"|[.,][0-9]+)",
     r"[\x20\x{a0}]?[A-Z]{0,2}\p{Sc}"
 );
 
@@ -137,16 +148,20 @@ impl Rule for SymbolRule {
     }
 
     fn validate(&self, candidate: &Candidate<'_>) -> Option<Verdict> {
-        if candidate.byte_before().is_some_and(is_word_byte)
-            || candidate.byte_after().is_some_and(is_word_byte)
-        {
+        if continues_left(candidate) || continues_right(candidate) {
             return None;
         }
 
         let text = candidate.text();
-        let leading = !text.starts_with(|c: char| c.is_ascii_digit());
+        let leading = !text.starts_with(|c: char| c.is_ascii_digit() || c == '.' || c == ',');
         let (symbol, amount) = if leading {
-            let split = text.find(|c: char| c.is_ascii_digit())?;
+            let digit = text.find(|c: char| c.is_ascii_digit())?;
+            // An amount with no integer part starts at its decimal mark, not at its first digit:
+            // splitting on the digit would turn `$.75` into seventy-five dollars.
+            let split = match text.as_bytes().get(digit.wrapping_sub(1)) {
+                Some(b'.' | b',') if digit > 0 => digit - 1,
+                _ => digit,
+            };
             (text[..split].trim_end(), text[split..].trim_start())
         } else {
             let split = text.rfind(|c: char| c.is_ascii_digit())? + 1;
@@ -208,10 +223,65 @@ impl Rule for SymbolRule {
 // Separator inference and scaling
 // ---------------------------------------------------------------------------------------------
 
-/// Whether a byte would make the span part of a longer token. Not `is_ascii_alphanumeric`, because
-/// a separator on either side means the digits continue and the amount is not the whole number.
-fn is_word_byte(byte: u8) -> bool {
-    byte.is_ascii_alphanumeric() || byte == b'.' || byte == b',' || byte == b'-'
+/// A dot, a comma or a hyphen touching the span is either the number continuing or the sentence
+/// ending, and one character further out is what tells them apart.
+fn is_separator(byte: u8) -> bool {
+    matches!(byte, b'.' | b',' | b'-')
+}
+
+/// Whether what precedes the span makes it the tail of a longer number. A letter or a digit always
+/// does. A minus sign does too: this rule reports an unsigned amount, so a match that drops a
+/// leading sign would report the wrong money rather than none. A dot or a comma does only when
+/// digits precede it — with or without the space some documents put after it, which is what makes
+/// `1.837, 32 €` one price written oddly rather than thirty-two euro.
+fn continues_left(candidate: &Candidate<'_>) -> bool {
+    let before = &candidate.fragment.as_bytes()[..candidate.start];
+    let Some((&last, head)) = before.split_last() else {
+        return false;
+    };
+    if last.is_ascii_alphanumeric() || last == b'-' {
+        return true;
+    }
+    let (separator, head) = if last == b' ' {
+        match head.split_last() {
+            Some((&byte, head)) => (byte, head),
+            None => return false,
+        }
+    } else {
+        (last, head)
+    };
+    is_separator(separator) && head.last().is_some_and(u8::is_ascii_digit)
+}
+
+/// Whether what follows the span makes it the head of a longer number. The separator that ends a
+/// sentence and the separator that groups the next three digits are the same character, so the
+/// test is what comes after it: a digit, or a digit one space away, means the amount continues past
+/// the span and this reading of it is wrong. Anything else is punctuation, and refusing it would
+/// put the commonest way a price appears in prose — at the end of a sentence, or in a list — out
+/// of reach. A span that ends in a code or a sign is not continued by digits at all: the `,100` in
+/// `500 USD,100 times more` cannot be part of the amount in front of the code.
+fn continues_right(candidate: &Candidate<'_>) -> bool {
+    let rest = &candidate.fragment.as_bytes()[candidate.end..];
+    let Some((&next, tail)) = rest.split_first() else {
+        return false;
+    };
+    if next.is_ascii_alphanumeric() {
+        return true;
+    }
+    if !is_separator(next)
+        || !candidate
+            .text()
+            .as_bytes()
+            .last()
+            .is_some_and(u8::is_ascii_digit)
+    {
+        return false;
+    }
+    let tail = match tail.split_first() {
+        Some((b' ', rest)) => rest,
+        _ => tail,
+    };
+    tail.first().is_some_and(u8::is_ascii_digit)
 }
 
 /// The amount as an integer number of minor units, and whether the separators had to be guessed.
@@ -225,9 +295,16 @@ fn to_minor_units(amount: &str, exponent: u8) -> Option<(String, bool)> {
     // the number.
     let amount: String = amount
         .chars()
-        .filter(|c| !matches!(c, ' ' | '\u{a0}' | '\u{202f}'))
+        .filter(|c| !matches!(c, ' ' | '\u{a0}' | '\u{202f}' | '\'' | '\u{2019}'))
         .collect();
-    if amount.is_empty() || !amount.starts_with(|c: char| c.is_ascii_digit()) {
+    // A fraction with no integer part is a price, so the amount may open with its decimal mark —
+    // but only with digits behind it, never with a bare separator.
+    let opens_well = match amount.as_bytes() {
+        [first, ..] if first.is_ascii_digit() => true,
+        [b'.' | b',', second, ..] => second.is_ascii_digit(),
+        _ => false,
+    };
+    if !opens_well {
         return None;
     }
 
@@ -301,7 +378,7 @@ fn to_minor_units(amount: &str, exponent: u8) -> Option<(String, bool)> {
         None => (&amount[..], ""),
     };
     let units: String = units.chars().filter(char::is_ascii_digit).collect();
-    if units.is_empty() || units.len() > 24 {
+    if units.len() > 24 || (units.is_empty() && decimal.is_none()) {
         return None;
     }
 
@@ -354,6 +431,13 @@ mod tests {
             Some(("1234567".into(), false))
         );
         assert_eq!(to_minor_units("1200", 0), Some(("1200".into(), false)));
+        // The apostrophe is Switzerland's grouping mark, and it carries no ambiguity either.
+        assert_eq!(
+            to_minor_units("1'049,95", 2),
+            Some(("104995".into(), false))
+        );
+        // A fraction with no integer part is a price, and its integer part is zero.
+        assert_eq!(to_minor_units(".75", 2), Some(("75".into(), false)));
     }
 
     #[test]
@@ -366,5 +450,8 @@ mod tests {
         assert_eq!(to_minor_units("1.234.56", 2), None);
         assert_eq!(to_minor_units("", 2), None);
         assert_eq!(to_minor_units("1.5", 0), None);
+        // A separator with nothing behind it is not a number at all.
+        assert_eq!(to_minor_units(".", 2), None);
+        assert_eq!(to_minor_units(".750.30", 2), None);
     }
 }
