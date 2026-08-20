@@ -30,7 +30,8 @@
 //!
 //! Recall, precision and coverage are reported separately and never blended. Recall is over
 //! upstream-valid cases in a scheme we implement; precision is over upstream-invalid ones, and
-//! asks only whether we stayed silent; coverage is how much of the extracted material was scored
+//! asks only whether we stayed silent — except where upstream's assertion was about one
+//! recogniser rather than about a span, for which see `classify`; coverage is how much of the extracted material was scored
 //! at all. Every excluded case carries an individually justifiable reason and is counted beside
 //! the scores, because a run that excludes its way to a good number is worthless.
 
@@ -48,7 +49,7 @@ use serde::{Deserialize, Serialize};
 /// id starts with its scheme, so taking the first `n` of a scheme is a stable sample: the same
 /// cases every run, on any machine, with no random seed to carry. Raise it with
 /// `RES_CONFORMANCE_MAX_PER_SCHEME`.
-const DEFAULT_MAX_PER_SCHEME: usize = 250;
+const DEFAULT_MAX_PER_SCHEME: usize = 500;
 
 /// Regression floors, in percent. They are a ratchet, not a target: they sit just under the
 /// numbers the current rule set produces, so a rule change that loses upstream agreement fails the
@@ -301,6 +302,14 @@ fn classify(case: &Case, entities: &[Entity]) -> (Outcome, Vec<String>) {
         .filter(|entity| type_name(entity) == wanted_type)
         .collect();
 
+    // A case whose token is the whole fragment is an upstream sentence that one recogniser found
+    // nothing in. That says nothing about the other facets: an email corpus asserting "no address
+    // here" in a sentence that also holds an IP address is not a claim about the IP address, and
+    // scoring the IP match as a false positive would measure the wrong thing. Where upstream named
+    // a span, any type over that span is still a failure — that is the case the distinction turns
+    // on.
+    let whole_fragment = case.token_start == 0 && case.token_end == case.text.len();
+
     let outcome = if case.valid {
         match (&case.expect_value, same_type.first()) {
             (_, None) => Outcome::Miss,
@@ -313,7 +322,7 @@ fn classify(case: &Case, entities: &[Entity]) -> (Outcome, Vec<String>) {
                 }
             }
         }
-    } else if touching.is_empty() {
+    } else if touching.is_empty() || (whole_fragment && same_type.is_empty()) {
         Outcome::Silent
     } else if same_type.is_empty() {
         Outcome::SpuriousOtherType

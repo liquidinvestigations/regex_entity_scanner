@@ -11,6 +11,8 @@ scorer.
 | `stdnum.jsonl` | The extracted `python-stdnum` cases, checked in. |
 | `extract_libphonenumber.py` | Turns libphonenumber's per-region example numbers and its matcher's free-text corpus into cases. |
 | `libphonenumber.jsonl` | The extracted libphonenumber cases, checked in. |
+| `extract_recognizers.py` | Turns the Recognizers-Text English specs — dates, currency, IP, phone, email — into cases. |
+| `recognizers.jsonl` | The extracted Recognizers-Text cases, checked in. |
 
 ## The case file
 
@@ -38,7 +40,7 @@ upstream snapshot moves.
 Upstream calls an API on a bare token; we scan free text. Three rules bridge that, applied
 uniformly and recorded in the file rather than reinvented by the runner:
 
-- **The carrier.** Every token goes into one neutral sentence — `The record shows <token> on the
+- **The carrier**, for an origin that tests an API on a bare token. Every token goes into one neutral sentence — `The record shows <token> on the
   form.` — which carries no digits, no currency symbol and no cue word of its own, so the only
   thing the scanner can find in a case is the token.
 - **The cue.** Several rules refuse a bare token unless a cue word is nearby, because a check digit
@@ -49,6 +51,15 @@ uniformly and recorded in the file rather than reinvented by the runner:
 - **The token is verbatim.** Separators, case and punctuation are left exactly as upstream wrote
   them. How a number survives contact with real prose is the property under test, so normalising it
   first would delete the finding.
+
+An origin whose own material is already free text keeps that text instead of the carrier, and takes
+the offsets upstream reports. Nothing is gained by re-housing a sentence somebody wrote to exercise
+a recogniser, and the surrounding words are half of what the case is testing.
+
+A case whose token spans the whole fragment is an upstream input that one recogniser found nothing
+in. Only a match of the same entity type fails it: an email corpus saying "no address in this
+sentence" makes no claim about the IP address the sentence also contains. Where upstream names a
+span, any type over that span still fails the case.
 
 ## Exclusions
 
@@ -63,6 +74,7 @@ tracked tree is a thumb on the scale. The run prints the exclusion count beside 
 ```sh
 ./shell.sh python3 tests/conformance/extract_stdnum.py > tests/conformance/stdnum.jsonl
 ./shell.sh python3 tests/conformance/extract_libphonenumber.py > tests/conformance/libphonenumber.jsonl
+./shell.sh python3 tests/conformance/extract_recognizers.py > tests/conformance/recognizers.jsonl
 ```
 
 Each script reads its own directory under `vendored/reference/`, needs no network, and writes the
