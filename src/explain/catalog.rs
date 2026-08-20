@@ -1584,6 +1584,8 @@ static RULE_DOCS: &[RuleDoc] = &[
         ],
         not_checked: &[
             "that the amount is correct, or that the transaction happened",
+            "any arithmetic over the digits: a sum of money carries no check digit, so acceptance \
+             rests on the amount's structure and the code's membership of the list",
             "the decimal convention where the number allows both readings: a single separator \
              followed by three digits is read as a thousands group and reported with the \
              separator-inferred flag",

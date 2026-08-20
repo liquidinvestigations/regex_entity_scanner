@@ -93,7 +93,10 @@ impl Rule for IsoCodeRule {
                 amount_minor,
                 exponent: currency.exponent,
             },
-            confidence: 0.97,
+            // There is no check digit here to earn a higher number: what the validator has is the
+            // amount's structure and the code's membership of the ISO 4217 list in current use,
+            // which is the ladder's own description of 0.95.
+            confidence: 0.95,
             flags: if inferred {
                 vec![Flag::SeparatorInferred]
             } else {
