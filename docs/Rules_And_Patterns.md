@@ -106,6 +106,11 @@ many to put into a facet. For the formats that are nothing but a token and a che
 MMSI, IMEI, CUSIP, SEDOL — acceptance also requires a cue word within a short window either side,
 matched case-insensitively and on ASCII word boundaries. The window is 48 bytes, roughly a clause.
 
+The same guard covers a second case: a format with no check digit at all whose shape collides with
+ordinary words. A BIC is eight or eleven uppercase characters, and `DOCUMENT` and `CUSTOMER` both
+carry a valid ISO 3166-1 country code in positions five and six, so the label beside the code is
+what makes the rule usable rather than merely correct.
+
 The cue list lives with the rule and appears verbatim in its catalogue entry: "this was accepted
 because the word IMO was nearby" is exactly what a reader needs in order to weigh the match.
 

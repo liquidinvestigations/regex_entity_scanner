@@ -148,7 +148,16 @@ Compiled today:
 | Type | Rule | What the validator checks |
 |---|---|---|
 | `date` | `date.iso8601` | Real calendar date, real clock time, year inside a plausibility window, no adjacent digits. Normalises to RFC 3339 with an explicit precision, and canonicalises `Z`, `+0200` and `+02:00` to one spelling. |
+| `date` | `date.rfc2822` | A mail header date, with the day of the week checked against the calendar date; the obsolete zone abbreviations normalise to offsets. |
+| `date` | `date.clf` | The bracketed Common Log Format timestamp web servers emit. The brackets make it self-identifying; the span reported is the timestamp inside them. |
+| `date` | `date.iso_week` | An ISO week date, resolved through week-date arithmetic so week 53 is accepted only in the years that have one. |
 | `email` | `email.basic` | RFC 5321 length limits, an addressable local part, no adjacent addressable characters on either side, and — the largest single precision win — the top-level domain must be in the IANA list. |
+| `bank_account` | `bank.iban` | The country's entry in the vendored IBAN registry: exact length, positional character classes, then ISO 7064 mod-97-10 over the rearranged form. |
+| `bank_account` | `bank.bic` | Eight or eleven characters, positions five and six an ISO 3166-1 country, and a label — BIC, SWIFT, IBAN, bank, beneficiary, correspondent — nearby. ISO 9362 defines no check digit. |
+| `company_id` | `company.lei` | ISO 7064 mod-97-10 over all twenty characters, letters counting as their base-36 value. |
+| `security` | `security.isin` | Luhn over the letter-expanded form, and a prefix that is an ISO 3166-1 country or one of the allocations ISO 6166 makes to substitute agencies. |
+| `security` | `security.cusip` | The alternating-weight check digit, plus a cue word — CUSIP, SEDOL, ISIN, ticker, security, CIK — because nine alphanumerics are also every part number there is. |
+| `security` | `security.sedol` | The weighted check digit, the vowel-free alphabet, and the same cue words. |
 
 Full RFC 5322 is deliberately not the target for email: it accepts a great deal nobody writes, and
 on real corpora the TLD membership test is where the precision actually comes from.
