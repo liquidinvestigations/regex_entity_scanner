@@ -9,6 +9,8 @@ scorer.
 |---|---|
 | `extract_stdnum.py` | Turns the `python-stdnum` module docstrings into cases. Runs in the dev container. |
 | `stdnum.jsonl` | The extracted `python-stdnum` cases, checked in. |
+| `extract_libphonenumber.py` | Turns libphonenumber's per-region example numbers and its matcher's free-text corpus into cases. |
+| `libphonenumber.jsonl` | The extracted libphonenumber cases, checked in. |
 
 ## The case file
 
@@ -60,8 +62,18 @@ tracked tree is a thumb on the scale. The run prints the exclusion count beside 
 
 ```sh
 ./shell.sh python3 tests/conformance/extract_stdnum.py > tests/conformance/stdnum.jsonl
+./shell.sh python3 tests/conformance/extract_libphonenumber.py > tests/conformance/libphonenumber.jsonl
 ```
 
-The script reads `vendored/reference/python-stdnum/`, needs no network, and writes the case file to
-stdout with a count on stderr. Re-run it when the vendored snapshot moves or when a scheme gains a
-rule, and commit the diff — the case file is the corpus, not a build artefact.
+Each script reads its own directory under `vendored/reference/`, needs no network, and writes the
+case file to stdout with a count on stderr. Re-run one when the vendored snapshot moves or when a
+scheme gains a rule, and commit the diff — the case file is the corpus, not a build artefact.
+
+## National form, and the numbers that are only written in it
+
+libphonenumber's example numbers are *national significant numbers*, and `phone.international`
+matches international form only — a deliberate limit, because the same digits name a different
+subscriber in every country. Upstream's own test supplies the region as an argument to `parse`;
+the extractor supplies the same fact the only way a scanner can receive it, by writing the number
+with its country calling code. Scoring a thousand national-form numbers as misses would be
+measuring the documented absence of a rule, over and over.
