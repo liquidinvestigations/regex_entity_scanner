@@ -9,6 +9,7 @@
 //!
 //! Adding a type is therefore a pattern, a validator and a fixture — not a new pipeline.
 
+pub mod bank;
 pub mod checksum;
 pub mod context;
 pub mod date_iso;
@@ -92,5 +93,7 @@ pub fn all() -> Vec<Box<dyn Rule>> {
         Box::new(date_machine::Rfc2822Rule),
         Box::new(date_machine::ClfRule),
         Box::new(date_machine::IsoWeekRule),
+        Box::new(bank::IbanRule),
+        Box::new(bank::BicRule),
     ]
 }

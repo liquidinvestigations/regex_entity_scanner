@@ -10,6 +10,7 @@ pattern, a validator and a fixture — not a new pipeline.
 | `email.rs` | `email.basic` |
 | `date_iso.rs` | `date.iso8601` |
 | `date_machine.rs` | `date.rfc2822`, `date.clf`, `date.iso_week` |
+| `bank.rs` | `bank.iban`, `bank.bic` |
 
 ## A date rule ships only when the match fixes the whole day
 
@@ -58,8 +59,11 @@ In rough order of how much noise they remove per line of code:
    identifier fragments.
 3. **Adjacent-byte guards** — the stripped lookarounds. A date wedged between digits is part of a
    longer number.
-4. **List membership** — the IANA TLD list, airport codes, MMSI flag prefixes. Cheap, and decisive
-   for the types that have no checksum.
+4. **List membership** — the IANA TLD list, the IBAN registry, the ISO 3166-1 country codes,
+   airport codes, MMSI flag prefixes. Cheap, and decisive for the types that have no checksum.
+   `VendoredData::is_country_code` is the country test: CLDR's territory list also holds groupings
+   and placeholders such as `EU` and `ZZ`, and an identifier that encodes a country encodes a real
+   one.
 5. **Ambiguous-lexeme rules** — surface forms that collide with ordinary words and need stronger
    context before they count.
 

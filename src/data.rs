@@ -118,6 +118,19 @@ impl VendoredData {
             .map(String::as_str)
     }
 
+    /// Whether `alpha2` names an actual country rather than one of CLDR's groupings or
+    /// placeholders. Identifier schemes that encode a country encode an ISO 3166-1 country, so
+    /// `EU`, `ZZ` and their kind have to be excluded or every eight-letter word ending in `ZZPP`
+    /// becomes a bank code.
+    pub fn is_country_code(&self, alpha2: &str) -> bool {
+        /// CLDR publishes these alongside the countries: political and economic groupings, the
+        /// unknown-region placeholder, and the two pseudo-locales used for translation testing.
+        const NOT_COUNTRIES: [&str; 7] = ["EU", "EZ", "QO", "UN", "XA", "XB", "ZZ"];
+
+        let alpha2 = alpha2.to_uppercase();
+        !NOT_COUNTRIES.contains(&alpha2.as_str()) && self.territories.contains_key(&alpha2)
+    }
+
     /// The IBAN registry entry for a country code, or `None` for a country that issues no IBANs —
     /// which is itself a rejection, and a decisive one.
     pub fn iban_country(&self, alpha2: &str) -> Option<&IbanCountry> {

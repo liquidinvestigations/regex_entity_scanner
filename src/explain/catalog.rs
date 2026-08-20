@@ -333,4 +333,108 @@ static RULE_DOCS: &[RuleDoc] = &[
             note: "the standard that defines the week numbering",
         }],
     },
+    RuleDoc {
+        rule_id: "bank.iban",
+        entity_type: EntityType::BankAccount,
+        title: "International Bank Account Number",
+        matches: "An account number in the international form: a country code, two check digits \
+                  and the national account number, written either compactly or in the groups of \
+                  four people use on invoices. It is the strongest bank identifier in an \
+                  investigative corpus, because it names one account at one institution.",
+        standards: &[
+            "ISO 13616 — International Bank Account Number",
+            "ISO 7064 Mod 97, 10 — the check character system it uses",
+        ],
+        checks: &[
+            "the country code has an entry in the IBAN registry, so a country that issues no IBANs \
+             is a rejection",
+            "the length is exactly what the registry gives for that country",
+            "every position matches the registry's structure — digits where it says digits, \
+             letters where it says letters",
+            "ISO 7064 mod-97-10 over the rearranged form, which is what makes the country code and \
+             the check digits part of the arithmetic",
+            "nothing alphanumeric runs into the match from the left",
+        ],
+        not_checked: &[
+            "whether the account exists, is open, or belongs to whoever the text says",
+            "the national check digits some countries embed inside their own account number, which \
+             are a separate scheme per country",
+            "that the bank code names a bank that still trades under that code",
+        ],
+        authorities: &[
+            Authority {
+                name: "SWIFT",
+                role: "is the registration authority for ISO 13616 and publishes the IBAN registry",
+                url: "https://www.swift.com/standards/data-standards/iban-international-bank-account-number",
+            },
+            Authority {
+                name: "International Organization for Standardization",
+                role: "publishes ISO 13616 and ISO 7064",
+                url: "https://www.iso.org/standard/81090.html",
+            },
+        ],
+        ftm: FtmMapping {
+            schema: "BankAccount",
+            property: "iban",
+            note: "FollowTheMoney's BankAccount schema takes the IBAN as its own typed property \
+                   and uses it as a caption, which is exactly this value.",
+        },
+        references: &[
+            Reference {
+                title: "IBAN registry",
+                url: "https://www.swift.com/standards/data-standards/iban-international-bank-account-number",
+                note: "the per-country length and structure this rule validates against",
+            },
+            Reference {
+                title: "IBAN checksum validation",
+                url: "https://en.wikipedia.org/wiki/International_Bank_Account_Number#Validating_the_IBAN",
+                note: "the rearrangement and the mod-97 arithmetic, worked through",
+            },
+        ],
+    },
+    RuleDoc {
+        rule_id: "bank.bic",
+        entity_type: EntityType::BankAccount,
+        title: "Business Identifier Code (SWIFT code)",
+        matches: "The code that names a financial institution rather than an account — four \
+                  letters of institution, two of country, two of location, and an optional branch. \
+                  It is what a payment instruction carries beside the account number.",
+        standards: &["ISO 9362 — Business identifier code (BIC)"],
+        checks: &[
+            "the length is eight or eleven characters, the only two ISO 9362 defines",
+            "positions five and six are an ISO 3166-1 alpha-2 country code that exists",
+            "one of the words BIC, SWIFT, SWIFTBIC, IBAN, bank, beneficiary or correspondent \
+             appears within 48 bytes either side",
+            "nothing alphanumeric runs into the match from either side",
+        ],
+        not_checked: &[
+            "any check digit — ISO 9362 defines none, so the structure and the label beside it are \
+             the whole of what can be verified",
+            "that the code is registered, or that the institution it names still exists",
+            "that the branch code is one the institution actually uses",
+        ],
+        authorities: &[Authority {
+            name: "SWIFT",
+            role: "is the registration authority for ISO 9362 and allocates the codes",
+            url: "https://www.swift.com/standards/data-standards/bic-business-identifier-code",
+        }],
+        ftm: FtmMapping {
+            schema: "BankAccount",
+            property: "bic",
+            note: "FollowTheMoney's BankAccount schema carries the institution's BIC beside the \
+                   account number, which is where a code found in a payment instruction belongs.",
+        },
+        references: &[
+            Reference {
+                title: "BIC at SWIFT",
+                url: "https://www.swift.com/standards/data-standards/bic-business-identifier-code",
+                note: "the structure and the registration process",
+            },
+            Reference {
+                title: "SWIFT BIC search",
+                url: "https://www.swift.com/bsl/",
+                note: "where a code can be looked up against the register",
+            },
+        ],
+    },
 ];

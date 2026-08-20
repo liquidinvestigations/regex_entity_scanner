@@ -38,3 +38,13 @@
 {"name": "a week without a weekday names no day", "text": "reporting period 2021-W09", "expect": []}
 {"name": "yearless syslog stamp", "text": "Mar  4 09:12:00 host sshd[2114]: accepted", "expect": []}
 {"name": "bare eight digit date shape", "text": "batch 20210304 released", "expect": []}
+{"name": "iban in a payment instruction", "text": "Please remit to IBAN RO49 AAAA 1B31 0075 9384 0000 before Friday.", "expect": [{"type": "bank_account", "text": "RO49 AAAA 1B31 0075 9384 0000", "value": "RO49AAAA1B31007593840000"}]}
+{"name": "compact iban", "text": "acct GB82WEST12345698765432 closed", "expect": [{"type": "bank_account", "text": "GB82WEST12345698765432", "value": "GB82WEST12345698765432"}]}
+{"name": "iban with a mistyped check digit", "text": "acct GB83WEST12345698765432 closed", "expect": []}
+{"name": "iban glued to a trailing digit run", "text": "IBAN GB82WEST123456987654321234 booked", "expect": [{"type": "bank_account", "text": "GB82WEST12345698765432", "value": "GB82WEST12345698765432"}]}
+{"name": "bic beside its label", "text": "SWIFT AGRIFRPP882 for the beneficiary", "expect": [{"type": "bank_account", "text": "AGRIFRPP882", "value": "AGRIFRPP882"}]}
+{"name": "capitalised words that look like bank codes", "text": "SECTION 4: DOCUMENT CUSTOMER RETAINED BY REGISTRY", "expect": []}
+{"name": "sha-256 hash", "text": "sha256 9F86D081884C7D659A2FEAA0C55AD015A3BF4F1B2B0B822CD15D6C15B0F00A08", "expect": []}
+{"name": "uuid", "text": "trace id 3f2504e0-4f89-11d3-9a0c-0305e82c3301", "expect": []}
+{"name": "semantic version string", "text": "upgraded to release 12.04.2019 build 4471", "expect": []}
+{"name": "invoice number", "text": "invoice INV2021030400012 issued", "expect": []}
