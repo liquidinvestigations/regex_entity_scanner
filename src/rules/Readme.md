@@ -130,7 +130,7 @@ across rules, which means picking a number off a fixed ladder rather than formin
 |---|---|
 | 0.99 | Check digit verified **and** the surface form is self-identifying — a country prefix, a fixed alphabet, a literal marker |
 | 0.97 | Check digit verified on a bare token, admitted on a cue word |
-| 0.95 | No check digit; structure plus authoritative list membership (email TLD, BIC country, MMSI MID) |
+| 0.95 | No check digit; structure plus membership of an authoritative list or published register (email TLD, BIC country, MMSI MID, ISO 4217 code, a country's numbering plan) |
 | 0.90 | No check digit; structure plus a cue word |
 | 0.85 | Structure and a plausibility window only |
 | 0.80 | Structure only, with an ambiguity reported as a flag |

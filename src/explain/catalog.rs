@@ -1587,7 +1587,8 @@ static RULE_DOCS: &[RuleDoc] = &[
              timestamp whose minutes follow it",
             "nothing alphanumeric, no currency sign and no separator that continues the token \
              touches the match, so a plus-addressed mailbox or a longer code is not read as a \
-             number",
+             number; an extension marker is the one thing that may, and the span ends in front \
+             of it",
         ],
         not_checked: &[
             "national-format numbers, which need a region the document does not supply; no default \

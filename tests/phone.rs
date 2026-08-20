@@ -49,7 +49,7 @@ fn accepts_international_numbers_from_several_countries() {
             "+40215550100".to_string(),
             "RO".to_string(),
             "fixed_line".to_string(),
-            0.97
+            0.95
         )
     );
     assert_eq!(
@@ -58,7 +58,7 @@ fn accepts_international_numbers_from_several_countries() {
             "+12025550143".to_string(),
             "US".to_string(),
             "fixed_line_or_mobile".to_string(),
-            0.97
+            0.95
         )
     );
     assert_eq!(
@@ -67,7 +67,7 @@ fn accepts_international_numbers_from_several_countries() {
             "+4930901820".to_string(),
             "DE".to_string(),
             "fixed_line".to_string(),
-            0.97
+            0.95
         )
     );
     assert_eq!(
@@ -76,7 +76,7 @@ fn accepts_international_numbers_from_several_countries() {
             "+5511912345678".to_string(),
             "BR".to_string(),
             "mobile".to_string(),
-            0.97
+            0.95
         )
     );
 }
@@ -89,7 +89,7 @@ fn a_global_service_number_belongs_to_no_country() {
             "+80012345678".to_string(),
             "001".to_string(),
             "toll_free".to_string(),
-            0.97
+            0.95
         )
     );
 }
@@ -170,4 +170,23 @@ fn a_run_that_continues_past_the_match_is_not_a_number() {
     // Separated by a space they are two things, and the number is recovered from the longer
     // candidate that failed.
     assert_eq!(only_phone("call +40 21 555 0100 3 times").0, "+40215550100");
+}
+
+/// An extension is not part of the E.164 number. The card promises it is dropped, so the marker
+/// that introduces one may touch the match, and the span ends in front of it.
+#[test]
+fn an_attached_extension_is_dropped_rather_than_refused() {
+    let scanner = support::scanner();
+    for (text, expected) in [
+        ("call +44 2034567890x456 for support", "+442034567890"),
+        ("call +44 2034567890 ext. 456 for support", "+442034567890"),
+        ("call +44 2034567890#456 for support", "+442034567890"),
+    ] {
+        let entities = scanner.scan(text, 0);
+        assert_eq!(entities.len(), 1, "{text:?} produced {entities:?}");
+        assert_eq!(only_phone(text).0, expected, "{text:?}");
+        assert_eq!(entities[0].text, "+44 2034567890", "{text:?}");
+    }
+    // A letter that is not an extension marker still means the run continues.
+    no_phone("code +442034567890abc here");
 }

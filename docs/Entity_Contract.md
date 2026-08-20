@@ -87,7 +87,7 @@ Comparable means a fixed ladder, not a per-rule opinion:
 |---|---|
 | 0.99 | Check digit verified **and** the surface form is self-identifying — a country prefix, a fixed alphabet, a literal marker |
 | 0.97 | Check digit verified on a bare token, admitted on a cue word |
-| 0.95 | No check digit; structure plus authoritative list membership (email TLD, BIC country, MMSI MID) |
+| 0.95 | No check digit; structure plus membership of an authoritative list or published register (email TLD, BIC country, MMSI MID, ISO 4217 code, a country's numbering plan) |
 | 0.90 | No check digit; structure plus a cue word |
 | 0.85 | Structure and a plausibility window only |
 | 0.80 | Structure only, with an ambiguity reported as a flag |
@@ -95,11 +95,12 @@ Comparable means a fixed ladder, not a per-rule opinion:
 A rule may not claim a number its checks do not earn, and the catalogue entry's `checks` list is the
 audit trail for the one it claims. A date in a machine format sits at the top of the ladder because
 its separators are the literal marker and every field is constrained by the calendar, which is the
-same kind of arithmetic agreement a check digit gives. A telephone number sits one row down for the
-mirror-image reason: nothing in it is redundant, so no arithmetic can ever confirm it, and what
-earns the number instead is that the country calling code and the national number both match the
-numbering plan that country publishes — a far narrower constraint than a check digit, reported with
-the no-checksum flag so a consumer can tell the two apart.
+same kind of arithmetic agreement a check digit gives. A telephone number sits on the membership row
+for the mirror-image reason: nothing in it is redundant, so no arithmetic can ever confirm it, and
+what earns the number instead is that the country calling code and the national number both match
+the numbering plan that country publishes. That is the same kind of evidence a sum of money has when
+its ISO 4217 code is in the list — narrow, authoritative, and not arithmetic — so the two rules
+report the same number, and the no-checksum flag says which kind of evidence it was.
 
 ## Flags, not guesses
 

@@ -27,6 +27,21 @@ use crate::rules::{Candidate, Rule, Verdict};
 /// paragraph.
 const PHONE_PATTERN: &str = r"(?:\+|00)[ ]?[(]?[0-9][0-9 ().\-]{4,22}[0-9]";
 
+/// What the validator can claim when the metadata says the country issues numbers of this shape.
+/// No arithmetic confirms a telephone number — nothing in it is redundant — so what it has is the
+/// number's structure and its membership of a numbering plan the country publishes, which is the
+/// ladder's own description of this row.
+const METADATA_VALID: f32 = 0.95;
+
+/// The weaker answer: the region's general pattern accepts the digits but no line type claims
+/// them, which is structure and a plausibility window rather than membership.
+const GENERAL_PATTERN_ONLY: f32 = 0.85;
+
+/// The markers an extension is written with. The number ends in front of them: an extension is not
+/// part of the E.164 number and is dropped rather than parsed, so a match must not be refused
+/// merely because one is attached.
+const EXTENSION_MARKERS: &[&str] = &["ext.", "ext", "x", "#"];
+
 /// Currency signs commonly written against a number. libphonenumber refuses any character in the
 /// Unicode currency-symbol category next to a match, because a sum of money that happens to be
 /// punctuated like a phone number is still a sum of money.
@@ -71,16 +86,18 @@ impl Rule for InternationalRule {
 
         let number = phonenumber::parse(None, &dialled).ok()?;
         let confidence = if number.is_valid() {
-            0.97
+            METADATA_VALID
         } else if matches_general_pattern(&number) {
-            0.85
+            GENERAL_PATTERN_ONLY
         } else {
             return None;
         };
         // A `00` prefix is two ordinary digits, so any long identifier run can wear one. Requiring
         // both the metadata's confirmation and the punctuation somebody dialling from abroad
         // writes is what keeps an invoice number from being read as a call to another country.
-        if !text.starts_with('+') && (confidence < 0.97 || digits.len() == text.chars().count()) {
+        if !text.starts_with('+')
+            && (confidence < METADATA_VALID || digits.len() == text.chars().count())
+        {
             return None;
         }
 
@@ -178,7 +195,7 @@ fn ends_cleanly(candidate: &Candidate<'_>) -> bool {
         return true;
     };
     if next.is_alphanumeric() || next == '%' || next == '+' || CURRENCY_SIGNS.contains(&next) {
-        return false;
+        return extension_follows(rest);
     }
     // A separator with a digit after it is the same token continuing. A space is not: a number
     // followed by a separate number is two numbers, which is what the recovery is for.
@@ -186,6 +203,21 @@ fn ends_cleanly(candidate: &Candidate<'_>) -> bool {
         return !following.next().is_some_and(|after| after.is_ascii_digit());
     }
     true
+}
+
+/// Whether the text past the right edge is an extension rather than the token continuing. The span
+/// still ends where the number does, so what this admits is the number in front of the marker and
+/// never the digits behind it.
+fn extension_follows(rest: &str) -> bool {
+    let head: String = rest
+        .chars()
+        .take(6)
+        .collect::<String>()
+        .to_ascii_lowercase();
+    EXTENSION_MARKERS.iter().any(|marker| {
+        head.strip_prefix(marker)
+            .is_some_and(|after| after.trim_start().starts_with(|c: char| c.is_ascii_digit()))
+    })
 }
 
 /// Brackets inside a number must open, hold digits and close. Anything else is two pieces of text
