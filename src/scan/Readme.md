@@ -44,6 +44,14 @@ which finds both the shorter match at the same start and the nested match that s
 The validator sees the whole fragment and absolute offsets on a retry exactly as on a first pass, so
 the adjacent-byte guards read the real neighbours rather than the edges of a slice.
 
+The recovery searches the rejected candidate's **interior**, which is what bounds its cost, and that
+bound has a visible edge: a match that begins inside a rejected candidate and ends past its right
+edge is not recovered. In `1 $10 dollars bill` a money pattern's trailing-sign alternative matches
+`1 $` first — the engine is leftmost-first, so a match at offset 0 wins over the better one at
+offset 2 — the validator rejects it because a digit follows, and `$10` is never proposed at all.
+Recovering it means re-searching the rest of the fragment on every rejection, which is linear work
+per rejection and is exactly the cost the caps exist to refuse.
+
 The retry is capped at eight per candidate and two hundred and fifty-six per fragment, which makes
 it best-effort by construction. That is deliberate: unbounded retry is quadratic in the fragment on
 adversarial input, which is the property the linear-time prefilter exists to protect. A match nested
