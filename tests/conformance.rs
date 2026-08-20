@@ -58,7 +58,7 @@ const DEFAULT_MAX_PER_SCHEME: usize = 500;
 /// An origin joining the corpus changes the denominator rather than the rules, so the aggregate
 /// floor is re-derived from the run at the commit that adds one. It is never lowered to let an
 /// unchanged corpus pass.
-const MIN_RECALL_PERCENT: f64 = 97.4;
+const MIN_RECALL_PERCENT: f64 = 97.7;
 const MIN_PRECISION_PERCENT: f64 = 99.5;
 
 /// The same ratchet per origin: minimum recall, then minimum precision. The aggregate floor alone
@@ -70,6 +70,7 @@ const MIN_PRECISION_PERCENT: f64 = 99.5;
 /// An origin with no upstream-invalid cases has no precision to measure; its precision floor is
 /// still written down, and is simply not asserted until such a case exists.
 const ORIGIN_FLOORS: &[(&str, f64, f64)] = &[
+    ("advisory-database", 99.5, 99.5),
     ("crossref", 99.5, 99.5),
     ("dateparser", 99.0, 99.0),
     ("eth-utils", 99.5, 99.5),
