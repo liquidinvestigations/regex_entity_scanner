@@ -140,11 +140,18 @@ struct Tally {
     valid_agreed: usize,
     invalid_scored: usize,
     invalid_silent: usize,
+    /// Agreements where upstream documented no canonical form, so only the type was checked. They
+    /// count towards recall exactly like a full agreement, and without the column a recall figure
+    /// reads as stronger evidence than it is.
+    value_unchecked: usize,
 }
 
 impl Tally {
     fn record(&mut self, outcome: Outcome) {
         self.scored += 1;
+        if outcome == Outcome::HitValueUnchecked {
+            self.value_unchecked += 1;
+        }
         if outcome.counts_for_recall() {
             self.valid_scored += 1;
             if outcome.is_success() {
@@ -284,6 +291,39 @@ fn canonical(entity: &Entity) -> String {
     }
 }
 
+/// How far two coordinate readings may differ and still name the same point. A reference
+/// implementation's own encode and decode material disagrees in the last bits of the double —
+/// `2.7821874999999996` on one side, `2.7821875` on the other — and scoring that pair as a
+/// disagreement measures floating-point formatting rather than the rule. A billionth of a degree is
+/// a tenth of a millimetre, so nothing a reader would call a different place hides under it. It is
+/// one constant applied componentwise rather than a per-case field, because a per-case field makes
+/// every extractor fill in a column that one origin needs.
+const COORDINATE_TOLERANCE: f64 = 1e-9;
+
+/// Whether an observed canonical value answers the expected one: exact string equality, or —
+/// for the comma-separated pair a geographic point formats as — componentwise agreement within
+/// [`COORDINATE_TOLERANCE`].
+fn values_agree(observed: &str, expected: &str) -> bool {
+    if observed == expected {
+        return true;
+    }
+    match (coordinate_pair(observed), coordinate_pair(expected)) {
+        (Some(left), Some(right)) => {
+            (left.0 - right.0).abs() <= COORDINATE_TOLERANCE
+                && (left.1 - right.1).abs() <= COORDINATE_TOLERANCE
+        }
+        _ => false,
+    }
+}
+
+fn coordinate_pair(text: &str) -> Option<(f64, f64)> {
+    let (latitude, longitude) = text.split_once(',')?;
+    Some((
+        latitude.trim().parse().ok()?,
+        longitude.trim().parse().ok()?,
+    ))
+}
+
 fn type_name(entity: &Entity) -> String {
     serde_json::to_value(entity.entity_type)
         .expect("an entity type serialises")
@@ -333,7 +373,10 @@ fn classify(case: &Case, entities: &[Entity]) -> (Outcome, Vec<String>) {
             (_, None) => Outcome::Miss,
             (None, Some(_)) => Outcome::HitValueUnchecked,
             (Some(want), Some(_)) => {
-                if same_type.iter().any(|entity| &canonical(entity) == want) {
+                if same_type
+                    .iter()
+                    .any(|entity| values_agree(&canonical(entity), want))
+                {
                     Outcome::Hit
                 } else {
                     Outcome::ValueDisagreement
@@ -444,6 +487,7 @@ fn upstream_conformance() {
                 tally.valid_agreed += scheme_tally.valid_agreed;
                 tally.invalid_scored += scheme_tally.invalid_scored;
                 tally.invalid_silent += scheme_tally.invalid_silent;
+                tally.value_unchecked += scheme_tally.value_unchecked;
                 rows.push(SchemeReport {
                     scheme,
                     rule_id,
@@ -461,6 +505,7 @@ fn upstream_conformance() {
             total.valid_agreed += tally.valid_agreed;
             total.invalid_scored += tally.invalid_scored;
             total.invalid_silent += tally.invalid_silent;
+            total.value_unchecked += tally.value_unchecked;
             origins.push(OriginReport {
                 origin,
                 recall_percent: tally.recall(),
@@ -568,44 +613,47 @@ fn render(report: &Report) -> String {
     );
     let _ = writeln!(
         out,
-        "{:<26} {:>6} {:>6} {:>7} {:>8} {:>9}",
-        "scheme", "cases", "scored", "excl", "recall", "precision"
+        "{:<26} {:>6} {:>6} {:>7} {:>7} {:>8} {:>9}",
+        "scheme", "cases", "scored", "excl", "unchk", "recall", "precision"
     );
     for origin in &report.origins {
-        let _ = writeln!(out, "{}", "-".repeat(66));
+        let _ = writeln!(out, "{}", "-".repeat(73));
         let _ = writeln!(out, "{}", origin.origin);
         for row in &origin.schemes {
             let _ = writeln!(
                 out,
-                "  {:<24} {:>6} {:>6} {:>7} {:>8} {:>9}",
+                "  {:<24} {:>6} {:>6} {:>7} {:>7} {:>8} {:>9}",
                 row.scheme,
                 row.tally.cases,
                 row.tally.scored,
                 row.tally.excluded,
+                row.tally.value_unchecked,
                 show(row.recall_percent),
                 show(row.precision_percent),
             );
         }
         let _ = writeln!(
             out,
-            "  {:<24} {:>6} {:>6} {:>7} {:>8} {:>9}   coverage {}",
+            "  {:<24} {:>6} {:>6} {:>7} {:>7} {:>8} {:>9}   coverage {}",
             "= origin total",
             origin.tally.cases,
             origin.tally.scored,
             origin.tally.excluded,
+            origin.tally.value_unchecked,
             show(origin.recall_percent),
             show(origin.precision_percent),
             show(origin.coverage_percent),
         );
     }
-    let _ = writeln!(out, "{}", "=".repeat(66));
+    let _ = writeln!(out, "{}", "=".repeat(73));
     let _ = writeln!(
         out,
-        "{:<26} {:>6} {:>6} {:>7} {:>8} {:>9}   coverage {}",
+        "{:<26} {:>6} {:>6} {:>7} {:>7} {:>8} {:>9}   coverage {}",
         "AGGREGATE",
         report.total.cases,
         report.total.scored,
         report.total.excluded,
+        report.total.value_unchecked,
         show(report.recall_percent),
         show(report.precision_percent),
         show(report.coverage_percent),

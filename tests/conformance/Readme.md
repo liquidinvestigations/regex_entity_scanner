@@ -43,6 +43,17 @@ upstream snapshot moves.
 | `expect_value` | The normalised value we should produce, or `null` when upstream documents none. |
 | `exclusion` | Why the case is counted but not scored, or `null`. |
 
+An `expect_value` is compared as a string, with one exception: a geographic point is a
+comma-separated pair of doubles and is compared componentwise within a billionth of a degree. Two
+implementations of the same code arrive at a coordinate by different arithmetic and disagree in the
+last bits of the double; that is a fact about floating point and not a disagreement about the place,
+and a billionth of a degree is a tenth of a millimetre. The tolerance is one constant in the runner
+rather than a per-case field, so no extractor has to fill in a column that one origin needs.
+
+The per-scheme table carries an `unchk` column: agreements where upstream documents no canonical
+form, so only the entity type was checked. They count towards recall like any other agreement, and
+the column is what keeps a recall figure readable as the mix of evidence it is.
+
 ## Turning an upstream test into a scan
 
 Upstream calls an API on a bare token; we scan free text. Three rules bridge that, applied
