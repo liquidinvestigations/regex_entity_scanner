@@ -26,6 +26,20 @@ entity a client kept from an older rule set must still explain itself, so a valu
 has never seen thins the card instead of failing it. This is also why the endpoint sidesteps the
 `Value` round-trip question entirely — it never deserialises into the typed enum.
 
+## The FollowTheMoney mapping and the confidence note
+
+Two things are the same for the whole rule set rather than per match, and both live in `catalog.rs`.
+
+Every entry carries an `FtmMapping`: the FollowTheMoney schema and property this extraction feeds,
+with `res:` marking a property FollowTheMoney does not define and we are adding locally. It rides on
+`GET /rules/{rule_id}` with the rest of the entry, and the test suite fails a rule that has none.
+`docs/FollowTheMoney_Mapping.md` is the table it adds up to.
+
+`CONFIDENCE_NOTE` is one sentence about what a confidence number means. It is appended to every card
+that carries a confidence and served once at the top of `GET /rules`. It does not vary by rule,
+because a single threshold across every rule is only honest if the number means one thing across
+every rule.
+
 ## Adding a rule
 
 A catalogue entry is required; a shaper is optional. A rule with an entry and no shaper still

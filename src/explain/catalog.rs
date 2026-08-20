@@ -72,6 +72,18 @@ pub struct Reference {
     pub note: &'static str,
 }
 
+/// What the confidence number means, said the same way everywhere it appears.
+///
+/// One string, one place, no per-rule variation: a client that offers a single threshold control
+/// across every rule is only honest if the number means one thing across every rule, and a reader
+/// can only believe that if the explanation beside it does not change either. It is appended to
+/// every card that carries a confidence and served once at the top of `GET /rules`.
+pub const CONFIDENCE_NOTE: &str = "Confidence says how likely this span is to be the thing the \
+                                   rule claims, given what the validator was able to check. It is \
+                                   not a probability that the identifier was ever issued, that the \
+                                   address receives mail, or that the value is true — only that \
+                                   the text was read correctly.";
+
 pub fn lookup(rule_id: &str) -> Option<&'static RuleDoc> {
     RULE_DOCS.iter().find(|doc| doc.rule_id == rule_id)
 }

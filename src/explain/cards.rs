@@ -9,7 +9,7 @@
 //! documenting a new rule cheap: write the entry, ship a usable card, refine it later.
 
 use crate::data::VendoredData;
-use crate::explain::catalog::RuleDoc;
+use crate::explain::catalog::{self, RuleDoc};
 use crate::explain::{ExplainRequest, Explanation, Fact, Link};
 
 pub fn build(doc: &'static RuleDoc, request: &ExplainRequest, data: &VendoredData) -> Explanation {
@@ -33,6 +33,10 @@ pub fn build(doc: &'static RuleDoc, request: &ExplainRequest, data: &VendoredDat
         "date.iso8601" => date_iso(&mut card, request),
         "email.basic" => email(&mut card, request, data),
         "company.lei" => company_lei(&mut card, request),
+        "bank.iban" => bank_iban(&mut card, request, data),
+        "bank.bic" => bank_bic(&mut card, request, data),
+        "security.isin" => security_isin(&mut card, request, data),
+        "vessel.mmsi" => vessel_mmsi(&mut card, request, data),
         _ => None,
     };
 
@@ -91,6 +95,15 @@ fn body(doc: &'static RuleDoc, request: &ExplainRequest, specifics: Option<Strin
                 "[{}]({}) — {}",
                 reference.title, reference.url, reference.note
             )))
+        ));
+    }
+    // The same sentence on every card that carries a number, because a single threshold across
+    // thirty-one rules only works if the number means one thing, and the reader can only believe
+    // that if the explanation does not vary either.
+    if request.confidence.is_some() {
+        blocks.push(format!(
+            "**About confidence**\n{}",
+            catalog::CONFIDENCE_NOTE
         ));
     }
 
@@ -186,6 +199,141 @@ fn company_lei(card: &mut Explanation, request: &ExplainRequest) -> Option<Strin
          it was ever issued, and to whom, is a question for the register — the link above goes to \
          the entry for this exact code."
     ))
+}
+
+/// IBAN: the first two characters are the country whose registry decided the account number's
+/// length and layout, which is both what the validator checked against and the one fact a reader
+/// wants first.
+fn bank_iban(
+    card: &mut Explanation,
+    request: &ExplainRequest,
+    data: &VendoredData,
+) -> Option<String> {
+    let compact = request.value_str("compact")?;
+    let (alpha2, country) = encoded_country(request, data)?;
+
+    card.subtitle = format!("{compact} · {country}");
+    card.facts.push(Fact::new("Identifier", compact));
+    card.facts.push(Fact::new("Country", country.as_str()));
+    if let Some(bank) = request.value_part("bank_code") {
+        card.facts.push(Fact::new("Bank identifier", bank));
+    }
+    if let Some(bban) = request.value_part("bban") {
+        card.facts.push(Fact::new("Domestic account number", bban));
+    }
+
+    Some(format!(
+        "`{alpha2}` in the first two positions is {country}, and it is that country's entry in the \
+         IBAN registry that fixes how long the rest of the number is and which positions hold \
+         letters. The check digits agree with the account number, so the two were written down \
+         together correctly. The country is where the account is held, which is not necessarily \
+         where its holder lives."
+    ))
+}
+
+/// BIC: positions five and six are the country, and they are the only part of the code checked
+/// against a list — the institution and branch letters are whatever SWIFT allocated.
+fn bank_bic(
+    card: &mut Explanation,
+    request: &ExplainRequest,
+    data: &VendoredData,
+) -> Option<String> {
+    let compact = request.value_str("compact")?;
+    let (alpha2, country) = encoded_country(request, data)?;
+
+    card.subtitle = format!("{compact} · {country}");
+    card.facts.push(Fact::new("Identifier", compact));
+    card.facts.push(Fact::new("Country", country.as_str()));
+    if let Some(institution) = request.value_part("institution") {
+        card.facts.push(Fact::new("Institution code", institution));
+    }
+    if let Some(location) = request.value_part("location") {
+        card.facts.push(Fact::new("Location code", location));
+    }
+    match request.value_part("branch") {
+        Some(branch) => card.facts.push(Fact::new("Branch code", branch)),
+        None => card
+            .facts
+            .push(Fact::new("Branch code", "none — the head office")),
+    }
+
+    Some(format!(
+        "`{alpha2}` in positions five and six is {country}, the country of the office this code \
+         addresses. A BIC carries no check digit, so the country and the shape are all the \
+         arithmetic there is: whether SWIFT ever allocated this exact code is a question for their \
+         directory."
+    ))
+}
+
+/// ISIN: the prefix is the country of the national numbering agency that issued the number, which
+/// is where the security was issued and not where its issuer is domiciled.
+fn security_isin(
+    card: &mut Explanation,
+    request: &ExplainRequest,
+    data: &VendoredData,
+) -> Option<String> {
+    let compact = request.value_str("compact")?;
+    card.facts.push(Fact::new("Identifier", compact));
+    if let Some(national) = request.value_part("national_number") {
+        card.facts.push(Fact::new("National number", national));
+    }
+
+    let Some((alpha2, country)) = encoded_country(request, data) else {
+        // The substitute-agency prefixes — XS for Eurobonds and the rest — name no place, so the
+        // card says what the prefix is instead of naming a country that does not exist.
+        let prefix = compact.get(..2).unwrap_or_default();
+        card.subtitle = format!("{compact} · issued by a substitute numbering agency");
+        return Some(format!(
+            "`{prefix}` is not a country: it belongs to the substitute agencies that number \
+             securities with no single national home, such as Eurobonds cleared internationally. \
+             The check digit agrees, so the code is well-formed."
+        ));
+    };
+
+    card.subtitle = format!("{compact} · {country}");
+    card.facts.push(Fact::new("Country", country.as_str()));
+
+    Some(format!(
+        "`{alpha2}` in the first two positions is {country}, whose national numbering agency \
+         allocated the nine characters that follow. That says where the security was numbered, not \
+         where its issuer is domiciled or where it trades."
+    ))
+}
+
+/// MMSI: the first three digits are the ITU Maritime Identification Digits, which name the
+/// administration that assigned the number — the flag the station sails under.
+fn vessel_mmsi(
+    card: &mut Explanation,
+    request: &ExplainRequest,
+    data: &VendoredData,
+) -> Option<String> {
+    let compact = request.value_str("compact")?;
+    let (_, country) = encoded_country(request, data)?;
+    let mid = request.value_part("mid").unwrap_or_default();
+
+    card.subtitle = format!("{compact} · {country}");
+    card.facts.push(Fact::new("Identifier", compact));
+    card.facts.push(Fact::new("Flag state", country.as_str()));
+    if !mid.is_empty() {
+        card.facts
+            .push(Fact::new("Maritime identification digits", mid));
+    }
+
+    Some(format!(
+        "The leading `{mid}` is an ITU Maritime Identification Digit triple allocated to \
+         {country}, so that is the administration the station is registered with. An MMSI carries \
+         no check digit and is reassigned when a vessel changes flag or owner, so it identifies a \
+         radio station at a point in time rather than a hull for life."
+    ))
+}
+
+/// The country an identifier carries in its own characters, resolved to a name a reader knows.
+/// Every such rule already puts the alpha-2 in the value, so the shaper is a lookup rather than a
+/// second parse of the text.
+fn encoded_country(request: &ExplainRequest, data: &VendoredData) -> Option<(String, String)> {
+    let alpha2 = request.value_str("country")?;
+    let name = data.territory_name(alpha2)?;
+    Some((alpha2.to_string(), name.to_string()))
 }
 
 /// Email: the domain is the interesting part, because it is the only part anything was verified

@@ -64,6 +64,9 @@ pub struct HealthResponse {
 pub struct RulesResponse {
     pub rules: Vec<RuleSummary>,
     pub rule_set_version: u32,
+    /// What a confidence number means, once for the whole rule set, so a client can show it beside
+    /// a single threshold control instead of repeating it per rule.
+    pub confidence_note: &'static str,
 }
 
 /// Enough to populate a rule picker without pulling every catalogue entry.
@@ -106,6 +109,7 @@ async fn rules(State(state): State<Arc<AppState>>) -> Json<RulesResponse> {
     let compiled = state.scanner.rule_ids();
     Json(RulesResponse {
         rule_set_version: RULE_SET_VERSION,
+        confidence_note: catalog::CONFIDENCE_NOTE,
         rules: catalog::all()
             .iter()
             .map(|doc| RuleSummary {

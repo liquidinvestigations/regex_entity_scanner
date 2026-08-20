@@ -40,6 +40,21 @@ offsets were needed for.
 **Every rule change adds a case**: the input that motivated it, and the near-miss that must stay
 rejected. A rule change with no new fixture is a change nobody can defend later.
 
+## One scanner per test binary
+
+`tests/support::scanner()` hands out a shared `Arc<Scanner>` from a `OnceLock`. Compiling every
+candidate pattern and loading the vendored data files is the expensive part of a test, and paying
+that once per test instead of once per binary is where the whole budget would go. Nothing in the
+scanner is mutable, so sharing it across tests changes no result.
+
+## Where identifier fixtures come from
+
+Every `python-stdnum` module under `vendored/reference/` carries a valid and an invalid example in
+its docstring, and those are the fixtures: numbers the upstream implementers chose as the ones worth
+testing. Roughly five valid and three invalid per scheme, and the test says what the subset covers —
+the formats and the failure modes that scheme claims. Inventing an identifier by hand mostly proves
+the check digit routine agrees with itself.
+
 ## What the other tests cover
 
 Per-rule files pin what the validator keeps, what it rejects, and what the value normalises to —

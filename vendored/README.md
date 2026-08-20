@@ -34,6 +34,11 @@ so a re-fetch is reviewable as a diff of that subset rather than of an entire up
 
 ## License compatibility
 
+**This section governs what lives under `vendored/`** — material we clone, transform and rehost, and
+therefore redistribute together with the upstream notice. Ordinary crates.io dependencies are a
+different question: `cargo` resolves them, they are not copied into this tree, and nothing here is
+the place to record them.
+
 This project is AGPL-3.0-or-later, which puts us on the receiving end of copyleft — the easy
 direction. MIT, BSD-2/3, ISC, Apache-2.0, MPL-2.0, LGPL-2.1+, GPL-3.0, Unicode-3.0, CC0 and
 public-domain data all combine into an AGPLv3 work without further obligation beyond keeping the

@@ -1,8 +1,9 @@
 # regex-entity-scanner
 
-A stateless Rust service that reads UTF-8 text and returns typed, normalised entity spans: dates
-and email addresses today, with money, phone numbers and the large tier of checksummed structured
-identifiers built on the same two-stage frame.
+A stateless Rust service that reads UTF-8 text and returns typed, normalised entity spans: dates,
+email addresses, network and cryptocurrency addresses, coordinates, and the large tier of
+checksummed structured identifiers — IBAN, BIC, LEI, ISIN, IMO, MMSI, container, IMEI, DOI, ORCID
+and national identity numbers among them.
 
 It exists because matching is the cheap half of this problem. A pattern that finds every date in a
 corpus takes a morning; a pattern that finds every date and nothing that merely looks like one does
@@ -81,7 +82,7 @@ Details in [docs/Architecture.md](docs/Architecture.md).
 | `GET /health` | Liveness, the number of compiled rules, and the size of the loaded TLD list. |
 | `GET /rules` | Every documented rule: identifier, type, human-readable title, and whether this build has it compiled. |
 | `GET /rules/{rule_id}` | The full static documentation for one rule. |
-| `POST /scan` | `{"text": "…", "offset": 0}` → `{"entities": [...], "rule_set_version": 1}`. |
+| `POST /scan` | `{"text": "…", "offset": 0}` → `{"entities": [...], "rule_set_version": N}`. |
 | `POST /explain` | An entity, posted back exactly as `/scan` returned it → an explainer card. |
 
 `offset` is the byte offset of the fragment's first byte in the source document; it is added to
@@ -132,6 +133,10 @@ prove, the authorities and the references. Per-rule shapers add what only a part
 say — the country behind its top-level domain, the weekday its date fell on, the register entry for
 its own identifier. Every compiled rule must have an entry, and the test suite fails if one does
 not: a reader who clicks a match and gets nothing is worse than a rule that does not exist.
+
+Every entry also names the FollowTheMoney schema and property the extraction feeds, so a value has
+somewhere to land in the schema an investigative consumer already has:
+[docs/FollowTheMoney_Mapping.md](docs/FollowTheMoney_Mapping.md).
 
 Details in [docs/Explainer_Cards.md](docs/Explainer_Cards.md).
 

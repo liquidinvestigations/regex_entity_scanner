@@ -135,3 +135,88 @@ fn an_unknown_rule_has_no_card() {
         .expect("the request deserialises");
     assert!(explain::explain(&request, scanner.data()).is_none());
 }
+
+/// The four identifiers that carry a country in their own characters all resolve it the same way,
+/// through the same territory table, and all put it where a reader looks first.
+#[test]
+fn an_encoded_country_reaches_the_subtitle_and_the_facts() {
+    let scanner = support::scanner();
+    let cases = [
+        (
+            "transfer to GB82 WEST 1234 5698 7654 32 today",
+            "United Kingdom",
+            "Country",
+        ),
+        (
+            "swift bic DEUTDEFF for the beneficiary bank",
+            "Germany",
+            "Country",
+        ),
+        (
+            "the ISIN US0378331005 is quoted in New York",
+            "United States",
+            "Country",
+        ),
+        (
+            "MMSI 232003453 was heard on channel 16",
+            "United Kingdom",
+            "Flag state",
+        ),
+    ];
+
+    for (fragment, country, label) in cases {
+        let request = round_trip(fragment, 0);
+        let card = explain::explain(&request, scanner.data())
+            .unwrap_or_else(|| panic!("a card for {fragment:?}"));
+        assert!(
+            card.subtitle.contains(country),
+            "{}: {}",
+            request.rule_id,
+            card.subtitle
+        );
+        let fact = card
+            .facts
+            .iter()
+            .find(|fact| fact.label == label)
+            .unwrap_or_else(|| panic!("{} has no {label} fact", request.rule_id));
+        assert_eq!(fact.value, country);
+    }
+}
+
+/// An ISIN whose prefix belongs to a substitute numbering agency names no country, and the card
+/// says so rather than inventing one.
+#[test]
+fn a_substitute_agency_isin_names_no_country() {
+    let scanner = support::scanner();
+    let request = round_trip("the ISIN XS1088885550 was issued in London", 0);
+    let card = explain::explain(&request, scanner.data()).expect("a card for security.isin");
+
+    assert!(card.facts.iter().all(|fact| fact.label != "Country"));
+    assert!(card.body.contains("substitute agencies"), "{}", card.body);
+}
+
+/// The confidence note is one sentence for the whole rule set: it appears on every card that
+/// carries a number, and nowhere on one that does not.
+#[test]
+fn the_confidence_note_is_the_same_on_every_card() {
+    let scanner = support::scanner();
+    for fragment in [
+        "filed 2021-03-04 in Bucharest",
+        "write to anna@example.co.uk today",
+        "the ISIN US0378331005 is quoted in New York",
+    ] {
+        let request = round_trip(fragment, 0);
+        let card = explain::explain(&request, scanner.data())
+            .unwrap_or_else(|| panic!("a card for {fragment:?}"));
+        assert!(
+            card.body.contains(catalog::CONFIDENCE_NOTE),
+            "{} carries a confidence but does not explain it",
+            request.rule_id
+        );
+    }
+
+    let request: ExplainRequest = serde_json::from_str(r#"{"rule_id": "email.basic"}"#)
+        .expect("an entity with no confidence deserialises");
+    let card = explain::explain(&request, scanner.data()).expect("a card from the catalogue alone");
+    assert!(!card.body.contains(catalog::CONFIDENCE_NOTE));
+}

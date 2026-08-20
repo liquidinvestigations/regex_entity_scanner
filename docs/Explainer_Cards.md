@@ -75,7 +75,7 @@ verified quietly overstates it.
 
 | Route | |
 |---|---|
-| `GET /rules` | Every documented rule: identifier, type, human-readable title, and whether this build has it compiled. |
+| `GET /rules` | Every documented rule: identifier, type, human-readable title, and whether this build has it compiled — plus the rule-set version and the confidence note, once for the whole set. |
 | `GET /rules/{rule_id}` | The full static entry, with no match in hand. |
 | `POST /explain` | The card for one entity. |
 
@@ -101,3 +101,27 @@ surfaced on `GET /rules/{rule_id}`. Where FollowTheMoney defines a property we u
 where it does not, the property is prefixed `res:` to mark it as a local extension of their schema
 rather than something they define. A consumer reading a `res:` property knows it has to decide where
 to put the value; one reading `BankAccount.iban` does not.
+
+The full table, rule by rule, and what each `res:` extension exists for, is in
+[FollowTheMoney_Mapping.md](FollowTheMoney_Mapping.md).
+
+## The confidence note
+
+`confidence` is a number, and a number without a stated meaning is read as whatever the reader
+already believes. One static string in `src/explain/catalog.rs` says what it means, and it is the
+same string everywhere: appended to the body of every card that carries a confidence, as its own
+block, and served once at the top level of `GET /rules` so a client can show it beside a threshold
+control.
+
+One string, one place, no per-rule variation. A single threshold across the whole rule set only
+works if the number means one thing across the whole rule set, and a reader can only believe that if
+the explanation beside it does not change from card to card either. What it says is that the number
+is about whether the text was read correctly — not whether the identifier was ever issued, whether
+the address receives mail, or whether the value is true.
+
+## Cards are English
+
+The catalogue is static `&'static str` throughout and the cards it produces are English only. There
+is no content negotiation on `Accept-Language`, and a client asking for another language gets the
+same card. Translating them means a keyed catalogue, a negotiated request, and translated copy for
+every rule — a different kind of change from writing an entry.
