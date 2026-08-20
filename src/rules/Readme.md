@@ -43,9 +43,38 @@ In rough order of how much noise they remove per line of code:
 5. **Ambiguous-lexeme rules** — surface forms that collide with ordinary words and need stronger
    context before they count.
 
+## Shared machinery
+
+`checksum.rs` is the check-digit arithmetic — `luhn`, `damm`, `weighted_mod`, and `iso7064`'s
+`mod_97_10`, `mod_11_2` and `mod_11_10` — ported from `python-stdnum`, each with the valid and
+invalid pair from its upstream documentation as a test. The arithmetic is not invented here; a
+divergence from the reference shows up as a failing test rather than a quietly wrong facet.
+
+`context.rs` adds `Candidate::has_cue`, which answers whether one of a rule's cue words appears
+within a window either side of the candidate, case-insensitively and on ASCII word boundaries. A
+check digit on a bare digit run is a one-in-ten filter, so the formats that are nothing but a token
+and a check digit are admitted on a cue word as well.
+
 ## Confidence
 
 Confidence is what a consumer thresholds on at index time, so it has to mean something consistent
-across rules: how likely this span is to be the thing the rule claims, given everything the
-validator checked. A rule that passed a checksum says so with a high number; a rule that only
-matched a shape and a cue word does not get to claim the same.
+across rules, which means picking a number off a fixed ladder rather than forming an opinion:
+
+| Value | What the validator was able to do |
+|---|---|
+| 0.99 | Check digit verified **and** the surface form is self-identifying — a country prefix, a fixed alphabet, a literal marker |
+| 0.97 | Check digit verified on a bare token, admitted on a cue word |
+| 0.95 | No check digit; structure plus authoritative list membership (email TLD, BIC country, MMSI MID) |
+| 0.90 | No check digit; structure plus a cue word |
+| 0.85 | Structure and a plausibility window only |
+| 0.80 | Structure only, with an ambiguity reported as a flag |
+
+A rule may not claim a number its checks do not earn, and its catalogue entry's `checks` list is the
+audit trail for the one it claims. The ladder in full, with the reasoning, is in
+[../../docs/Rules_And_Patterns.md](../../docs/Rules_And_Patterns.md).
+
+## At most six rules per entity type
+
+An entity type is a facet somebody indexes, and a facet fed by a dozen loosely related rules stops
+meaning one thing. Six is the budget a proposed rule is measured against: when a type is full, the
+question is which of its rules is the weakest, not how to raise the cap.

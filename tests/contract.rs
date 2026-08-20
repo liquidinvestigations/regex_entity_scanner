@@ -1,7 +1,8 @@
 //! Structural properties of the wire contract, independent of any one rule.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashSet};
 
+use regex_entity_scanner::explain::catalog;
 use regex_entity_scanner::model::{DatePrecision, Entity, EntityType, Flag, Value};
 
 fn entity(entity_type: EntityType, value: Value) -> Entity {
@@ -139,5 +140,61 @@ fn no_candidate_pattern_depends_on_its_haystack_boundaries() {
                 rule.id()
             );
         }
+    }
+}
+
+/// Every entity type in the ladder, so a new one cannot be added without deciding what evidence it
+/// rests on.
+const EVERY_TYPE: &[EntityType] = &[
+    EntityType::Date,
+    EntityType::Email,
+    EntityType::Phone,
+    EntityType::Money,
+    EntityType::BankAccount,
+    EntityType::CompanyId,
+    EntityType::Security,
+    EntityType::Vessel,
+    EntityType::CargoContainer,
+    EntityType::Device,
+    EntityType::Network,
+    EntityType::Publication,
+    EntityType::Vulnerability,
+    EntityType::CryptoWallet,
+    EntityType::Coordinates,
+    EntityType::NationalId,
+    EntityType::MessageId,
+];
+
+/// Precedence is a ladder of bands, not a per-type ranking: types that had the same evidence
+/// available to them share a number and let length and position break the tie. So the interesting
+/// property is that the bands are distinct — a band that collided with its neighbour would silently
+/// stop deciding anything.
+#[test]
+fn the_precedence_ladder_has_one_value_per_band() {
+    let bands: HashSet<u8> = EVERY_TYPE.iter().map(|t| t.precedence()).collect();
+    assert_eq!(bands.len(), 7, "{bands:?}");
+
+    // The identifier tier outranks dates, which is the overlap the ladder exists to settle.
+    assert!(EntityType::BankAccount.precedence() > EntityType::Date.precedence());
+    assert!(EntityType::Date.precedence() > EntityType::Coordinates.precedence());
+}
+
+/// A rule with no FollowTheMoney mapping produces entities a consumer cannot put anywhere, so the
+/// mapping is a requirement rather than documentation.
+#[test]
+fn every_documented_rule_maps_into_followthemoney() {
+    for doc in catalog::all() {
+        assert!(
+            !doc.ftm.schema.is_empty() && !doc.ftm.property.is_empty(),
+            "{} has no FollowTheMoney mapping",
+            doc.rule_id
+        );
+        assert!(
+            !doc.ftm.note.is_empty(),
+            "{} maps to {}.{} without saying why",
+            doc.rule_id,
+            doc.ftm.schema,
+            doc.ftm.property
+        );
     }
 }

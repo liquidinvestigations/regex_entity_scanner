@@ -33,6 +33,27 @@ pub struct RuleDoc {
     pub not_checked: &'static [&'static str],
     pub authorities: &'static [Authority],
     pub references: &'static [Reference],
+    /// Where this extraction lands in FollowTheMoney, which is the schema an investigative
+    /// consumer already has. Every rule carries one; the test suite fails otherwise.
+    pub ftm: FtmMapping,
+}
+
+/// The FollowTheMoney schema and property an extraction feeds.
+///
+/// Where FollowTheMoney defines a property we use its exact name, and where the property sits on an
+/// abstract parent — `amount` and `currency` on `Value`, `idNumber` and `leiCode` on `LegalEntity`
+/// — the mapping names the parent, because that is where FollowTheMoney defines it and every
+/// concrete schema a consumer builds inherits it.
+#[derive(Debug, Serialize)]
+pub struct FtmMapping {
+    /// The schema, e.g. `BankAccount`.
+    pub schema: &'static str,
+    /// The property on it, e.g. `iban`. **Prefixed `res:` where FollowTheMoney has no property for
+    /// this and we are extending its schema locally** — an extension that is written down is a
+    /// mapping a consumer can implement, and one that is not is a surprise.
+    pub property: &'static str,
+    /// Why this is the right property, or why FollowTheMoney has none and an extension was needed.
+    pub note: &'static str,
 }
 
 #[derive(Debug, Serialize)]
@@ -98,6 +119,13 @@ static RULE_DOCS: &[RuleDoc] = &[
                 url: "https://www.ietf.org/",
             },
         ],
+        ftm: FtmMapping {
+            schema: "Analyzable",
+            property: "res:dateMentioned",
+            note: "FollowTheMoney has Document.date for the date a document carries as its own, \
+                   and no property for a date mentioned in its text, so the mention is a local \
+                   extension alongside the other Analyzable mention properties.",
+        },
         references: &[
             Reference {
                 title: "RFC 3339",
@@ -147,6 +175,13 @@ static RULE_DOCS: &[RuleDoc] = &[
             role: "delegates top-level domains and publishes the authoritative list",
             url: "https://www.iana.org/domains/root/db",
         }],
+        ftm: FtmMapping {
+            schema: "Analyzable",
+            property: "emailMentioned",
+            note: "The property FollowTheMoney defines for an address found in a document's text, \
+                   as opposed to LegalEntity.email, which asserts that the address belongs to the \
+                   entity — something extraction cannot establish.",
+        },
         references: &[
             Reference {
                 title: "IANA Root Zone Database",

@@ -9,6 +9,8 @@
 //!
 //! Adding a type is therefore a pattern, a validator and a fixture — not a new pipeline.
 
+pub mod checksum;
+pub mod context;
 pub mod date_iso;
 pub mod email;
 

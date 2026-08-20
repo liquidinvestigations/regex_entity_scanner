@@ -93,3 +93,11 @@ that does not exist.
 2. Add a shaper if the match carries anything worth saying that the catalogue cannot know — country,
    issuer, precision, a register link built from the value itself.
 3. Add a test that pins the fact a reader would actually be looking for.
+
+## The FollowTheMoney mapping
+
+Every catalogue entry names the FollowTheMoney schema and property its extraction feeds, and it is
+surfaced on `GET /rules/{rule_id}`. Where FollowTheMoney defines a property we use its exact name;
+where it does not, the property is prefixed `res:` to mark it as a local extension of their schema
+rather than something they define. A consumer reading a `res:` property knows it has to decide where
+to put the value; one reading `BankAccount.iban` does not.

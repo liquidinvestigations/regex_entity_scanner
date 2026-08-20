@@ -79,12 +79,41 @@ Roughly in order of noise removed per line of code:
    `t`, `$` — need stronger context before they count at all.
 6. **Negative contexts.** Inside a URL, inside a base64 blob, inside a hash, inside a code block.
 
-## Confidence
+## Confidence is a ladder, not an opinion
 
-Confidence is thresholded by consumers at index time, so it must mean the same thing across rules:
-how likely this span is to be what the rule claims, given what the validator could actually check. A
-rule that verified a check digit says so with a high number. A rule that matched a shape and found a
-cue word nearby does not get to claim the same, however useful its output is.
+Confidence is thresholded by consumers at index time, so it must mean the same thing across every
+rule: how likely this span is to be what the rule claims, given what the validator could actually
+check. Thirty rules cannot be thresholded on one number unless the number is picked off a fixed
+ladder.
+
+| Value | What the validator was able to do |
+|---|---|
+| 0.99 | Check digit verified **and** the surface form is self-identifying — a country prefix, a fixed alphabet, a literal marker |
+| 0.97 | Check digit verified on a bare token, admitted on a cue word |
+| 0.95 | No check digit; structure plus authoritative list membership (email TLD, BIC country, MMSI MID) |
+| 0.90 | No check digit; structure plus a cue word |
+| 0.85 | Structure and a plausibility window only |
+| 0.80 | Structure only, with an ambiguity reported as a flag |
+
+A rule may not claim a number its checks do not earn. The catalogue entry's `checks` list is the
+audit trail for the number it claims, which is what makes the ladder auditable rather than
+aspirational.
+
+## Cue words
+
+A check digit on a bare digit run is a one-in-ten filter, and one in ten invoice numbers is far too
+many to put into a facet. For the formats that are nothing but a token and a check digit — IMO,
+MMSI, IMEI, CUSIP, SEDOL — acceptance also requires a cue word within a short window either side,
+matched case-insensitively and on ASCII word boundaries. The window is 48 bytes, roughly a clause.
+
+The cue list lives with the rule and appears verbatim in its catalogue entry: "this was accepted
+because the word IMO was nearby" is exactly what a reader needs in order to weigh the match.
+
+## At most six rules per entity type
+
+An entity type is a facet somebody indexes, and a facet fed by a dozen loosely related rules stops
+meaning one thing. Six is the budget, and it is what a proposed rule is measured against: if a type
+is full, the question is which of its rules is weakest, not how to raise the cap.
 
 ## Rule identifiers
 

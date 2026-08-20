@@ -81,12 +81,31 @@ the thing the rule claims, given what the validator was able to check. A rule th
 digit claims more than a rule that matched a shape and a nearby cue word, and the numbers have to
 stay comparable across rules for a single threshold to make sense.
 
+Comparable means a fixed ladder, not a per-rule opinion:
+
+| Value | What the validator was able to do |
+|---|---|
+| 0.99 | Check digit verified **and** the surface form is self-identifying — a country prefix, a fixed alphabet, a literal marker |
+| 0.97 | Check digit verified on a bare token, admitted on a cue word |
+| 0.95 | No check digit; structure plus authoritative list membership (email TLD, BIC country, MMSI MID) |
+| 0.90 | No check digit; structure plus a cue word |
+| 0.85 | Structure and a plausibility window only |
+| 0.80 | Structure only, with an ambiguity reported as a flag |
+
+A rule may not claim a number its checks do not earn, and the catalogue entry's `checks` list is the
+audit trail for the one it claims. A date in a machine format sits at the top of the ladder because
+its separators are the literal marker and every field is constrained by the calendar, which is the
+same kind of arithmetic agreement a check digit gives.
+
 ## Flags, not guesses
 
 Some ambiguity is real and unresolvable from the text alone — `03/04/2021` is genuinely two dates, a
-timestamp without an offset is genuinely not an instant. The contract reports it (`ambiguous_order`,
-`no_timezone`) instead of picking one and presenting it as certainty. An investigative index is
-exactly the place where a silently wrong date is expensive.
+timestamp without an offset is genuinely not an instant. The contract reports it instead of picking
+one and presenting it as certainty: `ambiguous_order`, `no_timezone`, `no_checksum` for a format
+that carries no check digit at all, `ambiguous_currency` for a symbol shared by several ISO 4217
+codes, and `separator_inferred` for a number whose decimal and grouping marks rested on a convention
+the document never stated. An investigative index is exactly the place where a silently wrong value
+is expensive.
 
 ## The entity is a handle
 
